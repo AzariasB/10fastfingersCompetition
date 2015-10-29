@@ -20,22 +20,6 @@ var connector = new Connector();
 
 
 /*
- * Set all the basics options
- * 
- * For the moment :
- *  - the language name (English)
- *  - the language code (english)
- *  - the timeoutTime (10)
- * 
- * @param {type} options
- */
-function setOptions(options) {
-    languageTextName = options.favLangName || languageTextName;
-    languageTestVal = options.favLangVal || languageTestVal;
-    refreshTimeout = parseInt(options.refreshTimeout) || refreshTimeout;
-}
-
-/*
  * Start everything function
  * 
  * To be called only once !
@@ -43,7 +27,9 @@ function setOptions(options) {
 function init() {
     listenToStorage();
     chrome.alarms.onAlarm.addListener(function (alarm) {//Add alarm listener
-        connector.refresh();
+        if (alarm.name === 'refresh') {
+            connector.refresh();
+        }
     });
     chrome.browserAction.onClicked.addListener(function () {//Add click listnere
         click();
@@ -51,7 +37,7 @@ function init() {
 
     //Take out options and let's go !
     chrome.storage.sync.get(['favLangName', 'favLangVal', 'refreshTimeout'], function (items) {
-        setOptions(items);
+        connector.setOptions(items);
         connector.refresh();
     });
 }
@@ -69,6 +55,12 @@ function click() {
             } else {
                 openFastFingers();
             }
+        } else {
+            chrome.browserAction.setIcon({path: "pictures/icon _gray.png"});
+            chrome.browserAction.setTitle({title: "Not connected to 10fastfingers"});
+            chrome.browserAction.setBadgeBackgroundColor({color: [190, 190, 190, 230]});
+            chrome.browserAction.setBadgeText({text: "?"});
+            connector.refreshCompetitions(connector.refreshTimeout);
         }
     });
 }
@@ -120,13 +112,30 @@ function Connector() {
             if (alarm) {
                 if (alarm.periodInMinutes !== timeout) {
                     chrome.alarms.clear('refresh', function () {
-                        chrome.alamrs.create('refresh', {periodInMinutes: timeout});
+                        chrome.alarms.create('refresh', {periodInMinutes: timeout});
                     });
                 }
             } else {
                 chrome.alarms.create('refresh', {periodInMinutes: timeout});
             }
         });
+    };
+
+
+    /*
+     * Set all the basics options
+     * 
+     * For the moment :
+     *  - the language name (English)
+     *  - the language code (english)
+     *  - the timeoutTime (10)
+     * 
+     * @param {type} options
+     */
+    this.setOptions = function (options) {
+        this.languageTextName = options.favLangName || this.languageTextName;
+        this.languageTestVal = options.favLangVal || this.languageTestVal;
+        this.refreshTimeout = parseInt(options.refreshTimeout) || this.refreshTimeout;
     };
 
     this.is10fastFingersUrl = function (url) {
@@ -138,7 +147,7 @@ function Connector() {
     };
 
     this.getTypingTestUrl = function () {
-        return this.websiteUrl + 'typing-test/' + languageTestVal;
+        return this.websiteUrl + 'typing-test/' + this.languageTestVal;
     };
 
 
@@ -147,7 +156,7 @@ function Connector() {
     //---------------------------------------//
 
     function getFlagId() {
-        return 'flagid' + flagsLang[languageTextName];
+        return 'flagid' + flagsLang[self.languageTextName];
     }
 
     //Remove all scripts tag of the text
@@ -171,14 +180,14 @@ function Connector() {
      */
     function checkIfConnected(cookie, callback) {
         if (cookie === null) {//not connected
-            connected = false;
-            chrome.browserAction.setIcon({path: "icon _gray.png"});
+            self.connected = false;
+            chrome.browserAction.setIcon({path: "picture/icon _gray.png"});
             chrome.browserAction.setTitle({title: "Not connected to 10fastfingers"});
             chrome.browserAction.setBadgeBackgroundColor({color: [190, 190, 190, 230]});
             chrome.browserAction.setBadgeText({text: "?"});
-            refreshCompetitions(refreshTimeout);
+            self.refreshCompetitions(refreshTimeout);
         } else {
-            connected = true;
+            self.connected = true;
             lookForNewCompetitions(callback);
         }
     }
@@ -223,7 +232,7 @@ function Connector() {
         for (var i = 0; i < competitions.length; i++) {
             checkCompetition(competitions[i]);
         }
-        if (this.nwCompetitions > 0 && lastCompetition) {
+        if (self.nwCompetitions > 0 && self.lastCompetition) {
             chrome.browserAction.setTitle({title: self.nwCompetitions === 1 ? 'There is a new competition' :
                         'There are new competitions'});
             chrome.browserAction.setBadgeBackgroundColor({color: [58, 214, 0, 255]});
@@ -232,7 +241,7 @@ function Connector() {
             chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
         }
         chrome.browserAction.setBadgeText({text: (self.nwCompetitions === 0 ? "" : (self.nwCompetitions + ""))});
-        self.refreshCompetitions(refreshTimeout);//Refresh to see if there is a new competition every 10 minutes
+        self.refreshCompetitions(self.refreshTimeout);//Refresh to see if there is a new competition every 10 minutes
     }
 
     /*
@@ -248,7 +257,7 @@ function Connector() {
             var alreadyDone = informations[2].getElementsByTagName('div')[0].getAttribute('competition_id');
             if (self.competParticipated.indexOf(alreadyDone) === -1) {//Compet not done yet
                 var ref = informations[1].getElementsByTagName('a')[0].getAttribute('href');
-                nwCompetitions++;
+                self.nwCompetitions++;
                 self.lastCompetition = ref.substr(1);
             }
         }
@@ -293,9 +302,9 @@ function openCompetition(competitionId) {
 //Check if the chrome storage is changin to quickly change the icon display.
 function listenToStorage() {
     chrome.storage.onChanged.addListener(function (items) {
-        connector.languageTestVal = (items.favLangVal ? items.favLangVal.newValue : languageTestVal);
-        connector.languageTextName = (items.favLangName ? items.favLangName.newValue : languageTextName);
-        connector.refreshTimeout = (items.refreshTimeout ? items.refreshTimeout.newValue : refreshTimeout);
+        connector.languageTestVal = (items.favLangVal ? items.favLangVal.newValue : connector.languageTestVal);
+        connector.languageTextName = (items.favLangName ? items.favLangName.newValue : connector.languageTextName);
+        connector.refreshTimeout = (items.refreshTimeout ? items.refreshTimeout.newValue : connector.refreshTimeout);
         connector.refresh();
     });
 }
