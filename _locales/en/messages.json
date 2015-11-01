@@ -1,0 +1,38 @@
+{
+    "one_new_competition": {
+        "message": "A new competition was created"
+    },
+    "new_competitions": {
+        "message": "New competitions were created"
+    },
+    "nothing_new": {
+        "message": "There's no new competition"
+    },
+    "not_connected": {
+        "message": "You are not connected to 10fastfingers.com"
+    },
+    "goto_test": {
+        "message": "Go on the test page"
+    },
+    "goto_competition": {
+        "message": "Go on the competitions page"
+    },
+    "main_title": {
+        "message": "10fastfingers competitions"
+    },
+    "lang_option": {
+        "message": "Competition's langage"
+    },
+    "refresh_option": {
+        "message": "Refreshing timeout(minutes)"
+    },
+    "noCompet_option": {
+        "message": "Where there's no competition"
+    },
+    "confirm_save": {
+        "message": "Save"
+    },
+    "option_saved": {
+        "message": "All modifications were saved"
+    }
+}

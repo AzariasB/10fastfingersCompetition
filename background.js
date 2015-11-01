@@ -13,10 +13,15 @@
  */
 
 
-/* global chrome, competitions_participated */
-var flagsLang = {"English": 1, "German": 2, "French": 3, "Portuguese": 4, "Spanish": 5, "Indonesian": 6, "Turkish": 7, "Vietnamese": 8, "Polish": 9, "Romanian": 10, "Malaysian": 11, "Norwegian": 12, "Persian": 13, "Hungarian": 14, "Chinese (Traditional)": 15, "Chinese (Simplified)": 16, "Danish": 17, "Dutch": 18, "Swedish": 19, "Italian": 20, "Finnish": 21, "Serbian": 22, "Catalan": 23, "Filipino": 24, "Croatian": 25, "Russian": 26, "Arabic": 27, "Bulgarian": 28, "Japanese": 29, "Korean": 31, "Greek": 32, "Czech": 33, "Estonian": 34, "Latvian": 35, "Hebrew": 36, "Urdu": 37, "Galician": 38, "Lithuanian": 39, "Georgian": 40, "Armenian": 41, "Kurdish": 42, "Azerbaijani": 43, "Hindi": 44, "Slovak": 45, "Slovenian": 46, "Icelandic": 48, "Thai": 50, "Pashto": 51, "Esperanto": 52};
+//Translate faster, shorter
+function tr() {
+    return chrome.i18n.getMessage.apply(this,arguments);
+}
 
+/* global chrome, competitions_participated */
+var flagsLangId = {"English": 1, "German": 2, "French": 3, "Portuguese": 4, "Spanish": 5, "Indonesian": 6, "Turkish": 7, "Vietnamese": 8, "Polish": 9, "Romanian": 10, "Malaysian": 11, "Norwegian": 12, "Persian": 13, "Hungarian": 14, "Chinese (Traditional)": 15, "Chinese (Simplified)": 16, "Danish": 17, "Dutch": 18, "Swedish": 19, "Italian": 20, "Finnish": 21, "Serbian": 22, "Catalan": 23, "Filipino": 24, "Croatian": 25, "Russian": 26, "Arabic": 27, "Bulgarian": 28, "Japanese": 29, "Korean": 31, "Greek": 32, "Czech": 33, "Estonian": 34, "Latvian": 35, "Hebrew": 36, "Urdu": 37, "Galician": 38, "Lithuanian": 39, "Georgian": 40, "Armenian": 41, "Kurdish": 42, "Azerbaijani": 43, "Hindi": 44, "Slovak": 45, "Slovenian": 46, "Icelandic": 48, "Thai": 50, "Pashto": 51, "Esperanto": 52};
 var connector = new Connector();
+
 
 
 /*
@@ -36,11 +41,12 @@ function init() {
     });
 
     //Take out options and let's go !
-    chrome.storage.sync.get(['favLangName', 'favLangVal', 'refreshTimeout'], function (items) {
+    chrome.storage.sync.get(['favLangName', 'favLangVal', 'refreshTimeout', 'noCompetition'], function (items) {
         connector.setOptions(items);
         connector.refresh();
     });
 }
+
 
 /*
  * Click on the browseraction
@@ -53,14 +59,14 @@ function click() {
                 openCompetition(connector.lastCompetition);
                 connector.refreshCompetitions(1.2); //Refresh competition after 2 minutes of going in
             } else {
-                openFastFingers();
+                connector.openOption();
             }
         } else {
-            chrome.browserAction.setIcon({path: "pictures/icon _gray.png"});
-            chrome.browserAction.setTitle({title: "Not connected to 10fastfingers"});
-            chrome.browserAction.setBadgeBackgroundColor({color: [190, 190, 190, 230]});
-            chrome.browserAction.setBadgeText({text: "?"});
+            chrome.browserAction.setIcon({path: "pictures/icon_gray.png"});
+            chrome.browserAction.setTitle({title: tr("not_connected")});
+            chrome.browserAction.setBadgeText({text: ""});
             connector.refreshCompetitions(connector.refreshTimeout);
+            openFastFingers();
         }
     });
 }
@@ -76,9 +82,11 @@ function Connector() {
     this.refreshTimeout = 10;
     this.valRegex = /\s*var\s+competitions_participated\s*=\s*\[(\"\d+\",)*(\"\d+\")?\];/;
     this.scripReg = new RegExp('<script[\\s\\S\\d\\D]*?>[\\s\\S]*?</script>', 'g');
+    this.imgReg = new RegExp('url\\([\'"][\\d\\D]*?.png[\'"]\\)', 'g');
     this.linkReg = new RegExp('<link[\\d\\D]*?>', 'g');
     this.competParticipated;
     this.currentTimeout;
+    this.noCompet = "";
 
     var self = this;
 
@@ -121,6 +129,23 @@ function Connector() {
         });
     };
 
+    /*
+     * Open different pages
+     * depending on the option
+     */
+    this.openOption = function () {
+        switch (this.noCompet) {
+            case 0 ://Open simple test
+                openFastFingers();
+                break;
+            case 1: //Open competition test
+                openFastFingers('competiontions');
+                break;
+            default:
+                openFastFingers();
+                break;
+        }
+    };
 
     /*
      * Set all the basics options
@@ -136,6 +161,7 @@ function Connector() {
         this.languageTextName = options.favLangName || this.languageTextName;
         this.languageTestVal = options.favLangVal || this.languageTestVal;
         this.refreshTimeout = parseInt(options.refreshTimeout) || this.refreshTimeout;
+        this.noCompet = parseInt(options.noCompetition) || this.noCompet;
     };
 
     this.is10fastFingersUrl = function (url) {
@@ -150,13 +176,16 @@ function Connector() {
         return this.websiteUrl + 'typing-test/' + this.languageTestVal;
     };
 
+    this.getCompetPage = function () {
+        return this.websiteUrl + 'competitions';
+    };
 
     //---------------------------------------//
     //          PRIVATE FUNCTIONS            //
     //---------------------------------------//
 
     function getFlagId() {
-        return 'flagid' + flagsLang[self.languageTextName];
+        return 'flagid' + flagsLangId[self.languageTextName];
     }
 
     //Remove all scripts tag of the text
@@ -169,8 +198,14 @@ function Connector() {
         return text.replace(self.linkReg, "");
     }
 
+    function removePictures(text) {
+        return text.replace(self.imgReg, "");
+    }
+
     function cleanHTML(html) {
-        return removeLink(removeScript(html));
+        return removePictures(
+                removeLink(
+                        removeScript(html)));
     }
 
     /*
@@ -181,13 +216,15 @@ function Connector() {
     function checkIfConnected(cookie, callback) {
         if (cookie === null) {//not connected
             self.connected = false;
-            chrome.browserAction.setIcon({path: "picture/icon _gray.png"});
-            chrome.browserAction.setTitle({title: "Not connected to 10fastfingers"});
+            chrome.browserAction.setIcon({path: "pictures/icon _gray.png"});
+            chrome.browserAction.setTitle({title: tr("not_connected")});
             chrome.browserAction.setBadgeBackgroundColor({color: [190, 190, 190, 230]});
-            chrome.browserAction.setBadgeText({text: "?"});
-            self.refreshCompetitions(refreshTimeout);
+            chrome.browserAction.setBadgeText({text: ""});
+            self.refreshCompetitions(1);
+            callback && callback();
         } else {
             self.connected = true;
+            chrome.browserAction.setIcon({path: "pictures/icon.png"});
             lookForNewCompetitions(callback);
         }
     }
@@ -198,28 +235,25 @@ function Connector() {
      * passing by : taking the values of the 'alreadyDone' competitions
      */
     function lookForNewCompetitions(callback) {
-        if (HTMLinXHR()) {
-            var xhr = new XMLHttpRequest();
-            xhr.open("GET", self.websiteUrl + "competitions", true);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    // innerText does not let the attacker inject HTML elements.
-                    var res = self.valRegex.exec(xhr.responseText);
-                    eval(res[0]);//Get "competition_participated" var.
-                    self.competParticipated = competitions_participated;
-                    var clearedHTML = cleanHTML(xhr.responseText);
-                    var dummyDiv = document.createElement('DIV');
-                    dummyDiv.innerHTML = clearedHTML;
-                    document.body.appendChild(dummyDiv);
-                    var core = document.getElementById('join-competition-table');
-                    processCore(core.getElementsByTagName('tbody')[0]);
-                    callback && callback();
-                }
-            };
-            xhr.send();
-        } else {
-            console.log("Not possible");
-        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", self.websiteUrl + "competitions", true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                // innerText does not let the attacker inject HTML elements.
+                var res = self.valRegex.exec(xhr.responseText);
+                eval(res[0]);//Get "competition_participated" var.
+                self.competParticipated = competitions_participated;
+                var clearedHTML = cleanHTML(xhr.responseText);
+                var dummyDiv = document.createElement('DIV');
+                dummyDiv.innerHTML = clearedHTML;
+                document.body.appendChild(dummyDiv);
+                var core = document.getElementById('join-competition-table');
+                processCore(core.getElementsByTagName('tbody')[0]);
+                callback && callback();
+            }
+        };
+        xhr.send();
     }
 
     /*
@@ -233,11 +267,11 @@ function Connector() {
             checkCompetition(competitions[i]);
         }
         if (self.nwCompetitions > 0 && self.lastCompetition) {
-            chrome.browserAction.setTitle({title: self.nwCompetitions === 1 ? 'There is a new competition' :
-                        'There are new competitions'});
+            chrome.browserAction.setTitle({title: self.nwCompetitions === 1 ? tr("one_new_competition") :
+                        tr("new_competitions")});
             chrome.browserAction.setBadgeBackgroundColor({color: [58, 214, 0, 255]});
         } else {
-            chrome.browserAction.setTitle({title: 'Not new competitions'});
+            chrome.browserAction.setTitle({title: tr('nothing_new')});
             chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
         }
         chrome.browserAction.setBadgeText({text: (self.nwCompetitions === 0 ? "" : (self.nwCompetitions + ""))});
@@ -267,21 +301,22 @@ function Connector() {
 }
 
 //check if we really have a html-like response
-function HTMLinXHR() {
-    if (!window.XMLHttpRequest)
-        return false;
-    var req = new window.XMLHttpRequest();
-    req.open('GET', connector.websiteUrl + 'competitions', false);
-    try {
-        req.responseType = 'document';
-    } catch (e) {
-        return true;
-    }
-    return false;
-}
+//deprecated
+//function HTMLinXHR() {
+//    if (!window.XMLHttpRequest)
+//        return false;
+//    var req = new window.XMLHttpRequest();
+//    req.open('GET', connector.websiteUrl + 'competitions', false);
+//    try {
+//        req.responseType = 'document';
+//    } catch (e) {
+//        return true;
+//    }
+//    return false;
+//}
 
 //Open a simple tab with the 'default' page of 10 fast finger : the easy typing test
-function openFastFingers() {
+function openFastFingers(url) {
     chrome.tabs.getAllInWindow(undefined, function (tabs) {
         for (var i = 0, tab; tab = tabs[i]; i++) {
             if (tab.url && connector.is10fastFingersUrl(tab.url)) {
@@ -289,7 +324,10 @@ function openFastFingers() {
                 return;
             }
         }
-        chrome.tabs.create({url: connector.getTypingTestUrl()});
+        if (url)
+            chrome.tabs.create({url: connector.getCompetPage()});
+        else
+            chrome.tabs.create({url: connector.getTypingTestUrl()});
     });
 }
 
@@ -305,6 +343,7 @@ function listenToStorage() {
         connector.languageTestVal = (items.favLangVal ? items.favLangVal.newValue : connector.languageTestVal);
         connector.languageTextName = (items.favLangName ? items.favLangName.newValue : connector.languageTextName);
         connector.refreshTimeout = (items.refreshTimeout ? items.refreshTimeout.newValue : connector.refreshTimeout);
+        connector.noCompet = (items.noCompetition ? items.noCompetition.newValue : connector.noCompet);
         connector.refresh();
     });
 }

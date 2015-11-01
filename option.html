@@ -6,18 +6,21 @@
         <link rel="stylesheet" type="text/css" href="style.css" />
     </head>
     <body>
-        <h1>10fastFingers competitions</h1>
+        <h1 id="main_title" >10fastFingers competitions</h1>
         <div id="options">
             <div id="option1">
-                Language of tests and competitions :
+                <p id="option1_text" >Language of tests and competitions :</p>
                 <select id="language">
                 </select>
             </div>
             <div id="option2">
-                <p>Refreshing timeout (in minutes) :</p>
+                <p id="option2_text" >Refreshing timeout (in minutes) :</p>
                 <input type="number" id="refreshing" />
-
-
+            </div>
+            <div id="option3">
+                <p id="option3_text" >What to do where there is no competition</p>
+                <select id="no_competition" >
+                </select>
             </div>
             <button id="save">Save</button>
             <div id="status" ></div>
