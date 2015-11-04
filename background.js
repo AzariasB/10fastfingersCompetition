@@ -19,7 +19,7 @@ function tr() {
 }
 
 /* global chrome, competitions_participated */
-var flagsLangId = {"English": 1, "German": 2, "French": 3, "Portuguese": 4, "Spanish": 5, "Indonesian": 6, "Turkish": 7, "Vietnamese": 8, "Polish": 9, "Romanian": 10, "Malaysian": 11, "Norwegian": 12, "Persian": 13, "Hungarian": 14, "Chinese (Traditional)": 15, "Chinese (Simplified)": 16, "Danish": 17, "Dutch": 18, "Swedish": 19, "Italian": 20, "Finnish": 21, "Serbian": 22, "Catalan": 23, "Filipino": 24, "Croatian": 25, "Russian": 26, "Arabic": 27, "Bulgarian": 28, "Japanese": 29, "Korean": 31, "Greek": 32, "Czech": 33, "Estonian": 34, "Latvian": 35, "Hebrew": 36, "Urdu": 37, "Galician": 38, "Lithuanian": 39, "Georgian": 40, "Armenian": 41, "Kurdish": 42, "Azerbaijani": 43, "Hindi": 44, "Slovak": 45, "Slovenian": 46, "Icelandic": 48, "Thai": 50, "Pashto": 51, "Esperanto": 52};
+var flagsLangId = {"english": 1, "german": 2, "french": 3, "portuguese": 4, "spanish": 5, "indonesian": 6, "turkish": 7, "vietnamese": 8, "polish": 9, "romanian": 10, "malaysian": 11, "norwegian": 12, "persian": 13, "hungarian": 14, "chinese (Traditional)": 15, "chinese (Simplified)": 16, "danish": 17, "dutch": 18, "swedish": 19, "italian": 20, "finnish": 21, "serbian": 22, "catalan": 23, "filipino": 24, "croatian": 25, "russian": 26, "arabic": 27, "bulgarian": 28, "japanese": 29, "korean": 31, "greek": 32, "czech": 33, "estonian": 34, "latvian": 35, "hebrew": 36, "urdu": 37, "galician": 38, "lithuanian": 39, "georgian": 40, "armenian": 41, "kurdish": 42, "azerbaijani": 43, "hindi": 44, "slovak": 45, "slovenian": 46, "icelandic": 48, "thai": 50, "pashto": 51, "esperanto": 52};
 var connector = new Connector();
 
 
@@ -41,7 +41,7 @@ function init() {
     });
 
     //Take out options and let's go !
-    chrome.storage.sync.get(['favLangName', 'favLangVal', 'refreshTimeout', 'noCompetition'], function (items) {
+    chrome.storage.sync.get(['favLangVal', 'refreshTimeout', 'noCompetition'], function (items) {
         connector.setOptions(items);
         connector.refresh();
     });
@@ -78,7 +78,6 @@ function Connector() {
     this.lastCompetition;
     this.nwCompetitions = 0;
     this.languageTestVal = 'english';
-    this.languageTextName = 'English';
     this.refreshTimeout = 10;
     this.valRegex = /\s*var\s+competitions_participated\s*=\s*\[(\"\d+\",)*(\"\d+\")?\];/;
     this.scripReg = new RegExp('<script[\\s\\S\\d\\D]*?>[\\s\\S]*?</script>', 'g');
@@ -158,7 +157,6 @@ function Connector() {
      * @param {type} options
      */
     this.setOptions = function (options) {
-        this.languageTextName = options.favLangName || this.languageTextName;
         this.languageTestVal = options.favLangVal || this.languageTestVal;
         this.refreshTimeout = parseInt(options.refreshTimeout) || this.refreshTimeout;
         this.noCompet = parseInt(options.noCompetition) || this.noCompet;
@@ -185,7 +183,7 @@ function Connector() {
     //---------------------------------------//
 
     function getFlagId() {
-        return 'flagid' + flagsLangId[self.languageTextName];
+        return 'flagid' + (flagsLangId[self.languageTestVal] || 1);
     }
 
     //Remove all scripts tag of the text
@@ -235,15 +233,14 @@ function Connector() {
      * passing by : taking the values of the 'alreadyDone' competitions
      */
     function lookForNewCompetitions(callback) {
-
         var xhr = new XMLHttpRequest();
         xhr.open("GET", self.websiteUrl + "competitions", true);
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 // innerText does not let the attacker inject HTML elements.
                 var res = self.valRegex.exec(xhr.responseText);
-                eval(res[0]);//Get "competition_participated" var.
-                self.competParticipated = competitions_participated;
+                res !== null && res[0] && eval(res[0]);//Get "competition_participated" var.
+                self.competParticipated = competitions_participated || [];
                 var clearedHTML = cleanHTML(xhr.responseText);
                 var dummyDiv = document.createElement('DIV');
                 dummyDiv.innerHTML = clearedHTML;
@@ -300,21 +297,6 @@ function Connector() {
 
 }
 
-//check if we really have a html-like response
-//deprecated
-//function HTMLinXHR() {
-//    if (!window.XMLHttpRequest)
-//        return false;
-//    var req = new window.XMLHttpRequest();
-//    req.open('GET', connector.websiteUrl + 'competitions', false);
-//    try {
-//        req.responseType = 'document';
-//    } catch (e) {
-//        return true;
-//    }
-//    return false;
-//}
-
 //Open a simple tab with the 'default' page of 10 fast finger : the easy typing test
 function openFastFingers(url) {
     chrome.tabs.getAllInWindow(undefined, function (tabs) {
@@ -341,7 +323,6 @@ function openCompetition(competitionId) {
 function listenToStorage() {
     chrome.storage.onChanged.addListener(function (items) {
         connector.languageTestVal = (items.favLangVal ? items.favLangVal.newValue : connector.languageTestVal);
-        connector.languageTextName = (items.favLangName ? items.favLangName.newValue : connector.languageTextName);
         connector.refreshTimeout = (items.refreshTimeout ? items.refreshTimeout.newValue : connector.refreshTimeout);
         connector.noCompet = (items.noCompetition ? items.noCompetition.newValue : connector.noCompet);
         connector.refresh();
