@@ -15,7 +15,7 @@
 
 //Translate faster, shorter
 function tr() {
-    return chrome.i18n.getMessage.apply(this,arguments);
+    return chrome.i18n.getMessage.apply(this, arguments);
 }
 
 /* global chrome, competitions_participated */
@@ -53,22 +53,21 @@ function init() {
  * handler
  */
 function click() {
-    connector.refresh(function () {
-        if (connector.connected) {
-            if (connector.nwCompetitions > 0) {
-                openCompetition(connector.lastCompetition);
-                connector.refreshCompetitions(1.2); //Refresh competition after 2 minutes of going in
-            } else {
-                connector.openOption();
-            }
+    if (connector.connected) {
+        if (connector.nwCompetitions > 0) {
+            openFastFingers(getCompetitionURl(connector.lastCompetition));
+            connector.refreshCompetitions(1.2); //Refresh competition after 2 minutes of going in
         } else {
-            chrome.browserAction.setIcon({path: "pictures/icon_gray.png"});
-            chrome.browserAction.setTitle({title: tr("not_connected")});
-            chrome.browserAction.setBadgeText({text: ""});
-            connector.refreshCompetitions(connector.refreshTimeout);
-            openFastFingers();
+            connector.openOption();
         }
-    });
+    } else {
+        chrome.browserAction.setIcon({path: "pictures/icon_gray.png"});
+        chrome.browserAction.setTitle({title: tr("not_connected")});
+        chrome.browserAction.setBadgeText({text: ""});
+        connector.refreshCompetitions(connector.refreshTimeout);
+        openFastFingers();
+    }
+    connector.refresh();
 }
 
 
@@ -100,12 +99,12 @@ function Connector() {
      * @param {function} callback
      */
 
-    this.refresh = function (callback) {
+    this.refresh = function () {
         chrome.cookies.get({
             'url': this.websiteUrl,
             'name': 'CakeCookie[rememberMe]'
         }, function (cookie) {
-            checkIfConnected(cookie, callback);
+            checkIfConnected(cookie);
         });
     };
 
@@ -115,13 +114,13 @@ function Connector() {
      * if the timeout is different, changin the periodInterval
      */
     this.refreshCompetitions = function (timeout/*in minutes*/) {
+        timeout = this.nwCompetitions ? 1 : Math.max(timeout,this.refreshTimeout);
         chrome.alarms.get('refresh', function (alarm) {
             if (alarm) {
-                if (alarm.periodInMinutes !== timeout) {
-                    chrome.alarms.clear('refresh', function () {
-                        chrome.alarms.create('refresh', {periodInMinutes: timeout});
-                    });
-                }
+                chrome.alarms.clear('refresh', function () {
+                    chrome.alarms.create('refresh', {periodInMinutes: timeout});
+                });
+
             } else {
                 chrome.alarms.create('refresh', {periodInMinutes: timeout});
             }
@@ -162,22 +161,6 @@ function Connector() {
         this.noCompet = parseInt(options.noCompetition) || this.noCompet;
     };
 
-    this.is10fastFingersUrl = function (url) {
-        return url.indexOf(this.websiteUrl) === 0;
-    };
-
-    this.getCompetitionURl = function (competRef) {
-        return this.websiteUrl + competRef;
-    };
-
-    this.getTypingTestUrl = function () {
-        return this.websiteUrl + 'typing-test/' + this.languageTestVal;
-    };
-
-    this.getCompetPage = function () {
-        return this.websiteUrl + 'competitions';
-    };
-
     //---------------------------------------//
     //          PRIVATE FUNCTIONS            //
     //---------------------------------------//
@@ -211,7 +194,7 @@ function Connector() {
      * 
      * @param {Cookie} cookie
      */
-    function checkIfConnected(cookie, callback) {
+    function checkIfConnected(cookie) {
         if (cookie === null) {//not connected
             self.connected = false;
             chrome.browserAction.setIcon({path: "pictures/icon _gray.png"});
@@ -219,11 +202,11 @@ function Connector() {
             chrome.browserAction.setBadgeBackgroundColor({color: [190, 190, 190, 230]});
             chrome.browserAction.setBadgeText({text: ""});
             self.refreshCompetitions(1);
-            callback && callback();
         } else {
             self.connected = true;
             chrome.browserAction.setIcon({path: "pictures/icon.png"});
-            lookForNewCompetitions(callback);
+            lookForNewCompetitions();
+            self.refreshCompetitions(self.refreshTimeout);
         }
     }
 
@@ -232,7 +215,7 @@ function Connector() {
      * it to see if there are new competitions
      * passing by : taking the values of the 'alreadyDone' competitions
      */
-    function lookForNewCompetitions(callback) {
+    function lookForNewCompetitions() {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", self.websiteUrl + "competitions", true);
         xhr.onreadystatechange = function () {
@@ -247,7 +230,6 @@ function Connector() {
                 document.body.appendChild(dummyDiv);
                 var core = document.getElementById('join-competition-table');
                 processCore(core.getElementsByTagName('tbody')[0]);
-                callback && callback();
             }
         };
         xhr.send();
@@ -297,27 +279,45 @@ function Connector() {
 
 }
 
+function is10fastFingersUrl(url) {
+    return url.indexOf(connector.websiteUrl) === 0;
+}
+
+function getCompetitionURl(competRef) {
+    return connector.websiteUrl + competRef;
+}
+
+
+function getTypingTestUrl() {
+    return connector.websiteUrl + 'typing-test/' + connector.languageTestVal;
+}
+
+
+function getCompetPage() {
+    return connector.websiteUrl + 'competitions';
+}
+
+
 //Open a simple tab with the 'default' page of 10 fast finger : the easy typing test
 function openFastFingers(url) {
     chrome.tabs.getAllInWindow(undefined, function (tabs) {
         for (var i = 0, tab; tab = tabs[i]; i++) {
-            if (tab.url && connector.is10fastFingersUrl(tab.url)) {
+            if (tab.url && is10fastFingersUrl(tab.url)) {
                 chrome.tabs.update(tab.id, {active: true});
                 return;
             }
         }
         if (url)
-            chrome.tabs.create({url: connector.getCompetPage()});
+            if (is10fastFingersUrl(url)) {
+                chrome.tabs.create({url: url});
+            } else {
+                chrome.tabs.create({url: getCompetPage()});
+            }
         else
-            chrome.tabs.create({url: connector.getTypingTestUrl()});
+            chrome.tabs.create({url: getTypingTestUrl()});
     });
 }
 
-//Open the competition to the given id
-//The id must contain the 'competition/' url
-function openCompetition(competitionId) {
-    chrome.tabs.create({url: connector.getCompetitionURl(competitionId)});
-}
 
 //Check if the chrome storage is changin to quickly change the icon display.
 function listenToStorage() {

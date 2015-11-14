@@ -10,7 +10,7 @@
     "name": "10fastfingerCompetition",
     "description": "This extension shows a Google Image search result for the current page",
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-    "version": "0.6",
+    "version": "0.8",
     "icons": {
         "128": "pictures/big_icon.png"
     },
