@@ -61,15 +61,31 @@ function click() {
             connector.openOption();
         }
     } else {
-        chrome.browserAction.setIcon({path: "pictures/icon_gray.png"});
-        chrome.browserAction.setTitle({title: tr("not_connected")});
-        chrome.browserAction.setBadgeText({text: ""});
         connector.refreshCompetitions(connector.refreshTimeout);
         openFastFingers();
     }
     connector.refresh();
+    updateIcon();
 }
 
+
+function updateIcon() {
+    if (!connector.connected) {
+        chrome.browserAction.setIcon({path: "pictures/icon _gray.png"});
+        chrome.browserAction.setTitle({title: tr("not_connected")});
+        chrome.browserAction.setBadgeBackgroundColor({color: [190, 190, 190, 230]});
+        chrome.browserAction.setBadgeText({text: ""});
+    } else {
+        if (connector.nwCompetitions > 0 && connector.lastCompetition) {
+            chrome.browserAction.setTitle({title: connector.nwCompetitions === 1 ? tr("one_new_competition") :
+                        tr("new_competitions")});
+            chrome.browserAction.setBadgeBackgroundColor({color: [58, 214, 0, 255]});
+        } else {
+            chrome.browserAction.setTitle({title: tr('nothing_new')});
+            chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
+        }
+    }
+}
 
 function Connector() {
     this.connected = false;
@@ -114,7 +130,7 @@ function Connector() {
      * if the timeout is different, changin the periodInterval
      */
     this.refreshCompetitions = function (timeout/*in minutes*/) {
-        timeout = this.nwCompetitions ? 1 : Math.max(timeout,this.refreshTimeout);
+        timeout = this.nwCompetitions ? 1 : Math.max(timeout, this.refreshTimeout);
         chrome.alarms.get('refresh', function (alarm) {
             if (alarm) {
                 chrome.alarms.clear('refresh', function () {
@@ -197,17 +213,13 @@ function Connector() {
     function checkIfConnected(cookie) {
         if (cookie === null) {//not connected
             self.connected = false;
-            chrome.browserAction.setIcon({path: "pictures/icon _gray.png"});
-            chrome.browserAction.setTitle({title: tr("not_connected")});
-            chrome.browserAction.setBadgeBackgroundColor({color: [190, 190, 190, 230]});
-            chrome.browserAction.setBadgeText({text: ""});
             self.refreshCompetitions(1);
         } else {
             self.connected = true;
-            chrome.browserAction.setIcon({path: "pictures/icon.png"});
             lookForNewCompetitions();
             self.refreshCompetitions(self.refreshTimeout);
         }
+        updateIcon();
     }
 
     /*
@@ -222,7 +234,12 @@ function Connector() {
             if (xhr.readyState === 4) {
                 // innerText does not let the attacker inject HTML elements.
                 var res = self.valRegex.exec(xhr.responseText);
-                res !== null && res[0] && eval(res[0]);//Get "competition_participated" var.
+                if(res === null){
+                    self.connected = false;
+                    updateIcon();
+                    return;
+                }
+                res[0] && eval(res[0]);
                 self.competParticipated = competitions_participated || [];
                 var clearedHTML = cleanHTML(xhr.responseText);
                 var dummyDiv = document.createElement('DIV');
@@ -245,14 +262,7 @@ function Connector() {
         for (var i = 0; i < competitions.length; i++) {
             checkCompetition(competitions[i]);
         }
-        if (self.nwCompetitions > 0 && self.lastCompetition) {
-            chrome.browserAction.setTitle({title: self.nwCompetitions === 1 ? tr("one_new_competition") :
-                        tr("new_competitions")});
-            chrome.browserAction.setBadgeBackgroundColor({color: [58, 214, 0, 255]});
-        } else {
-            chrome.browserAction.setTitle({title: tr('nothing_new')});
-            chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
-        }
+        updateIcon();
         chrome.browserAction.setBadgeText({text: (self.nwCompetitions === 0 ? "" : (self.nwCompetitions + ""))});
         self.refreshCompetitions(self.refreshTimeout);//Refresh to see if there is a new competition every 10 minutes
     }
