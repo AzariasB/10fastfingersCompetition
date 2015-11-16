@@ -71,11 +71,12 @@ function click() {
 
 function updateIcon() {
     if (!connector.connected) {
-        chrome.browserAction.setIcon({path: "pictures/icon _gray.png"});
+        chrome.browserAction.setIcon({path: "pictures/icon_gray.png"});
         chrome.browserAction.setTitle({title: tr("not_connected")});
         chrome.browserAction.setBadgeBackgroundColor({color: [190, 190, 190, 230]});
         chrome.browserAction.setBadgeText({text: ""});
     } else {
+        chrome.browserAction.setIcon({path: "pictures/icon.png"});
         if (connector.nwCompetitions > 0 && connector.lastCompetition) {
             chrome.browserAction.setTitle({title: connector.nwCompetitions === 1 ? tr("one_new_competition") :
                         tr("new_competitions")});
@@ -233,14 +234,19 @@ function Connector() {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 // innerText does not let the attacker inject HTML elements.
-                var res = self.valRegex.exec(xhr.responseText);
-                if(res === null){
+                if (!xhr.responseText) {
                     self.connected = false;
                     updateIcon();
                     return;
                 }
-                res[0] && eval(res[0]);
-                self.competParticipated = competitions_participated || [];
+                var res = self.valRegex.exec(xhr.responseText);
+                if(res && res[0]){
+                    eval(res[0]);
+                    self.competParticipated = competitions_participated || [];
+                }else{
+                    self.competParticipated = [];
+                }
+               
                 var clearedHTML = cleanHTML(xhr.responseText);
                 var dummyDiv = document.createElement('DIV');
                 dummyDiv.innerHTML = clearedHTML;
@@ -313,7 +319,7 @@ function openFastFingers(url) {
     chrome.tabs.getAllInWindow(undefined, function (tabs) {
         for (var i = 0, tab; tab = tabs[i]; i++) {
             if (tab.url && is10fastFingersUrl(tab.url)) {
-                chrome.tabs.update(tab.id, {active: true});
+                chrome.tabs.update(tab.id, {active: true,url : url});
                 return;
             }
         }
