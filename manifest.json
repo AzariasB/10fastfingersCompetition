@@ -5,12 +5,12 @@
 
     },
     "manifest_version": 2,
-    "default_locale" : "en",
+    "default_locale": "en",
     "options_page": "option.html",
     "name": "10fastfingerCompetition",
     "description": "This extension shows a Google Image search result for the current page",
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-    "version": "0.8",
+    "version": "0.9",
     "icons": {
         "128": "pictures/big_icon.png"
     },
@@ -22,9 +22,10 @@
         "cookies",
         "storage",
         "alarms",
+        "activeTab",
         "tabs",
         "*://10fastfingers.com/",
-        "activeTab",
+        "runtime",
         "https://ajax.googleapis.com/"
     ]
 }

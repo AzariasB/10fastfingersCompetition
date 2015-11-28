@@ -22,49 +22,30 @@ function tr() {
 var flagsLangId = {"english": 1, "german": 2, "french": 3, "portuguese": 4, "spanish": 5, "indonesian": 6, "turkish": 7, "vietnamese": 8, "polish": 9, "romanian": 10, "malaysian": 11, "norwegian": 12, "persian": 13, "hungarian": 14, "chinese (Traditional)": 15, "chinese (Simplified)": 16, "danish": 17, "dutch": 18, "swedish": 19, "italian": 20, "finnish": 21, "serbian": 22, "catalan": 23, "filipino": 24, "croatian": 25, "russian": 26, "arabic": 27, "bulgarian": 28, "japanese": 29, "korean": 31, "greek": 32, "czech": 33, "estonian": 34, "latvian": 35, "hebrew": 36, "urdu": 37, "galician": 38, "lithuanian": 39, "georgian": 40, "armenian": 41, "kurdish": 42, "azerbaijani": 43, "hindi": 44, "slovak": 45, "slovenian": 46, "icelandic": 48, "thai": 50, "pashto": 51, "esperanto": 52};
 var connector = new Connector();
 
-
-
-/*
- * Start everything function
- * 
- * To be called only once !
- */
-function init() {
-    listenToStorage();
-    chrome.alarms.onAlarm.addListener(function (alarm) {//Add alarm listener
-        if (alarm.name === 'refresh') {
-            connector.refresh();
-        }
-    });
-    chrome.browserAction.onClicked.addListener(function () {//Add click listnere
-        click();
-    });
-
-    //Take out options and let's go !
-    chrome.storage.sync.get(['favLangVal', 'refreshTimeout', 'noCompetition'], function (items) {
-        connector.setOptions(items);
-        connector.refresh();
-    });
-}
-
-
 /*
  * Click on the browseraction
  * handler
  */
 function click() {
+    console.log(connector.competitions);
     if (connector.connected) {
-        if (connector.nwCompetitions > 0) {
-            openFastFingers(getCompetitionURl(connector.lastCompetition));
-            connector.refreshCompetitions(1.2); //Refresh competition after 2 minutes of going in
+        console.log("Connected", connector.competitions.length);
+        if (connector.competitions.length > 0) {
+            (connector.competitions.length + 1) < connector.nwCompetitions && connector.refresh();
+            openFastFingers(getCompetitionURl(connector.competitions.pop()));
+            connector.refreshCompetitions(10); //Refresh competition after 10 minutes of going in
+
         } else {
+            connector.refresh();
             connector.openOption();
         }
     } else {
+        console.log("not connected");
+        connector.refresh();
         connector.refreshCompetitions(connector.refreshTimeout);
         openFastFingers();
     }
-    connector.refresh();
+
     updateIcon();
 }
 
@@ -73,14 +54,15 @@ function updateIcon() {
     if (!connector.connected) {
         chrome.browserAction.setIcon({path: "pictures/icon_gray.png"});
         chrome.browserAction.setTitle({title: tr("not_connected")});
-        chrome.browserAction.setBadgeBackgroundColor({color: [190, 190, 190, 230]});
+        chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
         chrome.browserAction.setBadgeText({text: ""});
     } else {
         chrome.browserAction.setIcon({path: "pictures/icon.png"});
-        if (connector.nwCompetitions > 0 && connector.lastCompetition) {
+        if (connector.nwCompetitions > 0 && connector.competitions) {
             chrome.browserAction.setTitle({title: connector.nwCompetitions === 1 ? tr("one_new_competition") :
                         tr("new_competitions")});
             chrome.browserAction.setBadgeBackgroundColor({color: [58, 214, 0, 255]});
+            chrome.browserAction.setBadgeText({text: (connector.competitions.length === 0 ? "" : (connector.competitions.length + ""))});
         } else {
             chrome.browserAction.setTitle({title: tr('nothing_new')});
             chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
@@ -91,7 +73,7 @@ function updateIcon() {
 function Connector() {
     this.connected = false;
     this.websiteUrl = 'http://10fastfingers.com/';
-    this.lastCompetition;
+    this.competitions = [];
     this.nwCompetitions = 0;
     this.languageTestVal = 'english';
     this.refreshTimeout = 10;
@@ -117,6 +99,7 @@ function Connector() {
      */
 
     this.refresh = function () {
+        console.log("Refreshing...");
         chrome.cookies.get({
             'url': this.websiteUrl,
             'name': 'CakeCookie[rememberMe]'
@@ -131,7 +114,7 @@ function Connector() {
      * if the timeout is different, changin the periodInterval
      */
     this.refreshCompetitions = function (timeout/*in minutes*/) {
-        timeout = this.nwCompetitions ? 1 : Math.max(timeout, this.refreshTimeout);
+        timeout = Math.max(timeout, this.refreshTimeout);
         chrome.alarms.get('refresh', function (alarm) {
             if (alarm) {
                 chrome.alarms.clear('refresh', function () {
@@ -240,13 +223,13 @@ function Connector() {
                     return;
                 }
                 var res = self.valRegex.exec(xhr.responseText);
-                if(res && res[0]){
+                if (res && res[0]) {
                     eval(res[0]);
                     self.competParticipated = competitions_participated || [];
-                }else{
+                } else {
                     self.competParticipated = [];
                 }
-               
+
                 var clearedHTML = cleanHTML(xhr.responseText);
                 var dummyDiv = document.createElement('DIV');
                 dummyDiv.innerHTML = clearedHTML;
@@ -264,12 +247,12 @@ function Connector() {
      */
     function processCore(tbody) {
         self.nwCompetitions = 0;
+        self.competitions = [];
         var competitions = tbody.getElementsByTagName('tr');
         for (var i = 0; i < competitions.length; i++) {
             checkCompetition(competitions[i]);
         }
         updateIcon();
-        chrome.browserAction.setBadgeText({text: (self.nwCompetitions === 0 ? "" : (self.nwCompetitions + ""))});
         self.refreshCompetitions(self.refreshTimeout);//Refresh to see if there is a new competition every 10 minutes
     }
 
@@ -287,7 +270,7 @@ function Connector() {
             if (self.competParticipated.indexOf(alreadyDone) === -1) {//Compet not done yet
                 var ref = informations[1].getElementsByTagName('a')[0].getAttribute('href');
                 self.nwCompetitions++;
-                self.lastCompetition = ref.substr(1);
+                self.competitions.push(ref.substr(1));
             }
         }
     }
@@ -319,7 +302,7 @@ function openFastFingers(url) {
     chrome.tabs.getAllInWindow(undefined, function (tabs) {
         for (var i = 0, tab; tab = tabs[i]; i++) {
             if (tab.url && is10fastFingersUrl(tab.url)) {
-                chrome.tabs.update(tab.id, {active: true,url : url});
+                chrome.tabs.update(tab.id, {active: true, url: url});
                 return;
             }
         }
@@ -344,5 +327,53 @@ function listenToStorage() {
         connector.refresh();
     });
 }
+
+//Update when navigate in 10fastfingers
+function onNavigate(details) {
+    if (details.url && is10fastFingersUrl(details.url) && !/competition\//.test(details.url)) {
+        connector.refresh();
+    }
+}
+
+/*
+ * Start everything function
+ * 
+ * To be called only once !
+ */
+function init() {
+//    console.log(chrome.webNavigation,chrome.webNavigation.onDOMContentLoaded,chrome.webNavigation.onReferenceFragmentUpdated);
+
+    listenToStorage();
+    chrome.alarms.onAlarm.addListener(function (alarm) {//Add alarm listener
+        if (alarm.name === 'refresh') {
+            connector.refresh();
+        }
+    });
+    chrome.browserAction.onClicked.addListener(function () {//Add click listnere
+        click();
+    });
+
+    //Take out options and let's go !
+    chrome.storage.sync.get(['favLangVal', 'refreshTimeout', 'noCompetition'], function (items) {
+        connector.setOptions(items);
+        connector.refresh();
+    });
+
+    var filters = {
+        url: [{urlContains: connector.websiteUrl.replace(/^https?\:\/\//, '')}]
+    };
+    if (chrome.webNavigation && chrome.webNavigation.onDOMContentLoaded &&
+            chrome.webNavigation.onReferenceFragmentUpdated) {
+        chrome.webNavigation.onDOMContentLoaded.addListener(onNavigate, filters);
+        chrome.webNavigation.onReferenceFragmentUpdated.addListener(
+                onNavigate, filters);
+    } else {
+        chrome.tabs.onUpdated.addListener(function (_, details) {
+            onNavigate(details);
+        });
+    }
+
+}
+
 
 init();
