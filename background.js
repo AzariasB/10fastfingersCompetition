@@ -2,7 +2,6 @@
 
 /*
  * TODO : 
- * -internationalize
  * -pretify
  * -add more options :
  *  - active/not active
@@ -27,7 +26,6 @@ var connector = new Connector();
  * handler
  */
 function click() {
-    console.log(connector.competitions);
     if (connector.connected) {
         console.log("Connected", connector.competitions.length);
         if (connector.competitions.length > 0) {
@@ -64,6 +62,7 @@ function updateIcon() {
             chrome.browserAction.setBadgeBackgroundColor({color: [58, 214, 0, 255]});
             chrome.browserAction.setBadgeText({text: (connector.competitions.length === 0 ? "" : (connector.competitions.length + ""))});
         } else {
+            chrome.browserAction.setBadgeText({text: ""});
             chrome.browserAction.setTitle({title: tr('nothing_new')});
             chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
         }
@@ -78,9 +77,13 @@ function Connector() {
     this.languageTestVal = 'english';
     this.refreshTimeout = 10;
     this.valRegex = /\s*var\s+competitions_participated\s*=\s*\[(\"\d+\",)*(\"\d+\")?\];/;
-    this.scripReg = new RegExp('<script[\\s\\S\\d\\D]*?>[\\s\\S]*?</script>', 'g');
-    this.imgReg = new RegExp('url\\([\'"][\\d\\D]*?.png[\'"]\\)', 'g');
-    this.linkReg = new RegExp('<link[\\d\\D]*?>', 'g');
+
+    var clearRegexes = [
+        new RegExp('<script[\\s\\S\\d\\D]*?>[\\s\\S]*?</script>', 'g'),
+        new RegExp('url\\([\'"][\\d\\D]*?.png[\'"]\\)', 'g'),
+        new RegExp('<[a-z]*.*?style=[\'"].*?url\\(.*?\\).*?[\'"].*?>.*?<\\/[a-z]*>', 'ig'),
+        new RegExp('<link[\\d\\D]*?>', 'g')
+    ];
     this.competParticipated;
     this.currentTimeout;
     this.noCompet = "";
@@ -162,31 +165,19 @@ function Connector() {
     };
 
     //---------------------------------------//
-    //          PRIVATE FUNCTIONS            //
+    //          PRIVATE FUNCTIONS                                    //
     //---------------------------------------//
 
     function getFlagId() {
         return 'flagid' + (flagsLangId[self.languageTestVal] || 1);
     }
 
-    //Remove all scripts tag of the text
-    function removeScript(text) {
-        return text.replace(self.scripReg, "");
-    }
-
-    //Remove all links tag of the text
-    function removeLink(text) {
-        return text.replace(self.linkReg, "");
-    }
-
-    function removePictures(text) {
-        return text.replace(self.imgReg, "");
-    }
 
     function cleanHTML(html) {
-        return removePictures(
-                removeLink(
-                        removeScript(html)));
+        for (var r = 0; r < clearRegexes.length; r++) {
+            html = html.replace(clearRegexes[r], "");
+        }
+        return html;
     }
 
     /*
@@ -198,12 +189,13 @@ function Connector() {
         if (cookie === null) {//not connected
             self.connected = false;
             self.refreshCompetitions(1);
+            updateIcon();//Directly update icon to warn the user he's not connected
         } else {
             self.connected = true;
             lookForNewCompetitions();
             self.refreshCompetitions(self.refreshTimeout);
         }
-        updateIcon();
+
     }
 
     /*
@@ -220,12 +212,13 @@ function Connector() {
                 if (!xhr.responseText) {
                     self.connected = false;
                     updateIcon();
+                    //Hey, you're not connected mate !
                     return;
                 }
+
                 var res = self.valRegex.exec(xhr.responseText);
                 if (res && res[0]) {
-                    eval(res[0]);
-                    self.competParticipated = competitions_participated || [];
+                    self.competParticipated = decomposeArray(res[0]);
                 } else {
                     self.competParticipated = [];
                 }
@@ -236,9 +229,38 @@ function Connector() {
                 document.body.appendChild(dummyDiv);
                 var core = document.getElementById('join-competition-table');
                 processCore(core.getElementsByTagName('tbody')[0]);
+                //He's connected and have chances to get new competitions
+                updateIcon();
             }
         };
         xhr.send();
+    }
+
+    /**
+     * Instead of using the all mighty-dangerous eval,
+     * this function will decompose the string to find the values of the array
+     * 
+     * 
+     * @param {type} stringArray a string looking like var array_name = [value1,value2,...]
+     * @returns the array formed from the string
+     */
+    function decomposeArray(stringArray) {
+        //If emptry string or empty value, return empty array
+        if (!stringArray)
+            return [];
+        var brackIndex = stringArray.indexOf('[');
+        var closeIndex = stringArray.indexOf(']');
+        stringArray = stringArray.substr(brackIndex + 1, closeIndex - brackIndex - 1);
+
+        var res = [];
+        var decomposed = stringArray.split(",");
+        for (var i = 0; i < decomposed.length; i++) {
+            //Remove all the double quotes
+            var pureString = decomposed[i].substr(1, decomposed[i].length - 2);
+            res.push(pureString);
+
+        }
+        return res;
     }
 
     /*
@@ -341,8 +363,6 @@ function onNavigate(details) {
  * To be called only once !
  */
 function init() {
-//    console.log(chrome.webNavigation,chrome.webNavigation.onDOMContentLoaded,chrome.webNavigation.onReferenceFragmentUpdated);
-
     listenToStorage();
     chrome.alarms.onAlarm.addListener(function (alarm) {//Add alarm listener
         if (alarm.name === 'refresh') {
