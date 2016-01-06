@@ -1,0 +1,29 @@
+{
+    "background": {
+        "persistent": false,
+        "page": "background.html"
+
+    },
+    "manifest_version": 2,
+    "default_local" : "en",
+    "options_page": "option.html",
+    "name": "10fastfingerCompetition",
+    "description": "This extension shows a Google Image search result for the current page",
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+    "version": "0.4",
+    "icons": {
+        "128": "pictures/big_icon.png"
+    },
+    "description": "Knowing if there is a new competition in your langage",
+    "browser_action": {
+        "default_icon": "pictures/icon.png"
+    },
+    "permissions": [
+        "cookies",
+        "storage",
+        "alarms",
+        "*://10fastfingers.com/",
+        "activeTab",
+        "https://ajax.googleapis.com/"
+    ]
+}
