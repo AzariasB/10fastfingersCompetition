@@ -46,6 +46,8 @@ function updateIcon() {
     var text = connector.nwCompetitions > 0 ? connector.competitions.length + "" : "";
     var badgeColor = connector.nwCompetitions > 0 ? [58, 214, 0, 255] : [0, 0, 0, 0];
 
+    console.log(text);
+
     chrome.browserAction.setBadgeText({text: text});
     chrome.browserAction.setTitle({title: title});
     chrome.browserAction.setBadgeBackgroundColor({color: badgeColor});
