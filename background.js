@@ -12,7 +12,7 @@
  */
 
 
-//Translate faster, shorter
+//Translate shorter
 function tr() {
     return chrome.i18n.getMessage.apply(this, arguments);
 }
@@ -21,52 +21,35 @@ function tr() {
 var flagsLangId = {"english": 1, "german": 2, "french": 3, "portuguese": 4, "spanish": 5, "indonesian": 6, "turkish": 7, "vietnamese": 8, "polish": 9, "romanian": 10, "malaysian": 11, "norwegian": 12, "persian": 13, "hungarian": 14, "chinese (Traditional)": 15, "chinese (Simplified)": 16, "danish": 17, "dutch": 18, "swedish": 19, "italian": 20, "finnish": 21, "serbian": 22, "catalan": 23, "filipino": 24, "croatian": 25, "russian": 26, "arabic": 27, "bulgarian": 28, "japanese": 29, "korean": 31, "greek": 32, "czech": 33, "estonian": 34, "latvian": 35, "hebrew": 36, "urdu": 37, "galician": 38, "lithuanian": 39, "georgian": 40, "armenian": 41, "kurdish": 42, "azerbaijani": 43, "hindi": 44, "slovak": 45, "slovenian": 46, "icelandic": 48, "thai": 50, "pashto": 51, "esperanto": 52};
 var connector = new Connector();
 
+var canvas = document.getElementById('canvas');
+var loggedInImage = document.getElementById('logged_in');
+var canvasContext = canvas.getContext('2d');
+var animationFrames = 56;
+var animationSpeed = 20; // ms
+var rotation = 0;
+
 /*
  * Click on the browseraction
  * handler
  */
 function click() {
-    if (connector.connected) {
-        console.log("Connected", connector.competitions.length);
-        if (connector.competitions.length > 0) {
-            (connector.competitions.length + 1) < connector.nwCompetitions && connector.refresh();
-            openFastFingers(getCompetitionURl(connector.competitions.pop()));
-            connector.refreshCompetitions(10); //Refresh competition after 10 minutes of going in
-
-        } else {
-            connector.refresh();
-            connector.openOption();
-        }
-    } else {
-        console.log("not connected");
-        connector.refresh();
-        connector.refreshCompetitions(connector.refreshTimeout);
-        openFastFingers();
-    }
-
+    connector.clicked();
     updateIcon();
 }
 
 
 function updateIcon() {
-    if (!connector.connected) {
-        chrome.browserAction.setIcon({path: "pictures/icon_gray.png"});
-        chrome.browserAction.setTitle({title: tr("not_connected")});
-        chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
-        chrome.browserAction.setBadgeText({text: ""});
-    } else {
-        chrome.browserAction.setIcon({path: "pictures/icon.png"});
-        if (connector.nwCompetitions > 0 && connector.competitions) {
-            chrome.browserAction.setTitle({title: connector.nwCompetitions === 1 ? tr("one_new_competition") :
-                        tr("new_competitions")});
-            chrome.browserAction.setBadgeBackgroundColor({color: [58, 214, 0, 255]});
-            chrome.browserAction.setBadgeText({text: (connector.competitions.length === 0 ? "" : (connector.competitions.length + ""))});
-        } else {
-            chrome.browserAction.setBadgeText({text: ""});
-            chrome.browserAction.setTitle({title: tr('nothing_new')});
-            chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
-        }
-    }
+    var icon = "pictures/" + (connector.connected ? "icon.png" : "icon_gray.png");
+    var title = !connector.connected ? tr("not_connected") :
+            connector.nwCompetitions === 0 ? tr("nothing_new") :
+            connector.nwCompetitions === 1 ? tr("one_new_competition") : tr("new_competitions");
+    var text = connector.nwCompetitions > 0 ? connector.competitions.length + "" : "";
+    var badgeColor = connector.nwCompetitions > 0 ? [58, 214, 0, 255] : [0, 0, 0, 0];
+
+    chrome.browserAction.setBadgeText({text: text});
+    chrome.browserAction.setTitle({title: title});
+    chrome.browserAction.setBadgeBackgroundColor({color: badgeColor});
+    chrome.browserAction.setIcon({path: icon});
 }
 
 function Connector() {
@@ -94,20 +77,41 @@ function Connector() {
     //---------------------------------------//
     //          PUBLIC FUNCTIONS             //
     //---------------------------------------//
-    /*
-     * Check if the user is connected to the website,
-     * if he is, check for new competitions
-     * 
-     * @param {function} callback
-     */
 
-    this.refresh = function () {
-        console.log("Refreshing...");
+
+    /**
+     * Open the necessary tab depending on the state of 
+     * the object.
+     * Called whenever the user click on the icon
+     */
+    this.clicked = function () {
+        animateFlip();
+        this.refresh(function () {
+            self.refreshCompetitions(connector.refreshTimeout);
+            openFastFingers();
+        }, function () {
+            if (self.competitions.length > 0) {
+                openFastFingers(getCompetitionURl(self.competitions[self.competitions.length - 1]));
+                self.refreshCompetitions(2); //Refresh competition after 2 mn
+            } else {
+                self.refresh();
+                self.openOption();
+            }
+        });
+
+    };
+
+    /**
+     * 
+     * @param {function} notConnectedCallback callback to execute when the user is not connected
+     * @param {function} connectedCallback callback to execute when the user is connected
+     */
+    this.refresh = function (notConnectedCallback, connectedCallback) {
         chrome.cookies.get({
             'url': this.websiteUrl,
             'name': 'CakeCookie[rememberMe]'
         }, function (cookie) {
-            checkIfConnected(cookie);
+            checkIfConnected(cookie, notConnectedCallback, connectedCallback);
         });
     };
 
@@ -180,19 +184,21 @@ function Connector() {
         return html;
     }
 
-    /*
-     * Handler when the cookie is found
+    /**
      * 
-     * @param {Cookie} cookie
+     * @param {Cookie} cookie cookie found by chomre
+     * @param {type} notConnectedCallback function to execute if not connected
+     * @param {type} connectedCallback function to execute when connected
      */
-    function checkIfConnected(cookie) {
+    function checkIfConnected(cookie, notConnectedCallback, connectedCallback) {
         if (cookie === null) {//not connected
             self.connected = false;
             self.refreshCompetitions(1);
+            notConnectedCallback && notConnectedCallback.call();
             updateIcon();//Directly update icon to warn the user he's not connected
         } else {
             self.connected = true;
-            lookForNewCompetitions();
+            lookForNewCompetitions(connectedCallback);
             self.refreshCompetitions(self.refreshTimeout);
         }
 
@@ -202,8 +208,10 @@ function Connector() {
      * Get the 'competitions' page and process
      * it to see if there are new competitions
      * passing by : taking the values of the 'alreadyDone' competitions
+     * 
+     * @param {function} endCallback callback to call at the end of the processing
      */
-    function lookForNewCompetitions() {
+    function lookForNewCompetitions(endCallback) {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", self.websiteUrl + "competitions", true);
         xhr.onreadystatechange = function () {
@@ -230,6 +238,7 @@ function Connector() {
                 var core = document.getElementById('join-competition-table');
                 processCore(core.getElementsByTagName('tbody')[0]);
                 //He's connected and have chances to get new competitions
+                endCallback && endCallback.call();
                 updateIcon();
             }
         };
@@ -324,7 +333,10 @@ function openFastFingers(url) {
     chrome.tabs.getAllInWindow(undefined, function (tabs) {
         for (var i = 0, tab; tab = tabs[i]; i++) {
             if (tab.url && is10fastFingersUrl(tab.url)) {
-                chrome.tabs.update(tab.id, {active: true, url: url});
+                chrome.tabs.update(tab.id, {
+                    active: true, 
+                    url: url || getTypingTestUrl()
+                });
                 return;
             }
         }
@@ -395,5 +407,37 @@ function init() {
 
 }
 
+function animateFlip() {
+    rotation += 1 / animationFrames;
+    drawIconAtRotation();
+
+    if (rotation <= 1) {
+        setTimeout(animateFlip, animationSpeed);
+    } else {
+        rotation = 0;
+        updateIcon();
+    }
+}
+
+
+function drawIconAtRotation() {
+    canvasContext.save();
+    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
+    canvasContext.translate(
+            Math.ceil(canvas.width / 2),
+            Math.ceil(canvas.height / 2));
+    canvasContext.rotate(2 * Math.PI * ease(rotation));
+    canvasContext.drawImage(loggedInImage,
+            -Math.ceil(canvas.width / 2),
+            -Math.ceil(canvas.height / 2));
+    canvasContext.restore();
+
+    chrome.browserAction.setIcon({imageData: canvasContext.getImageData(0, 0,
+                canvas.width, canvas.height)});
+}
+
+function ease(x) {
+    return (1 - Math.sin(Math.PI / 2 + x * Math.PI)) / 2;
+}
 
 init();

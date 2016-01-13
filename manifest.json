@@ -10,7 +10,7 @@
     "name": "10fastfingerCompetition",
     "description": "This extension shows a Google Image search result for the current page",
     "content_security_policy": "script-src 'self'; object-src 'self'",
-    "version": "1.0",
+    "version": "1.2",
     "icons": {
         "128": "pictures/big_icon.png"
     },
@@ -24,7 +24,6 @@
         "alarms",
         "activeTab",
         "tabs",
-        "*://10fastfingers.com/",
-        "runtime"
+        "*://10fastfingers.com/"
     ]
 }
