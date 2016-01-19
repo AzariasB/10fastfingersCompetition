@@ -1,4 +1,4 @@
-
+'use strict';
 
 /*
  * TODO : 
@@ -21,12 +21,13 @@ function tr() {
 var flagsLangId = {"english": 1, "german": 2, "french": 3, "portuguese": 4, "spanish": 5, "indonesian": 6, "turkish": 7, "vietnamese": 8, "polish": 9, "romanian": 10, "malaysian": 11, "norwegian": 12, "persian": 13, "hungarian": 14, "chinese (Traditional)": 15, "chinese (Simplified)": 16, "danish": 17, "dutch": 18, "swedish": 19, "italian": 20, "finnish": 21, "serbian": 22, "catalan": 23, "filipino": 24, "croatian": 25, "russian": 26, "arabic": 27, "bulgarian": 28, "japanese": 29, "korean": 31, "greek": 32, "czech": 33, "estonian": 34, "latvian": 35, "hebrew": 36, "urdu": 37, "galician": 38, "lithuanian": 39, "georgian": 40, "armenian": 41, "kurdish": 42, "azerbaijani": 43, "hindi": 44, "slovak": 45, "slovenian": 46, "icelandic": 48, "thai": 50, "pashto": 51, "esperanto": 52};
 var connector = new Connector();
 
-var canvas = document.getElementById('canvas');
-var loggedInImage = document.getElementById('logged_in');
-var canvasContext = canvas.getContext('2d');
-var animationFrames = 56;
-var animationSpeed = 20; // ms
-var rotation = 0;
+var canvas = document.getElementById('canvas'),
+    loggedInImage = document.getElementById('logged_in'),
+    canvasContext = canvas.getContext('2d'),
+    animationFrames = 56,
+    animationSpeed = 20,
+    direction = 1,
+    intervalId = null;
 
 /*
  * Click on the browseraction
@@ -45,8 +46,6 @@ function updateIcon() {
             connector.nwCompetitions === 1 ? tr("one_new_competition") : tr("new_competitions");
     var text = connector.nwCompetitions > 0 ? connector.competitions.length + "" : "";
     var badgeColor = connector.nwCompetitions > 0 ? [58, 214, 0, 255] : [0, 0, 0, 0];
-
-    console.log(text);
 
     chrome.browserAction.setBadgeText({text: text});
     chrome.browserAction.setTitle({title: title});
@@ -87,10 +86,11 @@ function Connector() {
      * Called whenever the user click on the icon
      */
     this.clicked = function () {
-        animateFlip();
+        startAnimation();
         this.refresh(function () {
             self.refreshCompetitions(connector.refreshTimeout);
             openFastFingers();
+            stopAnimation();
         }, function () {
             if (self.competitions.length > 0) {
                 openFastFingers(getCompetitionURl(self.competitions[self.competitions.length - 1]));
@@ -99,6 +99,7 @@ function Connector() {
                 self.refresh();
                 self.openOption();
             }
+            stopAnimation();
         });
 
     };
@@ -285,7 +286,6 @@ function Connector() {
         for (var i = 0; i < competitions.length; i++) {
             checkCompetition(competitions[i]);
         }
-        updateIcon();
         self.refreshCompetitions(self.refreshTimeout);//Refresh to see if there is a new competition every 10 minutes
     }
 
@@ -409,37 +409,39 @@ function init() {
 
 }
 
-function animateFlip() {
-    rotation += 1 / animationFrames;
-    drawIconAtRotation();
+function startAnimation() {
+    //Reset the canvas
+    console.log("animate !");
+    canvasContext.drawImage(loggedInImage,0,0);
+    var currentCol = 0;
+    direction = 1;
+    intervalId = setInterval(function(){
+        if(currentCol === canvas.width || currentCol < 0)
+            direction = -direction;
+        negateColumn(currentCol += direction);
+    },animationSpeed);
+}
 
-    if (rotation <= 1) {
-        setTimeout(animateFlip, animationSpeed);
-    } else {
-        rotation = 0;
-        updateIcon();
-    }
+function stopAnimation(){
+    console.log("Stop animation");
+    intervalId && clearInterval(intervalId);
+    intervalId = null;
+    updateIcon();
 }
 
 
-function drawIconAtRotation() {
-    canvasContext.save();
-    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
-    canvasContext.translate(
-            Math.ceil(canvas.width / 2),
-            Math.ceil(canvas.height / 2));
-    canvasContext.rotate(2 * Math.PI * ease(rotation));
-    canvasContext.drawImage(loggedInImage,
-            -Math.ceil(canvas.width / 2),
-            -Math.ceil(canvas.height / 2));
-    canvasContext.restore();
-
-    chrome.browserAction.setIcon({imageData: canvasContext.getImageData(0, 0,
+function negateColumn(n){
+  var data = canvasContext.getImageData(0,0,canvas.width,canvas.height);
+  for(var col = n*4; col  < data.data.length;col += data.width*4)     {
+    data.data[col  ] = 255 - data.data[col  ];
+    data.data[col+1] = 255 - data.data[col+1];
+    data.data[col+2] = 255 - data.data[col+2];
+    data.data[col+3] = 255;
+  }
+  canvasContext.putImageData(data,0,0);
+  chrome.browserAction.setIcon({imageData: canvasContext.getImageData(0, 0,
                 canvas.width, canvas.height)});
 }
 
-function ease(x) {
-    return (1 - Math.sin(Math.PI / 2 + x * Math.PI)) / 2;
-}
 
 init();
