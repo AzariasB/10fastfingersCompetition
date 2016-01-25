@@ -1,3 +1,5 @@
+
+
 'use strict';
 
 /*
@@ -411,19 +413,20 @@ function init() {
 
 function startAnimation() {
     //Reset the canvas
-    console.log("animate !");
     canvasContext.drawImage(loggedInImage,0,0);
     var currentCol = 0;
     direction = 1;
     intervalId = setInterval(function(){
-        if(currentCol === canvas.width || currentCol < 0)
-            direction = -direction;
-        negateColumn(currentCol += direction);
+		if(currentCol >= 19 || currentCol < 0){
+		    currentCol += direction = -direction;
+		}else{
+		    negateColumn(currentCol);
+		    currentCol += direction;
+		}
     },animationSpeed);
 }
 
 function stopAnimation(){
-    console.log("Stop animation");
     intervalId && clearInterval(intervalId);
     intervalId = null;
     updateIcon();
