@@ -24,12 +24,13 @@ var flagsLangId = {"english": 1, "german": 2, "french": 3, "portuguese": 4, "spa
 var connector = new Connector();
 
 var canvas = document.getElementById('canvas'),
-    loggedInImage = document.getElementById('logged_in'),
-    canvasContext = canvas.getContext('2d'),
-    animationFrames = 56,
-    animationSpeed = 20,
-    direction = 1,
-    intervalId = null;
+        loggedInImage = document.getElementById('logged_in'),
+        canvasContext = canvas.getContext('2d'),
+        animationFrames = 56,
+        animationSpeed = 20,
+        direction = 1,
+        intervalId = null, // Save the animation interval
+        resetTimeout = null; // Reset the animation
 
 /*
  * Click on the browseraction
@@ -338,7 +339,7 @@ function openFastFingers(url) {
         for (var i = 0, tab; tab = tabs[i]; i++) {
             if (tab.url && is10fastFingersUrl(tab.url)) {
                 chrome.tabs.update(tab.id, {
-                    active: true, 
+                    active: true,
                     url: url || getTypingTestUrl()
                 });
                 return;
@@ -412,37 +413,49 @@ function init() {
 }
 
 function startAnimation() {
-    //Reset the canvas
-    canvasContext.drawImage(loggedInImage,0,0);
-    var currentCol = 0;
-    direction = 1;
-    intervalId = setInterval(function(){
-		if(currentCol >= 19 || currentCol < 0){
-		    currentCol += direction = -direction;
-		}else{
-		    negateColumn(currentCol);
-		    currentCol += direction;
-		}
-    },animationSpeed);
+    if (intervalId) {
+        //If animation currently working, stop it
+        stopAnimation();
+    } else {
+        //Reset the canvas
+        canvasContext.drawImage(loggedInImage, 0, 0);
+        var currentCol = 0;
+        direction = 1;
+        intervalId = setInterval(function () {
+            if (currentCol >= 19 || currentCol < 0) {
+                currentCol += direction = -direction;
+            } else {
+                negateColumn(currentCol);
+                currentCol += direction;
+            }
+        }, animationSpeed);
+        resetTimeout = setTimeout(function(){
+            //We timedout
+            connector.connected = false;
+            stopAnimation();
+        },5000);
+    }
 }
 
-function stopAnimation(){
+function stopAnimation() {
     intervalId && clearInterval(intervalId);
+    resetTimeout && clearTimeout(resetTimeout);
+    resetTimeout = null;
     intervalId = null;
     updateIcon();
 }
 
 
-function negateColumn(n){
-  var data = canvasContext.getImageData(0,0,canvas.width,canvas.height);
-  for(var col = n*4; col  < data.data.length;col += data.width*4)     {
-    data.data[col  ] = 255 - data.data[col  ];
-    data.data[col+1] = 255 - data.data[col+1];
-    data.data[col+2] = 255 - data.data[col+2];
-    data.data[col+3] = 255;
-  }
-  canvasContext.putImageData(data,0,0);
-  chrome.browserAction.setIcon({imageData: canvasContext.getImageData(0, 0,
+function negateColumn(n) {
+    var data = canvasContext.getImageData(0, 0, canvas.width, canvas.height);
+    for (var col = n * 4; col < data.data.length; col += data.width * 4) {
+        data.data[col  ] = 255 - data.data[col  ];
+        data.data[col + 1] = 255 - data.data[col + 1];
+        data.data[col + 2] = 255 - data.data[col + 2];
+        data.data[col + 3] = 255;
+    }
+    canvasContext.putImageData(data, 0, 0);
+    chrome.browserAction.setIcon({imageData: canvasContext.getImageData(0, 0,
                 canvas.width, canvas.height)});
 }
 
