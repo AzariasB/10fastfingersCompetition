@@ -8,15 +8,14 @@
     "default_locale": "en",
     "options_page": "option.html",
     "name": "10fastfingerCompetition",
-    "description": "This extension shows a Google Image search result for the current page",
     "content_security_policy": "script-src 'self'; object-src 'self'",
-    "version": "1.2",
+    "version": "1.2.2",
     "icons": {
         "128": "pictures/big_icon.png"
     },
     "description": "Knowing if there is a new competition in your langage",
     "browser_action": {
-        "default_icon": "pictures/icon.png"
+        "default_icon": "pictures/icon_gray.png"
     },
     "permissions": [
         "cookies",

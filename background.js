@@ -66,10 +66,10 @@ function Connector() {
     this.valRegex = /\s*var\s+competitions_participated\s*=\s*\[(\"\d+\",)*(\"\d+\")?\];/;
 
     var clearRegexes = [
-        new RegExp('<script[\\s\\S\\d\\D]*?>[\\s\\S]*?</script>', 'g'),
-        new RegExp('url\\([\'"][\\d\\D]*?.png[\'"]\\)', 'g'),
-        new RegExp('<[a-z]*.*?style=[\'"].*?url\\(.*?\\).*?[\'"].*?>.*?<\\/[a-z]*>', 'ig'),
-        new RegExp('<link[\\d\\D]*?>', 'g')
+        new RegExp('<script[\\s\\S\\d\\D]*?>[\\s\\S]*?</script>', 'g'), //rm script tags
+        new RegExp('url\\([\'"][\\d\\D]*?.png[\'"]\\)', 'g'), //rm url attributes in images
+        new RegExp('<[a-z]*.*?style=[\'"].*?url\\(.*?\\).*?[\'"].*?>.*?<\\/[a-z]*>', 'ig'), //rm anchors
+        new RegExp('<link[\\d\\D]*?>', 'g')//rm links
     ];
     this.competParticipated;
     this.currentTimeout;
@@ -121,6 +121,7 @@ function Connector() {
         });
     };
 
+
     /*
      * Set the alarm
      * if the timeout is the same as before, nothing changes
@@ -145,7 +146,7 @@ function Connector() {
      * depending on the option
      */
     this.openOption = function () {
-        switch (this.noCompet) {
+        switch (parseInt(this.noCompet)) {
             case 0 ://Open simple test
                 openFastFingers();
                 break;
@@ -381,12 +382,12 @@ function onNavigate(details) {
  */
 function init() {
     listenToStorage();
-    chrome.alarms.onAlarm.addListener(function (alarm) {//Add alarm listener
+    chrome.alarms.onAlarm.addListener(function (alarm) {
         if (alarm.name === 'refresh') {
             connector.refresh();
         }
     });
-    chrome.browserAction.onClicked.addListener(function () {//Add click listnere
+    chrome.browserAction.onClicked.addListener(function () {
         click();
     });
 
@@ -429,11 +430,11 @@ function startAnimation() {
                 currentCol += direction;
             }
         }, animationSpeed);
-        resetTimeout = setTimeout(function(){
+        resetTimeout = setTimeout(function () {
             //We timedout
             connector.connected = false;
             stopAnimation();
-        },5000);
+        }, 5000);
     }
 }
 
