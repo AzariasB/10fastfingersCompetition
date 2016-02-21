@@ -3,14 +3,14 @@
 'use strict';
 
 /*
- * TODO : 
+ * TODO :
  * -pretify
  * -add more options :
  *  - active/not active
  *  - listen to multiples competitions ?
- *  
+ *
  * -suggestions
- * 
+ *
  */
 
 
@@ -32,6 +32,15 @@ var canvas = document.getElementById('canvas'),
         intervalId = null, // Save the animation interval
         resetTimeout = null; // Reset the animation
 
+
+var options = {
+  favLangVal: 'english',
+  favLangName: 1,
+  refreshTimeout: 10,
+  noCompetition: 0,
+  loadingAnimation : true,
+  notification : true
+}
 /*
  * Click on the browseraction
  * handler
@@ -56,13 +65,22 @@ function updateIcon() {
     chrome.browserAction.setIcon({path: icon});
 }
 
+function notifyNewcompetition(numberOfNew){
+  var plural = numberOfNew > 1 ? 's':'';
+  chrome.notifications.create("1",{
+        'type' : 'basic',
+        'iconUrl' : './pictures/big_icon.png',
+        'eventTime' : 2000,
+        'title' : 'New competition' + plural,
+        'message' : 'There are '+numberOfNew+' new competition'+plural+'.'
+  });
+}
+
 function Connector() {
     this.connected = false;
     this.websiteUrl = 'http://10fastfingers.com/';
     this.competitions = [];
     this.nwCompetitions = 0;
-    this.languageTestVal = 'english';
-    this.refreshTimeout = 10;
     this.valRegex = /\s*var\s+competitions_participated\s*=\s*\[(\"\d+\",)*(\"\d+\")?\];/;
 
     var clearRegexes = [
@@ -73,7 +91,6 @@ function Connector() {
     ];
     this.competParticipated;
     this.currentTimeout;
-    this.noCompet = "";
 
     var self = this;
 
@@ -84,14 +101,14 @@ function Connector() {
 
 
     /**
-     * Open the necessary tab depending on the state of 
+     * Open the necessary tab depending on the state of
      * the object.
      * Called whenever the user click on the icon
      */
     this.clicked = function () {
-        startAnimation();
+        if(options.loadingAnimation) startAnimation();
         this.refresh(function () {
-            self.refreshCompetitions(connector.refreshTimeout);
+            self.refreshCompetitions(options.refreshTimeout);
             openFastFingers();
             stopAnimation();
         }, function () {
@@ -108,7 +125,7 @@ function Connector() {
     };
 
     /**
-     * 
+     *
      * @param {function} notConnectedCallback callback to execute when the user is not connected
      * @param {function} connectedCallback callback to execute when the user is connected
      */
@@ -117,7 +134,13 @@ function Connector() {
             'url': this.websiteUrl,
             'name': 'CakeCookie[rememberMe]'
         }, function (cookie) {
-            checkIfConnected(cookie, notConnectedCallback, connectedCallback);
+            var oldNumber = self.nwCompetitions;
+            checkIfConnected(cookie, notConnectedCallback, function(){
+              if(self.nwCompetitions > oldNumber && options.notification){
+                notifyNewcompetition(self.nwCompetitions);
+              }
+              connectedCallback && connectedCallback.call();
+            });
         });
     };
 
@@ -128,7 +151,7 @@ function Connector() {
      * if the timeout is different, changin the periodInterval
      */
     this.refreshCompetitions = function (timeout/*in minutes*/) {
-        timeout = Math.max(timeout, this.refreshTimeout);
+        timeout = Math.max(timeout, options.refreshTimeout);
         chrome.alarms.get('refresh', function (alarm) {
             if (alarm) {
                 chrome.alarms.clear('refresh', function () {
@@ -146,12 +169,12 @@ function Connector() {
      * depending on the option
      */
     this.openOption = function () {
-        switch (parseInt(this.noCompet)) {
+        switch (parseInt(options.noCompet)) {
             case 0 ://Open simple test
                 openFastFingers();
                 break;
             case 1: //Open competition test
-                openFastFingers('competiontions');
+                openFastFingers('competitions');
                 break;
             default:
                 openFastFingers();
@@ -161,26 +184,21 @@ function Connector() {
 
     /*
      * Set all the basics options
-     * 
+     *
      * For the moment :
      *  - the language name (English)
      *  - the language code (english)
      *  - the timeoutTime (10)
-     * 
+     *
      * @param {type} options
      */
-    this.setOptions = function (options) {
-        this.languageTestVal = options.favLangVal || this.languageTestVal;
-        this.refreshTimeout = parseInt(options.refreshTimeout) || this.refreshTimeout;
-        this.noCompet = parseInt(options.noCompetition) || this.noCompet;
-    };
 
     //---------------------------------------//
     //          PRIVATE FUNCTIONS                                    //
     //---------------------------------------//
 
     function getFlagId() {
-        return 'flagid' + (flagsLangId[self.languageTestVal] || 1);
+        return 'flagid' + (flagsLangId[options.favLangVal] || 1);
     }
 
 
@@ -192,7 +210,7 @@ function Connector() {
     }
 
     /**
-     * 
+     *
      * @param {Cookie} cookie cookie found by chomre
      * @param {type} notConnectedCallback function to execute if not connected
      * @param {type} connectedCallback function to execute when connected
@@ -206,7 +224,7 @@ function Connector() {
         } else {
             self.connected = true;
             lookForNewCompetitions(connectedCallback);
-            self.refreshCompetitions(self.refreshTimeout);
+            self.refreshCompetitions(options.refreshTimeout);
         }
 
     }
@@ -215,7 +233,7 @@ function Connector() {
      * Get the 'competitions' page and process
      * it to see if there are new competitions
      * passing by : taking the values of the 'alreadyDone' competitions
-     * 
+     *
      * @param {function} endCallback callback to call at the end of the processing
      */
     function lookForNewCompetitions(endCallback) {
@@ -255,8 +273,8 @@ function Connector() {
     /**
      * Instead of using the all mighty-dangerous eval,
      * this function will decompose the string to find the values of the array
-     * 
-     * 
+     *
+     *
      * @param {type} stringArray a string looking like var array_name = [value1,value2,...]
      * @returns the array formed from the string
      */
@@ -290,13 +308,13 @@ function Connector() {
         for (var i = 0; i < competitions.length; i++) {
             checkCompetition(competitions[i]);
         }
-        self.refreshCompetitions(self.refreshTimeout);//Refresh to see if there is a new competition every n minutes
+        self.refreshCompetitions(options.refreshTimeout);//Refresh to see if there is a new competition every n minutes
     }
 
     /*
-     * For one given competition, check if the 
+     * For one given competition, check if the
      * competition is in the 'done' list, and if not, add new undone competition.
-     * 
+     *
      * @param {DOMObject} compet
      */
     function checkCompetition(compet) {
@@ -325,7 +343,7 @@ function getCompetitionURl(competRef) {
 
 
 function getTypingTestUrl() {
-    return connector.websiteUrl + 'typing-test/' + connector.languageTestVal;
+    return connector.websiteUrl + 'typing-test/' + options.favLangVal;
 }
 
 
@@ -357,13 +375,17 @@ function openFastFingers(url) {
     });
 }
 
+function mergeOption(nwOptions){
+  for(var i in nwOptions){
+    var nwValue = nwOptions[i].hasOwnProperty('newValue') ? nwOptions[i].newValue : nwOptions[i];
+    options[i] = isNaN(nwValue) ? nwValue : nwValue|0;
+  }
+}
 
 //Check if the chrome storage is changin to quickly change the icon display.
 function listenToStorage() {
     chrome.storage.onChanged.addListener(function (items) {
-        connector.languageTestVal = (items.favLangVal ? items.favLangVal.newValue : connector.languageTestVal);
-        connector.refreshTimeout = (items.refreshTimeout ? items.refreshTimeout.newValue : connector.refreshTimeout);
-        connector.noCompet = (items.noCompetition ? items.noCompetition.newValue : connector.noCompet);
+        mergeOption(items);
         connector.refresh();
     });
 }
@@ -377,7 +399,7 @@ function onNavigate(details) {
 
 /*
  * Start everything function
- * 
+ *
  * To be called only once !
  */
 function init() {
@@ -392,8 +414,9 @@ function init() {
     });
 
     //Take out options and let's go !
-    chrome.storage.sync.get(['favLangVal', 'refreshTimeout', 'noCompetition'], function (items) {
-        connector.setOptions(items);
+
+    chrome.storage.sync.get(Object.keys(options), function (items) {
+        mergeOption(items);
         connector.refresh();
     });
 

@@ -23,6 +23,7 @@
         "alarms",
         "activeTab",
         "tabs",
+        "notifications",
         "*://10fastfingers.com/"
     ]
 }
