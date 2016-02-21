@@ -56,7 +56,7 @@ var availableLang = {
 };
 
 function tr() {
-    return chrome.i18n.getMessage.apply(this, arguments);
+    return chrome.i18n.getMessage.apply(null, arguments);
 }
 
 var noCompet = [tr("goto_test"), tr("goto_competition")];
@@ -71,11 +71,12 @@ function initDoc(){
         'option1_text' : 'lang_option',
         'option2_text' : 'refresh_option',
         'option3_text' : 'noCompet_option',
+        'animation_text' : 'animation_option',
+        'notification_text' : 'notification_option',
         'save' : 'confirm_save'
     };
-    
+
     for(var i in idToSet){
-        console.log(tr(idToSet[i]));
         document.getElementById(i).innerHTML = tr(idToSet[i]);
     }
 }
@@ -89,26 +90,38 @@ function setOptions() {
     }
 
     for (var i = 0; i < noCompet.length; i++) {
-        var opt = document.createElement('OPTION');
-        opt.setAttribute('value', i);
-        opt.appendChild(document.createTextNode(noCompet[i]));
-        document.getElementById('no_competition').appendChild(opt);
+        var opt = document.createElement('INPUT');
+        opt.setAttribute('id',i);
+        opt.setAttribute('type','radio')
+        opt.setAttribute('name','groupCompet')
+        opt.setAttribute('value', noCompet[i]);
+        var lab = document.createElement('LABEL');
+        lab.setAttribute('for',i);
+        lab.appendChild(document.createTextNode(noCompet[i]));
+        var formGroup = document.createElement('DIV');
+        formGroup.setAttribute('class','form-group');
+        formGroup.appendChild(opt);
+        formGroup.appendChild(lab);
+        document.getElementById('option3').appendChild(formGroup);
     }
 }
 
 function save_options() {
-    var el = document.getElementById('language');
-    var noComp = document.getElementById('no_competition');
-
-    var languageVal = el.value;
-    var languageName = el.options[el.selectedIndex].text;
-    var refreshing = parseInt(document.getElementById('refreshing').value);
-    var noCompetition = noComp.value;
+    var el = document.getElementById('language'),
+        noComp = document.querySelector('input[name="groupCompet"]:checked'),
+        languageVal = el.value,
+        languageName = el.options[el.selectedIndex].text,
+        refreshing = parseInt(document.getElementById('refreshing').value),
+        noCompetition = noComp.id,
+        loadingAnim = document.getElementById('animation').checked,
+        notif = document.getElementById('notification').checked;
     chrome.storage.sync.set({
         favLangVal: languageVal,
         favLangName: languageName,
         refreshTimeout: refreshing,
-        noCompetition: noCompetition
+        noCompetition: noCompetition,
+        loadingAnimation : loadingAnim,
+        notification : notif
     }, function () {
         // Update status to let user know options were saved.
         var status = document.getElementById('status');
@@ -127,11 +140,19 @@ function restore_options() {
         favLangVal: 'english',
         favLangName: 'English',
         refreshTimeout: 10,
-        noCompetition: 0
+        noCompetition: 0,
+        loadingAnimation : true,
+        notification : true
     }, function (items) {
         document.getElementById('language').value = items.favLangVal;
         document.getElementById('refreshing').value = items.refreshTimeout;
-        document.getElementById('no_competition').value = items.noCompetition;
+        var noCompetOptions = document.getElementsByName('groupCompet');
+        var indexChecked = items.noCompetition;
+        for(var i = 0; i < noCompetOptions.length;i++){
+          noCompetOptions[i].checked = (indexChecked|0 === i);
+        }
+        document.getElementById('animation').checked = items.loadingAnimation;
+        document.getElementById('notification').checked = items.notification;
     });
 }
 

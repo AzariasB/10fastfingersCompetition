@@ -290,7 +290,7 @@ function Connector() {
         for (var i = 0; i < competitions.length; i++) {
             checkCompetition(competitions[i]);
         }
-        self.refreshCompetitions(self.refreshTimeout);//Refresh to see if there is a new competition every 10 minutes
+        self.refreshCompetitions(self.refreshTimeout);//Refresh to see if there is a new competition every n minutes
     }
 
     /*

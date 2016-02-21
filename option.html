@@ -18,13 +18,21 @@
                 <input type="number" id="refreshing" />
             </div>
             <div id="option3">
-                <p id="option3_text" >What to do where there is no competition</p>
-                <select id="no_competition" >
-                </select>
+                <label id="option3_text" >What to do where there is no competition</label>
             </div>
-            <button id="save">Save</button>
-            <div id="status" ></div>
+            <div id="option4">
+              <div class="form-group">
+                <input type="checkbox" id="animation" />
+                <label for="animation" id="animation_text" >Loading animation</label>
+              </div>
+              <div class="form-group">
+                <input type="checkbox" id="notification" />
+                <label for="notification" id="notification_text" >Notification</label>
+              </div>
+            </div>
         </div>
+        <button id="save">Save</button>
+        <div id="status" ></div>
 
         <script src="options.js"></script>
     </body>

@@ -10,5 +10,7 @@
     "refresh_option" : {"message" : "Intervalle de temps entre les rafraîchissement(minutes)"},
     "noCompet_option" : {"message":"Quand il n'y a pas de compétition"},
     "confirm_save" : {"message" : "Enregistrer"},
-    "option_saved" : {"message" : "Les modifications ont bien été enregistrées"}
+    "option_saved" : {"message" : "Les modifications ont bien été enregistrées"},
+    "animation_option" : {"message" : "Animation de chargement"},
+    "notification_option" : {"message" : "Notification lorsqu'une nouvelle competition est créée"}
 }
