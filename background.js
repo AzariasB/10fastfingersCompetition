@@ -21,7 +21,6 @@ function tr() {
 
 /* global chrome, competitions_participated */
 var flagsLangId = {"english": 1, "german": 2, "french": 3, "portuguese": 4, "spanish": 5, "indonesian": 6, "turkish": 7, "vietnamese": 8, "polish": 9, "romanian": 10, "malaysian": 11, "norwegian": 12, "persian": 13, "hungarian": 14, "chinese (Traditional)": 15, "chinese (Simplified)": 16, "danish": 17, "dutch": 18, "swedish": 19, "italian": 20, "finnish": 21, "serbian": 22, "catalan": 23, "filipino": 24, "croatian": 25, "russian": 26, "arabic": 27, "bulgarian": 28, "japanese": 29, "korean": 31, "greek": 32, "czech": 33, "estonian": 34, "latvian": 35, "hebrew": 36, "urdu": 37, "galician": 38, "lithuanian": 39, "georgian": 40, "armenian": 41, "kurdish": 42, "azerbaijani": 43, "hindi": 44, "slovak": 45, "slovenian": 46, "icelandic": 48, "thai": 50, "pashto": 51, "esperanto": 52};
-var connector = new Connector();
 
 var canvas = document.getElementById('canvas'),
         loggedInImage = document.getElementById('logged_in'),
@@ -30,7 +29,8 @@ var canvas = document.getElementById('canvas'),
         animationSpeed = 20,
         direction = 1,
         intervalId = null, // Save the animation interval
-        resetTimeout = null; // Reset the animation
+        resetTimeout = null,
+        connector; // Reset the animation
 
 
 var options = {
@@ -39,7 +39,8 @@ var options = {
   refreshTimeout: 10,
   noCompetition: 0,
   loadingAnimation : true,
-  notification : true
+  notification : true,
+  lastNumberOfCompet : 0
 }
 /*
  * Click on the browseraction
@@ -66,14 +67,16 @@ function updateIcon() {
 }
 
 function notifyNewcompetition(numberOfNew){
-  var plural = numberOfNew > 1 ? 's':'';
+  var message = numberOfNew + " " + (numberOfNew === 1 ? tr("one_was_created") : tr("several_was_created") );
   chrome.notifications.create("1",{
         'type' : 'basic',
         'iconUrl' : './pictures/big_icon.png',
         'eventTime' : 2000,
-        'title' : 'New competition' + plural,
-        'message' : 'There are '+numberOfNew+' new competition'+plural+'.'
+        'title' : '10fastfingers competition',
+        'message' : message
   });
+
+  //On click ... go to competition
 }
 
 function Connector() {
@@ -134,10 +137,12 @@ function Connector() {
             'url': this.websiteUrl,
             'name': 'CakeCookie[rememberMe]'
         }, function (cookie) {
-            var oldNumber = self.nwCompetitions;
             checkIfConnected(cookie, notConnectedCallback, function(){
-              if(self.nwCompetitions > oldNumber && options.notification){
-                notifyNewcompetition(self.nwCompetitions);
+              if(self.nwCompetitions > options.lastNumberOfCompet && options.notification){
+                notifyNewcompetition(self.nwCompetitions - options.lastNumberOfCompet);
+              }
+              if(self.nwCompetitions != options.lastNumberOfCompet){
+                saveNumberOfCompet(self.nwCompetitions);
               }
               connectedCallback && connectedCallback.call();
             });
@@ -159,7 +164,7 @@ function Connector() {
                 });
 
             } else {
-                chrome.alarms.create('refresh', {periodInMinutes: timeout});
+              chrome.alarms.create('refresh', {periodInMinutes: timeout});
             }
         });
     };
@@ -169,7 +174,7 @@ function Connector() {
      * depending on the option
      */
     this.openOption = function () {
-        switch (parseInt(options.noCompet)) {
+        switch (parseInt(options.noCompetition)) {
             case 0 ://Open simple test
                 openFastFingers();
                 break;
@@ -390,6 +395,13 @@ function listenToStorage() {
     });
 }
 
+function saveNumberOfCompet(nwNumber){
+  chrome.storage.sync.set({
+      lastNumberOfCompet : nwNumber
+  });
+  options.lastNumberOfCompet = nwNumber;
+}
+
 //Update when navigate in 10fastfingers
 function onNavigate(details) {
     if (details.url && is10fastFingersUrl(details.url) && !/competition\//.test(details.url)) {
@@ -420,6 +432,7 @@ function init() {
         connector.refresh();
     });
 
+    if(!connector) connector = new Connector();
     var filters = {
         url: [{urlContains: connector.websiteUrl.replace(/^https?\:\/\//, '')}]
     };

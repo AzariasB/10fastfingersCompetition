@@ -12,5 +12,7 @@
     "confirm_save" : {"message" : "Enregistrer"},
     "option_saved" : {"message" : "Les modifications ont bien été enregistrées"},
     "animation_option" : {"message" : "Animation de chargement"},
-    "notification_option" : {"message" : "Notification lorsqu'une nouvelle competition est créée"}
+    "notification_option" : {"message" : "Notification lorsqu'une nouvelle competition est créée"},
+    "one_was_created" : {"message" : "nouvelle compétition a été créé"},
+    "several_was_created" : {"message" : "nouvelles compétitions ont été créés"}
 }

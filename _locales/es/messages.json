@@ -36,5 +36,7 @@
         "message": "Los cambios se han guardado"
     },
     "animation_option" : {"message" : "Animación de carga"},
-    "notification_option" : {"message" : "Notificación cuando se crea una nueva competencia"}
+    "notification_option" : {"message" : "Notificación cuando se crea una nueva competencia"},
+    "one_was_created" : {"message" : "fue creado"},
+    "several_was_created" : {"message" : "fueron creados"}
 }

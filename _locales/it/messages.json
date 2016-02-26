@@ -34,6 +34,9 @@
     },
     "option_saved": {
         "message": "Le modifiche sono state salvate"
-    }
-
+    },
+    "animation_option" : {"message" : "Animazione di carico"},
+    "notification_option" : {"message" : "Notifica quando viene creato un nuovo evento"},
+    "one_was_created" : {"message" : "nuovo concorso è stato istituito"},
+    "several_was_created" : {"message" : "nuovi concorsi sono stati creati"}
 }

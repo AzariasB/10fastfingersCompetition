@@ -36,5 +36,7 @@
         "message": "All modifications were saved"
     },
     "animation_option" : {"message" : "Loading animation"},
-    "notification_option" : {"message" : "Notification when a new competition is created"}
+    "notification_option" : {"message" : "Notification when a new competition is created"},
+    "one_was_created" : {"message" : "new competition was created"},
+    "several_was_created" : {"message" : "new competitions were created"}
 }
