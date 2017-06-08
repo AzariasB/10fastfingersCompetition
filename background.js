@@ -33,14 +33,14 @@ var canvas = document.getElementById('canvas'),
         connector; // Reset the animation
 
 
+//Don't need the 'favLangName', it's just for the options
 var options = {
-  favLangVal: 'english',
-  favLangName: 1,
-  refreshTimeout: 10,
-  noCompetition: 0,
-  loadingAnimation : true,
-  notification : true,
-  lastNumberOfCompet : 0
+    favLangVal: '', //No favlang to avoid badmessages display
+    refreshTimeout: 10,
+    noCompetition: 0,
+    loadingAnimation: true,
+    notification: true,
+    lastNumberOfCompet: 0
 }
 /*
  * Click on the browseraction
@@ -66,17 +66,17 @@ function updateIcon() {
     chrome.browserAction.setIcon({path: icon});
 }
 
-function notifyNewcompetition(numberOfNew){
-  var message = numberOfNew + " " + (numberOfNew === 1 ? tr("one_was_created") : tr("several_was_created") );
-  chrome.notifications.create("1",{
-        'type' : 'basic',
-        'iconUrl' : './pictures/big_icon.png',
-        'eventTime' : 2000,
-        'title' : '10fastfingers competition',
-        'message' : message
-  });
+function notifyNewcompetition(numberOfNew) {
+    var message = numberOfNew + " " + (numberOfNew === 1 ? tr("one_was_created") : tr("several_was_created"));
+    chrome.notifications.create("1", {
+        'type': 'basic',
+        'iconUrl': './pictures/big_icon.png',
+        'eventTime': 2000,
+        'title': '10fastfingers competition',
+        'message': message
+    });
 
-  //On click ... go to competition
+    //On click ... go to competition
 }
 
 function Connector() {
@@ -109,14 +109,15 @@ function Connector() {
      * Called whenever the user click on the icon
      */
     this.clicked = function () {
-        if(options.loadingAnimation) startAnimation();
+        if (options.loadingAnimation)
+            startAnimation();
         this.refresh(function () {
             self.refreshCompetitions(options.refreshTimeout);
             openFastFingers();
             stopAnimation();
         }, function () {
             if (self.competitions.length > 0) {
-                openFastFingers(getCompetitionURl(self.competitions[self.competitions.length - 1]));
+                openFastFingers(getCompetitionURl(self.competitions[0]));//Open the oldest competition
                 self.refreshCompetitions(2); //Refresh competition after 2 mn
             } else {
                 self.refresh();
@@ -135,16 +136,16 @@ function Connector() {
     this.refresh = function (notConnectedCallback, connectedCallback) {
         chrome.cookies.get({
             'url': this.websiteUrl,
-            'name': 'CakeCookie[rememberMe]'
+            'name': 'CakeCookie[remember_me_cookie]'
         }, function (cookie) {
-            checkIfConnected(cookie, notConnectedCallback, function(){
-              if(self.nwCompetitions > options.lastNumberOfCompet && options.notification){
-                notifyNewcompetition(self.nwCompetitions - options.lastNumberOfCompet);
-              }
-              if(self.nwCompetitions != options.lastNumberOfCompet){
-                saveNumberOfCompet(self.nwCompetitions);
-              }
-              connectedCallback && connectedCallback.call();
+            checkIfConnected(cookie, notConnectedCallback, function () {
+                if (self.nwCompetitions > options.lastNumberOfCompet && options.notification) {
+                    notifyNewcompetition(self.nwCompetitions - options.lastNumberOfCompet);
+                }
+                if (self.nwCompetitions != options.lastNumberOfCompet) {
+                    saveNumberOfCompet(self.nwCompetitions);
+                }
+                connectedCallback && connectedCallback.call();
             });
         });
     };
@@ -164,7 +165,7 @@ function Connector() {
                 });
 
             } else {
-              chrome.alarms.create('refresh', {periodInMinutes: timeout});
+                chrome.alarms.create('refresh', {periodInMinutes: timeout});
             }
         });
     };
@@ -174,7 +175,7 @@ function Connector() {
      * depending on the option
      */
     this.openOption = function () {
-        switch (parseInt(options.noCompetition)) {
+        switch (options.noCompetition | 0) {
             case 0 ://Open simple test
                 openFastFingers();
                 break;
@@ -202,11 +203,22 @@ function Connector() {
     //          PRIVATE FUNCTIONS                                    //
     //---------------------------------------//
 
+    /**
+     * Return the id of the flag that can be found ont 10fastfingers
+     * @return {String} the id of the flag as it can be found
+     */
     function getFlagId() {
-        return 'flagid' + (flagsLangId[options.favLangVal] || 1);
+        return options.favLangVal
+                ? 'flagid' + (flagsLangId[options.favLangVal] || 1)
+                : '';
     }
 
 
+    /**
+     * Remove all the urls/calls of the get request
+     * @param  {String} html The full html document
+     * @return {String}      The cleaned html
+     */
     function cleanHTML(html) {
         for (var r = 0; r < clearRegexes.length; r++) {
             html = html.replace(clearRegexes[r], "");
@@ -217,8 +229,8 @@ function Connector() {
     /**
      *
      * @param {Cookie} cookie cookie found by chomre
-     * @param {type} notConnectedCallback function to execute if not connected
-     * @param {type} connectedCallback function to execute when connected
+     * @param {Function} notConnectedCallback function to execute if not connected
+     * @param {Function} connectedCallback function to execute when connected
      */
     function checkIfConnected(cookie, notConnectedCallback, connectedCallback) {
         if (cookie === null) {//not connected
@@ -247,7 +259,7 @@ function Connector() {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 // innerText does not let the attacker inject HTML elements.
-                if (!xhr.responseText) {
+                if (!xhr.responseText || xhr.status !== 200) {
                     self.connected = false;
                     updateIcon();
                     //Hey, you're not connected mate !
@@ -279,7 +291,6 @@ function Connector() {
      * Instead of using the all mighty-dangerous eval,
      * this function will decompose the string to find the values of the array
      *
-     *
      * @param {type} stringArray a string looking like var array_name = [value1,value2,...]
      * @returns the array formed from the string
      */
@@ -310,8 +321,10 @@ function Connector() {
         self.nwCompetitions = 0;
         self.competitions = [];
         var competitions = tbody.getElementsByTagName('tr');
-        for (var i = 0; i < competitions.length; i++) {
-            checkCompetition(competitions[i]);
+        if (getFlagId()) {
+            for (var i = 0; i < competitions.length; i++) {
+                checkCompetition(competitions[i]);
+            }
         }
         self.refreshCompetitions(options.refreshTimeout);//Refresh to see if there is a new competition every n minutes
     }
@@ -380,11 +393,11 @@ function openFastFingers(url) {
     });
 }
 
-function mergeOption(nwOptions){
-  for(var i in nwOptions){
-    var nwValue = nwOptions[i].hasOwnProperty('newValue') ? nwOptions[i].newValue : nwOptions[i];
-    options[i] = isNaN(nwValue) ? nwValue : nwValue|0;
-  }
+function mergeOption(nwOptions) {
+    for (var i in nwOptions) {
+        var nwValue = nwOptions[i].hasOwnProperty('newValue') ? nwOptions[i].newValue : nwOptions[i];
+        options[i] = isNaN(nwValue) ? nwValue : nwValue | 0;
+    }
 }
 
 //Check if the chrome storage is changin to quickly change the icon display.
@@ -395,11 +408,11 @@ function listenToStorage() {
     });
 }
 
-function saveNumberOfCompet(nwNumber){
-  chrome.storage.sync.set({
-      lastNumberOfCompet : nwNumber
-  });
-  options.lastNumberOfCompet = nwNumber;
+function saveNumberOfCompet(nwNumber) {
+    chrome.storage.sync.set({
+        lastNumberOfCompet: nwNumber
+    });
+    options.lastNumberOfCompet = nwNumber;
 }
 
 //Update when navigate in 10fastfingers
@@ -432,15 +445,17 @@ function init() {
         connector.refresh();
     });
 
-    if(!connector) connector = new Connector();
+    if (!connector)
+        connector = new Connector();
+
     var filters = {
-        url: [{urlContains: connector.websiteUrl.replace(/^https?\:\/\//, '')}]
+        url: [{urlContains: connector.websiteUrl.replace(/^http\:\/\//, '')}]
     };
+
     if (chrome.webNavigation && chrome.webNavigation.onDOMContentLoaded &&
             chrome.webNavigation.onReferenceFragmentUpdated) {
         chrome.webNavigation.onDOMContentLoaded.addListener(onNavigate, filters);
-        chrome.webNavigation.onReferenceFragmentUpdated.addListener(
-                onNavigate, filters);
+        chrome.webNavigation.onReferenceFragmentUpdated.addListener(onNavigate, filters);
     } else {
         chrome.tabs.onUpdated.addListener(function (_, details) {
             onNavigate(details);

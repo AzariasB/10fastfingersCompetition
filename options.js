@@ -115,6 +115,7 @@ function save_options() {
         noCompetition = noComp.id,
         loadingAnim = document.getElementById('animation').checked,
         notif = document.getElementById('notification').checked;
+        
     chrome.storage.sync.set({
         favLangVal: languageVal,
         favLangName: languageName,
