@@ -1,0 +1,29 @@
+{
+    "background": {
+        "persistent": false,
+        "page": "background.html"
+
+    },
+    "manifest_version": 2,
+    "default_locale": "en",
+    "options_page": "option.html",
+    "name": "10fastfingerCompetition",
+    "content_security_policy": "script-src 'self'; object-src 'self'",
+    "version": "1.2.5",
+    "icons": {
+        "128": "pictures/big_icon.png"
+    },
+    "description": "Knowing if there is a new competition in your langage",
+    "browser_action": {
+        "default_icon": "pictures/icon_gray.png"
+    },
+    "permissions": [
+        "cookies",
+        "storage",
+        "alarms",
+        "activeTab",
+        "tabs",
+        "notifications",
+        "*://10fastfingers.com/"
+    ]
+}

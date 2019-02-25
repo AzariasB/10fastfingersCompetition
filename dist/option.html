@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>My Test Extension Options</title>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" type="text/css" href="style.css" />
+    </head>
+    <body>
+        <h1 id="main_title" >10fastFingers competitions</h1>
+        <div id="options">
+            <div id="option1">
+                <p id="option1_text" >Language of tests and competitions :</p>
+                <select id="language">
+                </select>
+            </div>
+            <div id="option2">
+                <p id="option2_text" >Refreshing timeout (in minutes) :</p>
+                <input type="number" id="refreshing" />
+            </div>
+            <div id="option3">
+                <label id="option3_text" >What to do where there is no competition</label>
+            </div>
+            <div id="option4">
+              <div class="form-group">
+                <input type="checkbox" id="animation" />
+                <label for="animation" id="animation_text" >Loading animation</label>
+              </div>
+              <div class="form-group">
+                <input type="checkbox" id="notification" />
+                <label for="notification" id="notification_text" >Notification</label>
+              </div>
+            </div>
+        </div>
+        <button id="save">Save</button>
+        <div id="status" ></div>
+
+        <script src="options.js"></script>
+    </body>
+</html>

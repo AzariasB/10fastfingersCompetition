@@ -1,0 +1,18 @@
+{
+    "one_new_competition" : {"message" : "Une nouvelle compétition a été créée"},
+    "new_competitions": {"message": "Des nouvelles compétitions ont été créées"},
+    "nothing_new" : {"message" : "Pas de nouvelle commpétition"},
+    "not_connected" : {"message":"Vous n'êtes pas connecté à 10fastfingers.com"},
+    "goto_test" : {"message":"Aller sur la page de test"},
+    "goto_competition" : {"message" : "Aller sur la page de compétitions"},
+    "main_title" : {"message" : "Compétitions 10fastfingers"},
+    "lang_option" : {"message" : "Langue de la compétition"},
+    "refresh_option" : {"message" : "Intervalle de temps entre les rafraîchissement(minutes)"},
+    "noCompet_option" : {"message":"Quand il n'y a pas de compétition"},
+    "confirm_save" : {"message" : "Enregistrer"},
+    "option_saved" : {"message" : "Les modifications ont bien été enregistrées"},
+    "animation_option" : {"message" : "Animation de chargement"},
+    "notification_option" : {"message" : "Notification lorsqu'une nouvelle competition est créée"},
+    "one_was_created" : {"message" : "nouvelle compétition a été créé"},
+    "several_was_created" : {"message" : "nouvelles compétitions ont été créés"}
+}

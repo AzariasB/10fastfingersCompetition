@@ -1,0 +1,24 @@
+{
+	"name": "10fastfingers-competition",
+	"version": "1.0.0",
+	"description": "Chrome extension to show the number of available competitions for a given langugage",
+	"main": "index.js",
+	"scripts": {
+		"watch": "webpack --config webpack/webpack.dev.js --watch",
+		"build": "webpack --config webpack/webpack.prod.js"
+	},
+	"author": "AzariasB",
+	"license": " GPL-2.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/AzariasB/10fastfingersCompetition"
+	},
+	"devDependencies": {
+		"@types/chrome": "~0.0.72",
+		"ts-loader": "~5.0.0",
+		"typescript": "~3.0.3",
+		"webpack": "~4.17.2",
+		"webpack-cli": "~3.1.0",
+		"webpack-merge": "~4.1.4"
+	}
+}
