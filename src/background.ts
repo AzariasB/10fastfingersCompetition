@@ -1,19 +1,59 @@
+/*
+ * The MIT License
+ *
+ * Copyright 2019 Azarias Boutin.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 import { IconAnimator } from './IconAnimator';
 import { PageParseService } from './PageParserService';
-import { getCompetitionsPage, is10fastFingersUrl, websiteUrl, getTypingTestUrl, getCompetitionURl } from './common';
+import { getCompetitionsPage, WEBSITE_URL, getTypingTestUrl, getCompetitionURl, join } from './common';
+import { Alarm } from './Alarm';
+import { StorageService } from './StorageService';
 
 class App {
 	private iconAnimator: IconAnimator;
+	private alarm: Alarm;
+	private storage: StorageService;
 
 	constructor() {
 		this.iconAnimator = new IconAnimator();
-		this.showCompetitions();
+		this.alarm = new Alarm(() => this.storage.checkTimeout, () => this.updateBadge());
+		this.updateBadge();
 		chrome.browserAction.onClicked.addListener(() => this.goToCompetition());
 	}
 
+	private async updateBadge(): Promise<string[]> {
+		try {
+			const compets = await PageParseService.parse(getCompetitionsPage(), this.storage.langWatch);
+			this.iconAnimator.showConnected(compets.length);
+			return compets;
+		} catch (err) {
+			console.error(err);
+			this.iconAnimator.showDisconnected();
+			return [];
+		}
+	}
+
 	private goToCompetition() {
-		PageParseService.parse(getCompetitionsPage(), [ 'french' ]).then((compets) => {
-			console.log(compets);
+		this.updateBadge().then((compets) => {
 			if (compets.length === 0) {
 				this.goToDefaultPage();
 			} else {
@@ -30,29 +70,22 @@ class App {
 	}
 
 	private goToDefaultPage() {
-		chrome.tabs.getAllInWindow((tabs) => {
-			for (var i = 0, tab; (tab = tabs[i]); i++) {
-				if (tab.url && is10fastFingersUrl(tab.url)) {
-					chrome.tabs.update(tab.id, {
-						active: true,
-						url: getTypingTestUrl('french')
-					});
-					return;
-				}
-			}
-			chrome.tabs.create({ url: getTypingTestUrl('french') });
-		});
+		chrome.tabs.query(
+			{
+				url: join(WEBSITE_URL, '*')
+			},
+			this.openFirstTab
+		);
 	}
 
-	private showCompetitions() {
-		PageParseService.parse(getCompetitionsPage(), [ 'french' ])
-			.then((compets) => {
-				this.iconAnimator.showConnected(compets.length);
-			})
-			.catch((err) => {
-				console.error(err);
-				this.iconAnimator.showDisconnected();
+	private openFirstTab(tabs: chrome.tabs.Tab[]) {
+		if (tabs.length === 0) {
+			chrome.tabs.create({ url: getTypingTestUrl('french') });
+		} else {
+			chrome.tabs.update(tabs[0].id, {
+				active: true
 			});
+		}
 	}
 }
 

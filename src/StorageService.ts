@@ -22,4 +22,67 @@
  * THE SOFTWARE.
  */
 
-export class StorageService {}
+enum OpenOption {
+	OpenTestPage,
+	OpenCompetitionPage,
+	OpenAdvanced,
+	OpenCustom,
+	OpenMultiPlayer,
+	OpenTextPractice,
+	OpenTop100
+}
+
+interface Config {
+	version: number;
+	checkTimeout: number;
+	langWatch: string[];
+	openOption: OpenOption;
+	notifyOnCreationg: boolean;
+}
+
+export class StorageService {
+	private config: Config;
+	constructor() {
+		chrome.storage.sync.get((items) => {
+			console.log(items);
+			if (!items || !items.version) {
+				this.config = {
+					version: 1,
+					checkTimeout: 5,
+					langWatch: [ 'english' ],
+					openOption: OpenOption.OpenTestPage,
+					notifyOnCreationg: true
+				};
+				chrome.storage.sync.set(this.config);
+			} else {
+				this.updateConfig(items);
+			}
+		});
+
+		chrome.storage.onChanged.addListener((items) => this.updateConfig(items));
+	}
+
+	private updateConfig(items: any) {
+		Object.keys(this.config).map((k) => {
+			if (items[k]) {
+				this.config[k] = items[k];
+			}
+		});
+	}
+
+	public get checkTimeout(): number {
+		return this.config.checkTimeout;
+	}
+
+	public get langWatch(): string[] {
+		return this.config.langWatch;
+	}
+
+	public get openOption(): OpenOption {
+		return this.config.openOption;
+	}
+
+	public get notifyOnCreation(): boolean {
+		return this.notifyOnCreation;
+	}
+}

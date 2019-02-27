@@ -46,12 +46,7 @@ export class PageParseService {
      * to be done yet
      */
 	public static async parse(pageUrl: string, langs: string[]): Promise<string[]> {
-		try {
-			return await new PageParseService(pageUrl).getMyCompetitions(langs);
-		} catch (ex) {
-			console.error(ex);
-			return [];
-		}
+		return await new PageParseService(pageUrl).getMyCompetitions(langs);
 	}
 
 	/**

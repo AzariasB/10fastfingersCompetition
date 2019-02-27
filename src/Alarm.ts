@@ -1,3 +1,5 @@
+import { ALARM_NAME } from './common';
+
 /*
  * The MIT License
  *
@@ -22,26 +24,33 @@
  * THE SOFTWARE.
  */
 
-export const tr = chrome.i18n.getMessage;
-export const WEBSITE_URL = 'https://10fastfingers.com';
-export const ALARM_NAME = 'typingTestRefresh';
+export class Alarm {
+	constructor(private timeout: () => number, private _callback: () => void) {
+		chrome.alarms.get(ALARM_NAME, (alarm) => {
+			if (!alarm) {
+				console.log('creating alarm');
+				chrome.alarms.create(ALARM_NAME, {
+					delayInMinutes: timeout()
+				});
+			}
+		});
+		chrome.alarms.onAlarm.addListener((a) => this.callAlarm(a));
+	}
 
-export const PAGES_URL = {
-	normalTest: 'typing-test',
-	competitions: 'competition',
-	customTest: 'widgets/typingtest',
-	multiPlayer: 'multiplayer',
-	textPractice: 'text-practice/new',
-	top100: 'top1000'
-};
-
-export const join = (...args: string[]): string => args.join('/');
-
-export const is10fastFingersUrl = (url: string): boolean => url.indexOf(WEBSITE_URL) === 0;
-
-export const getCompetitionURl = (competitionUrl: string): string => join(WEBSITE_URL, competitionUrl);
-
-export const getTypingTestUrl = (language: string = 'english'): string =>
-	join(WEBSITE_URL, PAGES_URL.normalTest, language);
-
-export const getCompetitionsPage = (): string => join(WEBSITE_URL, PAGES_URL.competitions);
+	private callAlarm(alarm: chrome.alarms.Alarm) {
+		console.log(alarm);
+		if (alarm.name != ALARM_NAME) return;
+		if (this._callback) this._callback();
+		chrome.alarms.get(ALARM_NAME, (alarm) => {
+			if (!alarm) {
+				console.log('creating alarm');
+				chrome.alarms.create(ALARM_NAME, {
+					delayInMinutes: this.timeout()
+				});
+			}
+		});
+	}
+	public set callback(nwCallback: () => void) {
+		this._callback = nwCallback;
+	}
+}
