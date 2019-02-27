@@ -216,18 +216,6 @@ function Connector() {
 	}
 
 	/**
-     * Remove all the urls/calls of the get request
-     * @param  {String} html The full html document
-     * @return {String}      The cleaned html
-     */
-	function cleanHTML(html) {
-		for (var r = 0; r < clearRegexes.length; r++) {
-			html = html.replace(clearRegexes[r], '');
-		}
-		return html;
-	}
-
-	/**
      *
      * @param {Cookie} cookie cookie found by chomre
      * @param {Function} notConnectedCallback function to execute if not connected
@@ -286,30 +274,6 @@ function Connector() {
 			}
 		};
 		xhr.send();
-	}
-
-	/**
-     * Instead of using the all mighty-dangerous eval,
-     * this function will decompose the string to find the values of the array
-     *
-     * @param {type} stringArray a string looking like var array_name = [value1,value2,...]
-     * @returns the array formed from the string
-     */
-	function decomposeArray(stringArray) {
-		//If emptry string or empty value, return empty array
-		if (!stringArray) return [];
-		var brackIndex = stringArray.indexOf('[');
-		var closeIndex = stringArray.indexOf(']');
-		stringArray = stringArray.substr(brackIndex + 1, closeIndex - brackIndex - 1);
-
-		var res = [];
-		var decomposed = stringArray.split(',');
-		for (var i = 0; i < decomposed.length; i++) {
-			//Remove all the double quotes
-			var pureString = decomposed[i].substr(1, decomposed[i].length - 2);
-			res.push(pureString);
-		}
-		return res;
 	}
 
 	/*

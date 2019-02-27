@@ -1,3 +1,5 @@
+import { availableLang } from './languages';
+
 /*
  * The MIT License
  *
@@ -22,14 +24,124 @@
  * THE SOFTWARE.
  */
 
+const clearRegexes = [
+	new RegExp('<script[\\s\\S\\d\\D]*?>[\\s\\S]*?</script>', 'g'), //rm script tags
+	new RegExp('url\\([\'"][\\d\\D]*?.png[\'"]\\)', 'g'), //rm url attributes in images
+	new RegExp('<[a-z]*.*?style=[\'"].*?url\\(.*?\\).*?[\'"].*?>.*?<\\/[a-z]*>', 'ig'), //rm anchors
+	new RegExp('<link[\\d\\D]*?>', 'g') //rm links
+];
+
+const competListRegex = /\s*var\s+competitions_participated\s*=\s*\[(\"\d+\",)*(\"\d+\")?\];/;
+
+interface CompetitionData {
+	id: number;
+	url: string;
+}
+
 export class PageParseService {
-	static parse(pageUrl: string, langs: string[]): string[] {
-		return new PageParseService(pageUrl).getMyCompetitions(langs);
+	/**
+     * Only public accessor for the parser service, only works
+     * when the user is connected, returns the list of URLS of the competitions
+     * to be done yet
+     */
+	public static async parse(pageUrl: string, langs: string[]): Promise<string[]> {
+		return await new PageParseService(pageUrl).getMyCompetitions(langs);
 	}
 
+	/**
+     * Constructor with the url of the page to parse
+     */
 	constructor(private readonly pageUrl: string) {}
 
-	private getMyCompetitions(langs: string[]): string[] {
-		return [];
+	/**
+     * Parser the competition page to check if new competitions were 
+     * created
+     * 
+     * @param langs list of languages the user want to compet in
+     * @returns all the competitions to be completed by the user
+     */
+	private async getMyCompetitions(langs: string[]): Promise<string[]> {
+		const response = await fetch(this.pageUrl);
+		const page = await response.text();
+		const doneCompetitions = this.getCompetitionsParticipated(page);
+		const cleanedPage = this.cleanHtml(page);
+		const flagIds = langs.map((x) => availableLang[x].flagId);
+		const compets = this.readPageCompetitions(cleanedPage, flagIds);
+		return compets.filter((x) => doneCompetitions.indexOf(x.id) == -1).map((x) => x.url);
+	}
+
+	/**
+     * 
+     * @param cleanHtml html without any external links, to parse to find any competitions
+     * @param flagIds ids of the flags we're looking for
+     * @returns List of all the competitions found
+     */
+	private readPageCompetitions(cleanHtml: string, flagIds: number[]): CompetitionData[] {
+		const dummyDiv = document.createElement('DIV');
+		dummyDiv.innerHTML = cleanHtml;
+		document.body.appendChild(dummyDiv);
+		const tbody = document.getElementById('join-competition-table').getElementsByTagName('tbody')[0];
+		const competitions = tbody.getElementsByTagName('tr');
+		const tranform = this.hasGreenStamp(flagIds);
+		return [ ...competitions ].map(tranform).filter((x) => x !== null);
+	}
+
+	/**
+     * 
+     * @param flagIds all the flag we're looking for
+     * @returns A function to turn a row into a competition data (null if it does not have the flag in the list)
+     */
+	private hasGreenStamp(flagIds: number[]): (el: HTMLTableRowElement) => CompetitionData {
+		return (compet): CompetitionData => {
+			const informations = compet.getElementsByTagName('td');
+			const flag = +informations[0].getElementsByTagName('span')[0].getAttribute('id');
+			if (flagIds.indexOf(flag) === -1) return null;
+			const competId = informations[2].getElementsByTagName('div')[0].getAttribute('competition_id');
+			//Compet not done yet
+			return {
+				id: +competId,
+				url: informations[1].getElementsByTagName('a')[0].getAttribute('href')
+			};
+		};
+	}
+
+	/**
+     * Remove all the urls/calls of the get request
+     * @param  html The full html document
+     * @return The cleaned html
+     */
+	private cleanHtml(html: string): string {
+		return clearRegexes.reduce((a) => html.replace(a, ''), html);
+	}
+
+	/**
+     * 
+     * @param html parses the ids of the competitions the user participated in
+     * @returns the list of the competitions ids
+     */
+	private getCompetitionsParticipated(html: string): number[] {
+		const res = competListRegex.exec(html);
+		if (res && res[0]) {
+			return this.parseJsArray(res[0]);
+		} else {
+			return [];
+		}
+	}
+
+	/**
+     * Instead of using the all mighty-dangerous eval,
+     * this function will decompose the string to find the values of the array
+     *
+     * @param {string} stringArray a string looking like var array_name = [value1,value2,...]
+     * @returns the array formed from the string
+     */
+	private parseJsArray(stringArray: string): number[] {
+		//If emptry string or empty value, return empty array
+		if (!stringArray || !stringArray.length) return [];
+		const brackIndex = stringArray.indexOf('[');
+		const closeIndex = stringArray.indexOf(']');
+		stringArray = stringArray.substr(brackIndex + 1, closeIndex - brackIndex - 1);
+
+		return stringArray.split(',').map((x) => +x.substr(1, x.length - 2));
 	}
 }
