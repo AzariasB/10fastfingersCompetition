@@ -25,10 +25,11 @@ import { availableLang } from './languages';
  */
 
 const clearRegexes = [
-	new RegExp('<script[\\s\\S\\d\\D]*?>[\\s\\S]*?</script>', 'g'), //rm script tags
+	new RegExp('<script[^>]*>(.|\\s)*?<\\/script>', 'g'), //rm script tags
 	new RegExp('url\\([\'"][\\d\\D]*?.png[\'"]\\)', 'g'), //rm url attributes in images
 	new RegExp('<[a-z]*.*?style=[\'"].*?url\\(.*?\\).*?[\'"].*?>.*?<\\/[a-z]*>', 'ig'), //rm anchors
-	new RegExp('<link[\\d\\D]*?>', 'g') //rm links
+	new RegExp('<link[^>]*?>', 'g'), //rm links
+	new RegExp('<img[^>]*?\\/?>', 'g') // rm images
 ];
 
 const competListRegex = /\s*var\s+competitions_participated\s*=\s*\[(\"\d+\",)*(\"\d+\")?\];/;
@@ -83,6 +84,7 @@ export class PageParseService {
 		const tbody = document.getElementById('join-competition-table').getElementsByTagName('tbody')[0];
 		const competitions = tbody.getElementsByTagName('tr');
 		const tranform = this.hasGreenStamp(flagIds);
+		document.body.removeChild(dummyDiv);
 		return [ ...competitions ].map(tranform).filter((x) => x !== null);
 	}
 
@@ -94,8 +96,8 @@ export class PageParseService {
 	private hasGreenStamp(flagIds: number[]): (el: HTMLTableRowElement) => CompetitionData {
 		return (compet): CompetitionData => {
 			const informations = compet.getElementsByTagName('td');
-			const flag = +informations[0].getElementsByTagName('span')[0].getAttribute('id');
-			if (flagIds.indexOf(flag) === -1) return null;
+			const flag = +informations[0].getElementsByTagName('span')[0].getAttribute('id').replace('flagid', '');
+			if (flagIds.indexOf(+flag) === -1) return null;
 			const competId = informations[2].getElementsByTagName('div')[0].getAttribute('competition_id');
 			//Compet not done yet
 			return {
@@ -111,7 +113,7 @@ export class PageParseService {
      * @return The cleaned html
      */
 	private cleanHtml(html: string): string {
-		return clearRegexes.reduce((a) => html.replace(a, ''), html);
+		return clearRegexes.reduce((str, a) => str.replace(a, ''), html);
 	}
 
 	/**

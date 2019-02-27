@@ -1,5 +1,3 @@
-import { websiteUrl, cookieName } from './common';
-
 /*
  * The MIT License
  *
@@ -24,24 +22,4 @@ import { websiteUrl, cookieName } from './common';
  * THE SOFTWARE.
  */
 
-/**
-  * Used to query 10fastfingers for the cookie "remember me"
-  */
-export class CookieService {
-	/**
-     * 
-     * @param connectedCallback method to call when the cookie 'remember me' exists
-     * @param notConnectedCallback method to call when the cookie 'remember me' does not exist
-     */
-	constructor(private readonly onGetCookieCallback: (isConnected: boolean) => void) {}
-
-	public checkCookie() {
-		chrome.cookies.get(
-			{
-				url: websiteUrl,
-				name: cookieName
-			},
-			(cookie) => this.onGetCookieCallback(!!cookie)
-		);
-	}
-}
+export class StorageService {}

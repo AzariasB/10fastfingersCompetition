@@ -22,4 +22,21 @@
  * THE SOFTWARE.
  */
 
-export class IconAnimator {}
+export class IconAnimator {
+	constructor() {}
+
+	public showConnected(availableCompets: number) {
+		this.updateBrowserAction(availableCompets ? availableCompets + '' : null, 'nothing_new', 'pictures/icon.png');
+	}
+
+	public showDisconnected() {
+		this.updateBrowserAction(null, 'not_connected', 'pictures/icon_gray.png');
+	}
+
+	private updateBrowserAction(text: string, title: string, iconPath: string) {
+		chrome.browserAction.setBadgeText({ text: text || '' });
+		chrome.browserAction.setTitle({ title: title });
+		chrome.browserAction.setBadgeBackgroundColor({ color: text ? [ 10, 56, 0, 255 ] : [ 0, 0, 0, 0 ] });
+		chrome.browserAction.setIcon({ path: iconPath });
+	}
+}

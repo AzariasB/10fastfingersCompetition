@@ -23,3 +23,18 @@
  */
 
 export const tr = chrome.i18n.getMessage;
+export const websiteUrl = 'https://10fastfingers.com';
+export const cookieName = 'CakeCookie[remember_me_cookie]';
+
+const typingTestUrl = 'typing-test';
+const competitionsUrl = 'competitions';
+
+export const join = (...args: string[]): string => args.join('/');
+
+export const is10fastFingersUrl = (url: string): boolean => url.indexOf(websiteUrl) === 0;
+
+export const getCompetitionURl = (competitionUrl: string): string => join(websiteUrl, competitionUrl);
+
+export const getTypingTestUrl = (language: string = 'english'): string => join(websiteUrl, typingTestUrl, language);
+
+export const getCompetitionsPage = (): string => join(websiteUrl, competitionsUrl);
