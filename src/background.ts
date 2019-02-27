@@ -1,20 +1,47 @@
-import { CookieService } from './CookieService';
 import { IconAnimator } from './IconAnimator';
 import { PageParseService } from './PageParserService';
-import { getCompetitionsPage } from './common';
+import { getCompetitionsPage, is10fastFingersUrl, websiteUrl, getTypingTestUrl, getCompetitionURl } from './common';
 
 class App {
-	private cookieService: CookieService;
 	private iconAnimator: IconAnimator;
 
 	constructor() {
-		this.cookieService = new CookieService((co) => this.isConnected(co));
 		this.iconAnimator = new IconAnimator();
+		this.showCompetitions();
+		chrome.browserAction.onClicked.addListener(() => this.goToCompetition());
 	}
 
-	private isConnected(connected: boolean) {
-		if (connected) this.showCompetitions();
-		else this.iconAnimator.showDisconnected();
+	private goToCompetition() {
+		PageParseService.parse(getCompetitionsPage(), [ 'french' ]).then((compets) => {
+			console.log(compets);
+			if (compets.length === 0) {
+				this.goToDefaultPage();
+			} else {
+				this.openCompetitionTab(compets.shift());
+			}
+		});
+	}
+
+	private openCompetitionTab(competition: string) {
+		chrome.tabs.create({
+			active: true,
+			url: getCompetitionURl(competition)
+		});
+	}
+
+	private goToDefaultPage() {
+		chrome.tabs.getAllInWindow((tabs) => {
+			for (var i = 0, tab; (tab = tabs[i]); i++) {
+				if (tab.url && is10fastFingersUrl(tab.url)) {
+					chrome.tabs.update(tab.id, {
+						active: true,
+						url: getTypingTestUrl('french')
+					});
+					return;
+				}
+			}
+			chrome.tabs.create({ url: getTypingTestUrl('french') });
+		});
 	}
 
 	private showCompetitions() {
@@ -27,14 +54,9 @@ class App {
 				this.iconAnimator.showDisconnected();
 			});
 	}
-
-	public init() {
-		this.cookieService.checkCookie();
-	}
 }
 
 const app = new App();
-app.init();
 
 /* var canvas = <HTMLCanvasElement>document.getElementById('canvas'),
 // 	loggedInImage = document.getElementById('logged_in'),
