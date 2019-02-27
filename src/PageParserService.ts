@@ -22,4 +22,14 @@
  * THE SOFTWARE.
  */
 
-export class IconAnimator {}
+export class PageParseService {
+	static parse(pageUrl: string, langs: string[]): string[] {
+		return new PageParseService(pageUrl).getMyCompetitions(langs);
+	}
+
+	constructor(private readonly pageUrl: string) {}
+
+	private getMyCompetitions(langs: string[]): string[] {
+		return [];
+	}
+}
