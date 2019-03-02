@@ -1,39 +1,157 @@
+<!--
+ * The MIT License
+ *
+ * Copyright 2019 Azarias Boutin.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ 
+-->
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>My Test Extension Options</title>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" type="text/css" href="style.css" />
-    </head>
-    <body>
-        <h1 id="main_title" >10fastFingers competitions</h1>
+
+<head>
+    <title>10fastFingers options</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <style>
+        .container{
+            padding: 0px 50px 50px 50px;
+        }
+        h1 {
+            margin-bottom: 50px;
+            display: flex;
+            justify-content: center;
+        }
+
+        img.responsive-img{
+            position: relative;
+            display: block;
+            top: 0px;
+            left: 0px;
+            height: 70px;
+        }
+    </style>
+    <script src="materialize.js"></script>
+</head>
+<body class="grey lighten-5">
+    <div class="container z-depth-5  blue  grey darken-3">
+        <img class="responsive-img" src="pictures/big_icon.png" />
+        <h1 id="main_title">
+            10fastFingers competition
+        </h1>
         <div id="options">
-            <div id="option1">
-                <p id="option1_text" >Language of tests and competitions :</p>
-                <select id="language">
-                </select>
+            <div class="row">
+                <div class="col s12">
+                    <div class="row">
+                        <div class="input-field col s12 m4">
+                            <select id="competitionLanguage" multiple>
+                                <option value="" disabled>choose_languages</option>
+                            </select>
+                            <label>competition_language</label>
+                        </div>
+                        <div class="input-field col s12 m4">
+                            <select id="websiteLanguage">
+                                <option value="" disabled selected>choose_language</option>
+                            </select>
+                            <label>website_language</label>
+                        </div>
+                        <div class="col s12 m4 input-field">
+                            <input id="timeoutRefresh" type="number" max="60" min="0" value="5" />
+                            <label for="timeoutRefresh">refresh_option</label>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div id="option2">
-                <p id="option2_text" >Refreshing timeout (in minutes) :</p>
-                <input type="number" id="refreshing" />
-            </div>
-            <div id="option3">
-                <label id="option3_text" >What to do where there is no competition</label>
-            </div>
-            <div id="option4">
-              <div class="form-group">
-                <input type="checkbox" id="animation" />
-                <label for="animation" id="animation_text" >Loading animation</label>
-              </div>
-              <div class="form-group">
-                <input type="checkbox" id="notification" />
-                <label for="notification" id="notification_text" >Notification</label>
-              </div>
+                <div class="row">
+                    <div class="input-field col s12 m4">
+                        <p><label>noCompet_option</label></p>
+                        <p>
+                            <label>
+                                <input name="group1" type="radio" value="1" checked />
+                                <span class="translatable">open_test_page</span>
+                            </label>
+                        </p>
+                        <p>
+                            <label>
+                                <input name="group1" type="radio" value="2" checked />
+                                <span>open_advanced</span>
+                            </label>
+                        </p>
+                        <p>
+                            <label>
+                                <input name="group1" type="radio" value="2" checked />
+                                <span>open_custom</span>
+                            </label>
+                        </p>
+                        <p>
+                            <label>
+                                <input name="group1" type="radio" value="2" checked />
+                                <span class="translatable">open_multiplayer</span>
+                            </label>
+                        </p>
+                        <p>
+                            <label>
+                                <input name="group1" type="radio" value="2" checked />
+                                <span>open_text_practice</span>
+                            </label>
+                        </p>
+                        <p>
+                            <label>
+                                <input name="group1" type="radio" value="2" checked />
+                                <span>open_top_100</span>
+                            </label>
+                        </p>
+                        </select>
+                    </div>
+                    <div class="col s12 m4 input-field">
+                        <div class="row">
+                            <p><label>animation_option</label></p>
+                            <div class="switch">
+                                <label>
+                                    Off
+                                    <input type="checkbox" id="animation" />
+                                    <span class="lever"></span>
+                                    On
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col s12 m4 input-field">
+                        <div class="row">
+                            <p><label>notification_option</label></p>
+                            <div class="switch">
+                                <label>
+                                    Off
+                                    <input type="checkbox" id="notification" />
+                                    <span class="lever"></span>
+                                    On
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <button id="save">Save</button>
-        <div id="status" ></div>
+        <button id="save" class="waves-effect waves-light btn orange darken-4">confirm_save</button>
+    </div>
+    <script src="js/options.js"></script>
+</body>
 
-        <script src="options.js"></script>
-    </body>
 </html>

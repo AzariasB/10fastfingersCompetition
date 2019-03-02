@@ -23,7 +23,7 @@
  */
 
 // All languages made availables on the 10fastfingers website
-export const availableLang = {
+export const availableLang: object = {
 	albanian: { value: 'Shqip', flagId: 30 },
 	arabic: { value: 'العربية', flagId: 27 },
 	armenian: { value: 'հայերեն', flagId: 41 },

@@ -15,10 +15,14 @@
 	},
 	"devDependencies": {
 		"@types/chrome": "latest",
+		"@types/materialize-css": "^1.0.6",
 		"ts-loader": "latest",
 		"typescript": "latest",
 		"webpack": "latest",
 		"webpack-cli": "latest",
 		"webpack-merge": "latest"
+	},
+	"dependencies": {
+		"materialize-css": "^1.0.0-rc.2"
 	}
 }
