@@ -28,7 +28,7 @@ export const ALARM_NAME = 'typingTestRefresh';
 
 export const PAGES_URL = {
 	normalTest: 'typing-test',
-	competitions: 'competition',
+	competitions: 'competitions',
 	customTest: 'widgets/typingtest',
 	multiPlayer: 'multiplayer',
 	textPractice: 'text-practice/new',

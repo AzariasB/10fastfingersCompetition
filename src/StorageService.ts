@@ -43,23 +43,27 @@ interface Config {
 export class StorageService {
 	private config: Config;
 	constructor() {
-		chrome.storage.sync.get((items) => {
-			console.log(items);
-			if (!items || !items.version) {
-				this.config = {
-					version: 1,
-					checkTimeout: 5,
-					langWatch: [ 'english' ],
-					openOption: OpenOption.OpenTestPage,
-					notifyOnCreationg: true
-				};
-				chrome.storage.sync.set(this.config);
-			} else {
-				this.updateConfig(items);
-			}
-		});
-
 		chrome.storage.onChanged.addListener((items) => this.updateConfig(items));
+	}
+
+	public init(): Promise<void> {
+		this.config = {
+			version: 1,
+			checkTimeout: 5,
+			langWatch: [ 'english' ],
+			openOption: OpenOption.OpenTestPage,
+			notifyOnCreationg: true
+		};
+		return new Promise<void>((res, rej) => {
+			chrome.storage.sync.get((items) => {
+				if (!items || !items.version) {
+					chrome.storage.sync.set(this.config);
+				} else {
+					this.updateConfig(items);
+				}
+				res();
+			});
+		});
 	}
 
 	private updateConfig(items: any) {

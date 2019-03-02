@@ -34,10 +34,13 @@ class App {
 	private storage: StorageService;
 
 	constructor() {
-		this.iconAnimator = new IconAnimator();
-		this.alarm = new Alarm(() => this.storage.checkTimeout, () => this.updateBadge());
-		this.updateBadge();
-		chrome.browserAction.onClicked.addListener(() => this.goToCompetition());
+		this.storage = new StorageService();
+		this.storage.init().then(() => {
+			this.iconAnimator = new IconAnimator();
+			this.alarm = new Alarm(() => this.storage.checkTimeout, () => this.updateBadge());
+			this.updateBadge();
+			chrome.browserAction.onClicked.addListener(() => this.goToCompetition());
+		});
 	}
 
 	private async updateBadge(): Promise<string[]> {
@@ -90,16 +93,6 @@ class App {
 }
 
 const app = new App();
-
-/* var canvas = <HTMLCanvasElement>document.getElementById('canvas'),
-// 	loggedInImage = document.getElementById('logged_in'),
-// 	canvasContext = canvas.getContext('2d'),
-// 	animationFrames = 56,
-// 	animationSpeed = 20,
-// 	direction = 1,
-// 	intervalId = null, // Save the animation interval
-// 	resetTimeout = null,
-// 	connector; // Reset the animation
 
 // //Don't need the 'favLangName', it's just for the options
 // var options = {
