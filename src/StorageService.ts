@@ -55,7 +55,7 @@ export class StorageService {
 	private updateConfig(items: any) {
 		Object.keys(this.config).map((k) => {
 			if (items[k]) {
-				this.config[k] = items[k];
+				this.config[k] = items[k].newValue || items[k];
 			}
 		});
 	}

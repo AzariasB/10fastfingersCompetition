@@ -28,7 +28,6 @@ export class Alarm {
 	constructor(private timeout: () => number, private _callback: () => void) {
 		chrome.alarms.get(ALARM_NAME, (alarm) => {
 			if (!alarm) {
-				console.log('creating alarm');
 				chrome.alarms.create(ALARM_NAME, {
 					delayInMinutes: timeout()
 				});
@@ -38,12 +37,10 @@ export class Alarm {
 	}
 
 	private callAlarm(alarm: chrome.alarms.Alarm) {
-		console.log(alarm);
 		if (alarm.name != ALARM_NAME) return;
 		if (this._callback) this._callback();
 		chrome.alarms.get(ALARM_NAME, (alarm) => {
 			if (!alarm) {
-				console.log('creating alarm');
 				chrome.alarms.create(ALARM_NAME, {
 					delayInMinutes: this.timeout()
 				});

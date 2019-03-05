@@ -40,6 +40,7 @@ class App {
 			this.alarm = new Alarm(() => this.storage.checkTimeout, () => this.updateBadge());
 			this.updateBadge();
 			chrome.browserAction.onClicked.addListener(() => this.goToCompetition());
+			chrome.storage.onChanged.addListener(() => this.updateBadge());
 		});
 	}
 
