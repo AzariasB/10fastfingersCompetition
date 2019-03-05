@@ -22,9 +22,30 @@
  * THE SOFTWARE.
  */
 
+export const CONFIG_VERSION = 1;
 export const tr = chrome.i18n.getMessage;
 export const WEBSITE_URL = 'https://10fastfingers.com';
 export const ALARM_NAME = 'typingTestRefresh';
+
+export enum OpenOption {
+	OpenTestPage = 'open_test_page',
+	OpenCompetitionPage = 'open_competition_page',
+	OpenAdvanced = 'open_advanced_page',
+	OpenCustom = 'open_custom_page',
+	OpenMultiPlayer = 'open_multiplayer_page',
+	OpenTextPractice = 'open_text_practice_page',
+	OpenTop100 = 'open_top_100_page'
+}
+
+export interface Config {
+	version: number;
+	checkTimeout: number;
+	langWatch: string[];
+	websiteLanguage: string;
+	openOption: OpenOption;
+	notifyOnCreationg: boolean;
+	animateIcon: boolean;
+}
 
 export const PAGES_URL = {
 	normalTest: 'typing-test',

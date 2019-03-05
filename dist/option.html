@@ -30,25 +30,41 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="style.css" />
     <style>
-        .container{
+        .container {
             padding: 0px 50px 50px 50px;
         }
+
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height:  100vh;
+        }
+
         h1 {
             margin-bottom: 50px;
             display: flex;
             justify-content: center;
         }
 
-        img.responsive-img{
+        img.responsive-img {
             position: relative;
             display: block;
             top: 0px;
             left: 0px;
             height: 70px;
         }
+
+        #toast-container {
+            top: auto !important;
+            right: auto !important;
+            bottom: 1%;
+            left: 1%;
+        }
     </style>
     <script src="materialize.js"></script>
 </head>
+
 <body class="grey lighten-5">
     <div class="container z-depth-5  blue  grey darken-3">
         <img class="responsive-img" src="pictures/big_icon.png" />
@@ -80,45 +96,8 @@
             </div>
             <div id="option2">
                 <div class="row">
-                    <div class="input-field col s12 m4">
+                    <div class="input-field col s12 m4" id="openOptionGroup">
                         <p><label>noCompet_option</label></p>
-                        <p>
-                            <label>
-                                <input name="group1" type="radio" value="1" checked />
-                                <span class="translatable">open_test_page</span>
-                            </label>
-                        </p>
-                        <p>
-                            <label>
-                                <input name="group1" type="radio" value="2" checked />
-                                <span>open_advanced</span>
-                            </label>
-                        </p>
-                        <p>
-                            <label>
-                                <input name="group1" type="radio" value="2" checked />
-                                <span>open_custom</span>
-                            </label>
-                        </p>
-                        <p>
-                            <label>
-                                <input name="group1" type="radio" value="2" checked />
-                                <span class="translatable">open_multiplayer</span>
-                            </label>
-                        </p>
-                        <p>
-                            <label>
-                                <input name="group1" type="radio" value="2" checked />
-                                <span>open_text_practice</span>
-                            </label>
-                        </p>
-                        <p>
-                            <label>
-                                <input name="group1" type="radio" value="2" checked />
-                                <span>open_top_100</span>
-                            </label>
-                        </p>
-                        </select>
                     </div>
                     <div class="col s12 m4 input-field">
                         <div class="row">

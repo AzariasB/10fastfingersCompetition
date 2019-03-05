@@ -22,23 +22,7 @@
  * THE SOFTWARE.
  */
 
-enum OpenOption {
-	OpenTestPage,
-	OpenCompetitionPage,
-	OpenAdvanced,
-	OpenCustom,
-	OpenMultiPlayer,
-	OpenTextPractice,
-	OpenTop100
-}
-
-interface Config {
-	version: number;
-	checkTimeout: number;
-	langWatch: string[];
-	openOption: OpenOption;
-	notifyOnCreationg: boolean;
-}
+import { Config, OpenOption, CONFIG_VERSION } from './common';
 
 export class StorageService {
 	private config: Config;
@@ -48,11 +32,13 @@ export class StorageService {
 
 	public init(): Promise<void> {
 		this.config = {
-			version: 1,
+			version: CONFIG_VERSION,
 			checkTimeout: 5,
 			langWatch: [ 'english' ],
 			openOption: OpenOption.OpenTestPage,
-			notifyOnCreationg: true
+			notifyOnCreationg: true,
+			animateIcon: true,
+			websiteLanguage: 'english'
 		};
 		return new Promise<void>((res, rej) => {
 			chrome.storage.sync.get((items) => {
