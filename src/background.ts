@@ -24,7 +24,16 @@
 
 import { IconAnimator } from './IconAnimator';
 import { PageParseService } from './PageParserService';
-import { getCompetitionsPage, WEBSITE_URL, getCompetitionURl, join, getAlternatePage } from './common';
+import {
+	getCompetitionsPage,
+	WEBSITE_URL,
+	getCompetitionURl,
+	join,
+	getAlternatePage,
+	tr,
+	NOTIFICATION_TIME,
+	BIG_ICON
+} from './common';
 import { Alarm } from './Alarm';
 import { StorageService } from './StorageService';
 
@@ -32,6 +41,7 @@ class App {
 	private iconAnimator: IconAnimator;
 	private alarm: Alarm;
 	private storage: StorageService;
+	private shownCompetitions: number;
 
 	constructor() {
 		this.storage = new StorageService();
@@ -44,6 +54,7 @@ class App {
 			this.updateBadge();
 			chrome.browserAction.onClicked.addListener(() => this.goToCompetition());
 			chrome.storage.onChanged.addListener(() => this.updateBadge());
+			chrome.notifications.onClicked.addListener(() => this.goToCompetition());
 		});
 	}
 
@@ -51,12 +62,28 @@ class App {
 		try {
 			const compets = await PageParseService.parse(getCompetitionsPage(), this.storage.langWatch);
 			this.iconAnimator.showConnected(compets.length);
+			if (this.shownCompetitions < compets.length) {
+				this.notifyCompetCreation();
+			}
+			this.shownCompetitions = compets.length;
 			return compets;
 		} catch (err) {
 			console.error(err);
 			this.iconAnimator.showDisconnected();
 			return [];
 		}
+	}
+
+	private notifyCompetCreation() {
+		if (!this.storage.notifyOnCreation) return;
+		chrome.notifications.create({
+			type: 'basic',
+			iconUrl: BIG_ICON,
+			eventTime: NOTIFICATION_TIME,
+			title: '10fastfingers competition',
+			message: tr('one_was_created'),
+			isClickable: true
+		});
 	}
 
 	private goToCompetition() {

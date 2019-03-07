@@ -59,9 +59,9 @@ export class IconAnimator {
 		);
 	}
 
-	private negateColumn(col: number) {
-		var data = this.context.getImageData(0, 0, this.baseImage.width, this.baseImage.height);
-		for (var col = col * 4; col < data.data.length; col += data.width * 4) {
+	private negateColumn(n: number) {
+		const data = this.context.getImageData(0, 0, this.baseImage.width, this.baseImage.height);
+		for (let col = n * 4; col < data.data.length; col += data.width * 4) {
 			data.data[col] = 255 - data.data[col];
 			data.data[col + 1] = 255 - data.data[col + 1];
 			data.data[col + 2] = 255 - data.data[col + 2];

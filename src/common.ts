@@ -28,7 +28,9 @@ export const WEBSITE_URL = 'https://10fastfingers.com';
 export const ALARM_NAME = 'typingTestRefresh';
 export const CONNECTED_ICON = 'pictures/icon.png';
 export const DISCONNECTED_ICON = 'pictures/icon_gray.png';
+export const BIG_ICON = 'pictures/big_icon.png';
 export const ANIMATION_SPEED = 20;
+export const NOTIFICATION_TIME = 2000;
 
 export enum OpenOption {
 	OpenTestPage = 'open_test_page',
