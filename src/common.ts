@@ -47,13 +47,14 @@ export interface Config {
 	animateIcon: boolean;
 }
 
-export const PAGES_URL = {
-	normalTest: 'typing-test',
-	competitions: 'competitions',
-	customTest: 'widgets/typingtest',
-	multiPlayer: 'multiplayer',
-	textPractice: 'text-practice/new',
-	top100: 'top1000'
+const PAGES_URL = {
+	[OpenOption.OpenTestPage]: 'typing-test',
+	[OpenOption.OpenAdvanced]: 'advanced-typing-test',
+	[OpenOption.OpenCompetitionPage]: 'competitions',
+	[OpenOption.OpenCustom]: 'widgets/typingtest',
+	[OpenOption.OpenMultiPlayer]: 'multiplayer',
+	[OpenOption.OpenTextPractice]: 'text-practice/new',
+	[OpenOption.OpenTop100]: 'top1000'
 };
 
 export const join = (...args: string[]): string => args.join('/');
@@ -63,6 +64,16 @@ export const is10fastFingersUrl = (url: string): boolean => url.indexOf(WEBSITE_
 export const getCompetitionURl = (competitionUrl: string): string => join(WEBSITE_URL, competitionUrl);
 
 export const getTypingTestUrl = (language: string = 'english'): string =>
-	join(WEBSITE_URL, PAGES_URL.normalTest, language);
+	join(WEBSITE_URL, PAGES_URL[OpenOption.OpenTestPage], language);
 
-export const getCompetitionsPage = (): string => join(WEBSITE_URL, PAGES_URL.competitions);
+export const getCompetitionsPage = (): string => join(WEBSITE_URL, PAGES_URL[OpenOption.OpenCompetitionPage]);
+
+export const getAlternatePage = (opOp: OpenOption, lang: string) => {
+	switch (opOp) {
+		case OpenOption.OpenAdvanced:
+		case OpenOption.OpenTestPage:
+			return join(PAGES_URL[opOp], lang);
+		default:
+			return PAGES_URL[opOp];
+	}
+};

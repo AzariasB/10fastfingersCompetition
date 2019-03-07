@@ -73,6 +73,10 @@ export class StorageService {
 	}
 
 	public get notifyOnCreation(): boolean {
-		return this.notifyOnCreation;
+		return this.config.notifyOnCreationg;
+	}
+
+	public get websiteLanguage(): string {
+		return this.config.websiteLanguage;
 	}
 }

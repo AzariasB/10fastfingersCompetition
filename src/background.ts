@@ -24,7 +24,7 @@
 
 import { IconAnimator } from './IconAnimator';
 import { PageParseService } from './PageParserService';
-import { getCompetitionsPage, WEBSITE_URL, getTypingTestUrl, getCompetitionURl, join } from './common';
+import { getCompetitionsPage, WEBSITE_URL, getCompetitionURl, join, getAlternatePage } from './common';
 import { Alarm } from './Alarm';
 import { StorageService } from './StorageService';
 
@@ -59,7 +59,7 @@ class App {
 	private goToCompetition() {
 		this.updateBadge().then((compets) => {
 			if (compets.length === 0) {
-				this.goToDefaultPage();
+				this.goToAlternativePage();
 			} else {
 				this.openCompetitionTab(compets.shift());
 			}
@@ -73,21 +73,23 @@ class App {
 		});
 	}
 
-	private goToDefaultPage() {
+	private goToAlternativePage() {
 		chrome.tabs.query(
 			{
 				url: join(WEBSITE_URL, '*')
 			},
-			this.openFirstTab
+			(tabs) => this.openFirstTab(tabs)
 		);
 	}
 
 	private openFirstTab(tabs: chrome.tabs.Tab[]) {
+		const url = join(WEBSITE_URL, getAlternatePage(this.storage.openOption, this.storage.websiteLanguage));
 		if (tabs.length === 0) {
-			chrome.tabs.create({ url: getTypingTestUrl('french') });
+			chrome.tabs.create({ url });
 		} else {
 			chrome.tabs.update(tabs[0].id, {
-				active: true
+				active: true,
+				url
 			});
 		}
 	}
