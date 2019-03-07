@@ -36,7 +36,10 @@ class App {
 	constructor() {
 		this.storage = new StorageService();
 		this.storage.init().then(() => {
-			this.iconAnimator = new IconAnimator();
+			this.iconAnimator = new IconAnimator(
+				<HTMLImageElement>document.getElementById('logged_in'),
+				<HTMLCanvasElement>document.getElementById('canvas')
+			);
 			this.alarm = new Alarm(() => this.storage.checkTimeout, () => this.updateBadge());
 			this.updateBadge();
 			chrome.browserAction.onClicked.addListener(() => this.goToCompetition());
@@ -57,13 +60,19 @@ class App {
 	}
 
 	private goToCompetition() {
-		this.updateBadge().then((compets) => {
-			if (compets.length === 0) {
-				this.goToAlternativePage();
-			} else {
-				this.openCompetitionTab(compets.shift());
-			}
-		});
+		if (this.storage.animateIcon) this.iconAnimator.beginAnimation();
+		this.updateBadge()
+			.then((compets) => {
+				if (compets.length === 0) {
+					this.goToAlternativePage();
+				} else {
+					this.openCompetitionTab(compets.shift());
+				}
+				this.iconAnimator.endAnimation();
+			})
+			.catch(() => {
+				this.iconAnimator.endAnimation();
+			});
 	}
 
 	private openCompetitionTab(competition: string) {

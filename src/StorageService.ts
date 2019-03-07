@@ -79,4 +79,8 @@ export class StorageService {
 	public get websiteLanguage(): string {
 		return this.config.websiteLanguage;
 	}
+
+	public get animateIcon(): boolean {
+		return this.config.animateIcon;
+	}
 }

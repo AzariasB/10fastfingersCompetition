@@ -26,6 +26,9 @@ export const CONFIG_VERSION = 1;
 export const tr = chrome.i18n.getMessage;
 export const WEBSITE_URL = 'https://10fastfingers.com';
 export const ALARM_NAME = 'typingTestRefresh';
+export const CONNECTED_ICON = 'pictures/icon.png';
+export const DISCONNECTED_ICON = 'pictures/icon_gray.png';
+export const ANIMATION_SPEED = 20;
 
 export enum OpenOption {
 	OpenTestPage = 'open_test_page',
