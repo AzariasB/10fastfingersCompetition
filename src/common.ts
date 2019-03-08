@@ -39,7 +39,7 @@ export enum OpenOption {
 	OpenCustom = 'open_custom_page',
 	OpenMultiPlayer = 'open_multiplayer_page',
 	OpenTextPractice = 'open_text_practice_page',
-	OpenTop100 = 'open_top_100_page'
+	OpenTop1000 = 'open_top_1000_page'
 }
 
 export interface Config {
@@ -59,7 +59,7 @@ const PAGES_URL = {
 	[OpenOption.OpenCustom]: 'widgets/typingtest',
 	[OpenOption.OpenMultiPlayer]: 'multiplayer',
 	[OpenOption.OpenTextPractice]: 'text-practice/new',
-	[OpenOption.OpenTop100]: 'top1000'
+	[OpenOption.OpenTop1000]: 'top1000'
 };
 
 export const join = (...args: string[]): string => args.join('/');

@@ -1,19 +1,68 @@
 {
-	"one_new_competition": { "message": "Une nouvelle compétition a été créée" },
-	"new_competitions": { "message": "Des nouvelles compétitions ont été créées" },
-	"nothing_new": { "message": "Pas de nouvelle commpétition" },
-	"not_connected": { "message": "Vous n'êtes pas connecté à 10fastfingers.com" },
-	"goto_test": { "message": "Aller sur la page de test" },
-	"goto_competition": { "message": "Aller sur la page de compétitions" },
-	"main_title": { "message": "Compétitions 10fastfingers" },
-	"lang_option": { "message": "Langue de la compétition" },
-	"refresh_option": { "message": "Intervalle de temps entre les rafraîchissement(minutes)" },
-	"noCompet_option": { "message": "Quand il n'y a pas de compétition" },
-	"confirm_save": { "message": "Enregistrer" },
-	"option_saved": { "message": "Les modifications ont bien été enregistrées" },
-	"animation_option": { "message": "Animation de chargement" },
-	"notification_option": { "message": "Notification lorsqu'une nouvelle competition est créée" },
-	"one_was_created": { "message": "nouvelle compétition a été créé" },
-	"several_was_created": { "message": "nouvelles compétitions ont été créés" },
-	"open_test_page": { "message": "Ouvrir la page de test par défaut" }
+	"animation_option": {
+		"message": "Animation de chargement"
+	},
+	"choose_language": {
+		"message": "Choisissez un language dans la liste"
+	},
+	"choose_languages": {
+		"message": "Choisissez plusieurs language dans la liste"
+	},
+	"competition_language": {
+		"message": "Langues des compétitions auxquelles vous souhaitez participer"
+	},
+	"confirm_save": {
+		"message": "Enregistrer"
+	},
+	"noCompet_option": {
+		"message": "Page par défaut quand aucune compétition n'est disponible"
+	},
+	"not_connected": {
+		"message": "Un problème est survenu en accédant à 10fastfingers"
+	},
+	"nothing_new": {
+		"message": "Pas de compétitions disponible"
+	},
+	"notification_option": {
+		"message": "Notification quand une compétition est disponible"
+	},
+	"one_new": {
+		"message": "Une compétition est disponible"
+	},
+	"one_was_created": {
+		"message": "Une nouvelle compétition est disponible"
+	},
+	"open_advanced_page": {
+		"message": "Ouvrir la page de test avancés"
+	},
+	"open_competition_page": {
+		"message": "Ouvrir la page des compétitions"
+	},
+	"open_custom_page": {
+		"message": "Ouvrir la page de test customisé"
+	},
+	"open_multiplayer_page": {
+		"message": "Ouvrir la page du jeu multijoeur"
+	},
+	"open_test_page": {
+		"message": "Ouvrir la page de test"
+	},
+	"open_text_practice_page": {
+		"message": "Ouvrir la page de pratique sur texte"
+	},
+	"open_top_1000_page": {
+		"message": "Ouvrir la page du top 1000"
+	},
+	"option_saved": {
+		"message": "Toutes les modification ont étés enregistrées"
+	},
+	"refresh_option": {
+		"message": "Rafraîchir compteur de compétition tous les (minutes):"
+	},
+	"several_new": {
+		"message": "Des compétitions sont disponibles"
+	},
+	"website_language": {
+		"message": "Langue de 10fastfinger pour les pages de test"
+	}
 }

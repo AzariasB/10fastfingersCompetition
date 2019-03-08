@@ -1,43 +1,68 @@
 {
-	"one_new_competition": {
-		"message": "A new competition was created"
+	"animation_option": {
+		"message": "Loading animation"
 	},
-	"new_competitions": {
-		"message": "New competitions were created"
+	"choose_language": {
+		"message": "Choose a single language from the list"
 	},
-	"nothing_new": {
-		"message": "There's no new competition"
+	"choose_languages": {
+		"message": "Choose several languages from the list"
 	},
-	"not_connected": {
-		"message": "You are not connected to 10fastfingers.com"
-	},
-	"goto_test": {
-		"message": "Go on the test page"
-	},
-	"goto_competition": {
-		"message": "Go on the competitions page"
-	},
-	"main_title": {
-		"message": "10fastfingers competitions"
-	},
-	"lang_option": {
-		"message": "Competition's langage"
-	},
-	"refresh_option": {
-		"message": "Refreshing timeout(minutes)"
-	},
-	"noCompet_option": {
-		"message": "Where there's no competition"
+	"competition_language": {
+		"message": "Languages of the competitions you want to compete in"
 	},
 	"confirm_save": {
 		"message": "Save"
 	},
+	"noCompet_option": {
+		"message": "Page to access when no competition is available"
+	},
+	"not_connected": {
+		"message": "There was a problem when accessing 10fastfingers"
+	},
+	"nothing_new": {
+		"message": "There's no new competition"
+	},
+	"notification_option": {
+		"message": "Notification when a new competition is created"
+	},
+	"one_new": {
+		"message": "There's one available competition"
+	},
+	"one_was_created": {
+		"message": "A new competition is available"
+	},
+	"open_advanced_page": {
+		"message": "Open the advanced test page"
+	},
+	"open_competition_page": {
+		"message": "Open the competitions page"
+	},
+	"open_custom_page": {
+		"message": "Open the custom test page"
+	},
+	"open_multiplayer_page": {
+		"message": "Open the multiplayer game page"
+	},
+	"open_test_page": {
+		"message": "Open default test page"
+	},
+	"open_text_practice_page": {
+		"message": "Open the text practice page"
+	},
+	"open_top_1000_page": {
+		"message": "Open the top 1000 page"
+	},
 	"option_saved": {
 		"message": "All modifications were saved"
 	},
-	"animation_option": { "message": "Loading animation" },
-	"notification_option": { "message": "Notification when a new competition is created" },
-	"one_was_created": { "message": "new competition was created" },
-	"several_was_created": { "message": "new competitions were created" },
-	"open_test_page": { "message": "Open default test page" }
+	"refresh_option": {
+		"message": "Check for new competitions every(minutes) :"
+	},
+	"several_new": {
+		"message": "There are multiple available competitions"
+	},
+	"website_language": {
+		"message": "Language of the website for the test pages"
+	}
 }

@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-import { CONNECTED_ICON, DISCONNECTED_ICON, ANIMATION_SPEED } from './common';
+import { CONNECTED_ICON, DISCONNECTED_ICON, ANIMATION_SPEED, tr } from './common';
 
 export class IconAnimator {
 	private intervalId?: number = null;
@@ -35,7 +35,9 @@ export class IconAnimator {
 	}
 
 	public showConnected(availableCompets: number) {
-		this.updateBrowserAction(availableCompets ? availableCompets + '' : null, 'nothing_new', CONNECTED_ICON);
+		const badgeMessage =
+			availableCompets == 0 ? tr('nothing_new') : availableCompets == 1 ? tr('one_new') : tr('several_new');
+		this.updateBrowserAction(availableCompets ? availableCompets + '' : null, badgeMessage, CONNECTED_ICON);
 	}
 
 	public showDisconnected() {

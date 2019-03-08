@@ -1,42 +1,68 @@
 {
-    "one_new_competition": {
-        "message": "Un nuovo concorso è stato creato"
-    },
-    "new_competitions": {
-        "message": "Nuovi concorsi sono stati creati"
-    },
-    "nothing_new": {
-        "message": "Non ci sono nuovi concorrenti"
-    },
-    "not_connected": {
-        "message": "Non sei collegato a 10fastfingers.com"
-    },
-    "goto_test": {
-        "message": "Vai alla pagina di test"
-    },
-    "goto_competition": {
-        "message": "Vai alla pagina concorsi"
-    },
-    "main_title": {
-        "message": "10fastfingers Concorsi"
-    },
-    "lang_option": {
-        "message": "La lingua del concorso"
-    },
-    "refresh_option": {
-        "message": "Intervallo di tempo tra l'aggiornamento ( minuti)"
-    },
-    "noCompet_option": {
-        "message": "Quando non ci sono concorsi"
-    },
-    "confirm_save": {
-            "message": "Salva"
-    },
-    "option_saved": {
-        "message": "Le modifiche sono state salvate"
-    },
-    "animation_option" : {"message" : "Animazione di carico"},
-    "notification_option" : {"message" : "Notifica quando viene creato un nuovo evento"},
-    "one_was_created" : {"message" : "nuovo concorso è stato istituito"},
-    "several_was_created" : {"message" : "nuovi concorsi sono stati creati"}
+	"animation_option": {
+		"message": "Animazione di carico"
+	},
+	"choose_language": {
+		"message": "Scegli una singola lingua dall'elenco"
+	},
+	"choose_languages": {
+		"message": "Scegli più lingue dall'elenco"
+	},
+	"competition_language": {
+		"message": "Lingue delle competizioni in cui si desidera competere"
+	},
+	"confirm_save": {
+		"message": "Salva"
+	},
+	"noCompet_option": {
+		"message": "Quando non ci sono concorsi"
+	},
+	"not_connected": {
+		"message": "Si è verificato un problema durante l'accesso a 10fastfingers"
+	},
+	"nothing_new": {
+		"message": "Non ci sono nuovi concorrenti"
+	},
+	"notification_option": {
+		"message": "Notifica quando viene creato un nuovo evento"
+	},
+	"one_new": {
+		"message": "There's one available competition"
+	},
+	"one_was_created": {
+		"message": "Un nuovo concorso è stato creato"
+	},
+	"open_advanced_page": {
+		"message": "Apri la pagina di prova avanzata"
+	},
+	"open_competition_page": {
+		"message": "Vai alla pagina concorsi"
+	},
+	"open_custom_page": {
+		"message": "Apri la pagina di prova personalizzata"
+	},
+	"open_multiplayer_page": {
+		"message": "Apri la pagina del gioco multiplayer"
+	},
+	"open_test_page": {
+		"message": "Vai alla pagina di test"
+	},
+	"open_text_practice_page": {
+		"message": "Apri la pagina di pratica del testo"
+	},
+	"open_top_1000_page": {
+		"message": "Apri la pagina top 1000"
+	},
+	"option_saved": {
+		"message": "Le modifiche sono state salvate"
+	},
+	"refresh_option": {
+		"message": "Intervallo di tempo tra l'aggiornamento ( minuti)"
+	},
+	"several_new": {
+		"message": "Ci sono più competizioni disponibili"
+	},
+	"website_language": {
+		"message": "Lingua del sito Web per le pagine di test"
+	}
 }

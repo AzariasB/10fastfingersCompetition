@@ -22,27 +22,7 @@
  * THE SOFTWARE.
  */
 
-/*
-Messages to translate:
-choose_languages : choose several languages from the list
-choose_language : choose a single language from the list
-competition_language : languages to watch for
-website_language : Language of the webiste when accessed
-open_test_page : Open the default test page
-open_advanced : Open the advanced test apge
-open_custom : Open the custom test page
-open_multiplayer : Open the multiplayer game page
-open_text_practice : Open the text practice page
-open_top_100 : Open the top 100 page
-confirm_save : save button
-refresh_option: Refresh timeout
-noCompet_option: What to do when there is not competition
-animation_option: Animate the icon ?
-notification_option: Notify when new is created ?
-*/
-
-import { availableLang } from './languages';
-import { tr, Config } from './common';
+import { Config } from './common';
 import { OptionForm } from './OptionForm';
 
 class App {

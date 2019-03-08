@@ -77,19 +77,19 @@
                     <div class="row">
                         <div class="input-field col s12 m4">
                             <select id="competitionLanguage" multiple>
-                                <option value="" disabled>choose_languages</option>
+                                <option value="" class="translatable" disabled>choose_languages</option>
                             </select>
-                            <label>competition_language</label>
+                            <label class="translatable" >competition_language</label>
                         </div>
                         <div class="input-field col s12 m4">
                             <select id="websiteLanguage">
-                                <option value="" disabled selected>choose_language</option>
+                                <option value="" disabled selected class="translatable">choose_language</option>
                             </select>
-                            <label>website_language</label>
+                            <label class="translatable">website_language</label>
                         </div>
                         <div class="col s12 m4 input-field">
                             <input id="timeoutRefresh" type="number" max="60" min="0" value="5" />
-                            <label for="timeoutRefresh">refresh_option</label>
+                            <label for="timeoutRefresh" class="translatable">refresh_option</label>
                         </div>
                     </div>
                 </div>
@@ -97,11 +97,11 @@
             <div id="option2">
                 <div class="row">
                     <div class="input-field col s12 m4" id="openOptionGroup">
-                        <p><label>noCompet_option</label></p>
+                        <p><label class="translatable">noCompet_option</label></p>
                     </div>
                     <div class="col s12 m4 input-field">
                         <div class="row">
-                            <p><label>animation_option</label></p>
+                            <p><label class="translatable">animation_option</label></p>
                             <div class="switch">
                                 <label>
                                     Off
@@ -114,7 +114,7 @@
                     </div>
                     <div class="col s12 m4 input-field">
                         <div class="row">
-                            <p><label>notification_option</label></p>
+                            <p><label class="translatable">notification_option</label></p>
                             <div class="switch">
                                 <label>
                                     Off
@@ -128,7 +128,7 @@
                 </div>
             </div>
         </div>
-        <button id="save" class="waves-effect waves-light btn orange darken-4">confirm_save</button>
+        <button id="save" class="waves-effect waves-light btn orange darken-4 translatable">confirm_save</button>
     </div>
     <script src="js/options.js"></script>
 </body>
