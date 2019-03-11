@@ -37,6 +37,10 @@ import {
 import { Alarm } from './Alarm';
 import { StorageService } from './StorageService';
 
+/**
+ * Main class of the extension, used to coordinate
+ * all the elements : the alarm, the storage and the icon
+ */
 class App {
 	private iconAnimator: IconAnimator;
 	private alarm: Alarm;
@@ -57,6 +61,10 @@ class App {
 		});
 	}
 
+	/**
+	 * uses the page parser to get the available competitions, and update
+	 * the extension badge, notify the user if a new competition was created
+	 */
 	private async updateBadge(): Promise<string[]> {
 		try {
 			const compets = await PageParseService.parse(getCompetitionsPage(), this.storage.langWatch);
@@ -73,6 +81,10 @@ class App {
 		}
 	}
 
+	/**
+	 * creates a notification
+	 * only if the option is on
+	 */
 	private notifyCompetCreation() {
 		if (!this.storage.notifyOnCreation) return;
 		chrome.notifications.create({
@@ -85,6 +97,11 @@ class App {
 		});
 	}
 
+	/**
+	 * When the extension icon is clicked it competitions are available
+	 * goes to the oldest
+	 * Otherwise, go to the alternative page, chosen by the user
+	 */
 	private goToCompetition() {
 		if (this.storage.animateIcon) this.iconAnimator.beginAnimation();
 		this.updateBadge()
