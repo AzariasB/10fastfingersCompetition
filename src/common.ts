@@ -48,7 +48,7 @@ export interface Config {
 	langWatch: string[];
 	websiteLanguage: string;
 	openOption: OpenOption;
-	notifyOnCreationg: boolean;
+	notifyOnCreation: boolean;
 	animateIcon: boolean;
 }
 

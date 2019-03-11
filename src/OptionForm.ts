@@ -50,7 +50,7 @@ export class OptionForm {
 		const notification = (document.getElementById('notification') as HTMLInputElement).checked;
 		const config: Config = {
 			animateIcon: animation,
-			notifyOnCreationg: notification,
+			notifyOnCreation: notification,
 			websiteLanguage: websiteLang,
 			version: CONFIG_VERSION,
 			openOption: <OpenOption>noCompet,
@@ -83,7 +83,7 @@ export class OptionForm {
 		const animationCheckBox = <HTMLInputElement>document.getElementById('animation');
 		animationCheckBox.checked = config.animateIcon;
 		const notificationCheckBox = <HTMLInputElement>document.getElementById('notification');
-		notificationCheckBox.checked = config.notifyOnCreationg;
+		notificationCheckBox.checked = config.notifyOnCreation;
 	}
 
 	private createNoCompetOptions(chosenOption: OpenOption) {

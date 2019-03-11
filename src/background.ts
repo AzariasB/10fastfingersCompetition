@@ -41,7 +41,6 @@ class App {
 	private iconAnimator: IconAnimator;
 	private alarm: Alarm;
 	private readonly storage: StorageService;
-	private shownCompetitions: number = 0;
 
 	constructor() {
 		this.storage = new StorageService();
@@ -61,11 +60,11 @@ class App {
 	private async updateBadge(): Promise<string[]> {
 		try {
 			const compets = await PageParseService.parse(getCompetitionsPage(), this.storage.langWatch);
+			const shownCompetitions = await PageParseService.getDisplayedCompetitions();
 			this.iconAnimator.showConnected(compets.length);
-			if (this.shownCompetitions < compets.length) {
+			if (shownCompetitions < compets.length) {
 				this.notifyCompetCreation();
 			}
-			this.shownCompetitions = compets.length;
 			return compets;
 		} catch (err) {
 			console.error(err);

@@ -26,35 +26,38 @@ import { Config, OpenOption, CONFIG_VERSION } from './common';
 
 export class StorageService {
 	private config: Config;
-	constructor() {
-		chrome.storage.onChanged.addListener((items) => this.updateConfig(items));
-	}
 
-	public init(): Promise<void> {
+	public async init(): Promise<void> {
 		this.config = {
 			version: CONFIG_VERSION,
 			checkTimeout: 5,
 			langWatch: [ 'english' ],
 			openOption: OpenOption.OpenTestPage,
-			notifyOnCreationg: true,
+			notifyOnCreation: true,
 			animateIcon: true,
 			websiteLanguage: 'english'
 		};
-		return new Promise<void>((res, rej) => {
-			chrome.storage.sync.get((items) => {
-				if (!items || !items.version) {
-					chrome.storage.sync.set(this.config);
-				} else {
-					this.updateConfig(items);
-				}
-				res();
-			});
+		const items = await this.getConfig();
+		if (!items || !items.version) await this.saveConfig(this.config);
+		else this.updateConfig(items);
+		chrome.storage.onChanged.addListener((items) => this.updateConfig(items));
+	}
+
+	private async getConfig(): Promise<Config> {
+		return new Promise((res, rej) => {
+			chrome.storage.sync.get((items: Config) => res(items));
+		});
+	}
+
+	private async saveConfig(item: Config): Promise<Config> {
+		return new Promise((res, rej) => {
+			chrome.storage.sync.set(item, () => res(item));
 		});
 	}
 
 	private updateConfig(items: any) {
 		Object.keys(this.config).map((k) => {
-			if (items[k]) {
+			if (items[k] !== undefined) {
 				if (items[k].newValue === undefined) {
 					this.config[k] = items[k];
 				} else {
@@ -77,7 +80,7 @@ export class StorageService {
 	}
 
 	public get notifyOnCreation(): boolean {
-		return this.config.notifyOnCreationg;
+		return this.config.notifyOnCreation;
 	}
 
 	public get websiteLanguage(): string {
