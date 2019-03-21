@@ -48,17 +48,18 @@ class App {
 
 	constructor() {
 		this.storage = new StorageService();
+		this.alarm = new Alarm(() => this.storage.checkTimeout, () => this.updateBadge());
 		this.storage.init().then(() => {
 			this.iconAnimator = new IconAnimator(
 				<HTMLImageElement>document.getElementById('logged_in'),
 				<HTMLCanvasElement>document.getElementById('canvas')
 			);
-			this.alarm = new Alarm(() => this.storage.checkTimeout, () => this.updateBadge());
 			this.updateBadge();
-			chrome.browserAction.onClicked.addListener(() => this.goToCompetition());
-			chrome.storage.onChanged.addListener(() => this.updateBadge());
-			chrome.notifications.onClicked.addListener(() => this.goToCompetition());
 		});
+		chrome.storage.onChanged.addListener((items) => this.storage.updateConfig(items));
+		chrome.browserAction.onClicked.addListener(() => this.goToCompetition());
+		chrome.storage.onChanged.addListener(() => this.updateBadge());
+		chrome.notifications.onClicked.addListener(() => this.goToCompetition());
 	}
 
 	/**

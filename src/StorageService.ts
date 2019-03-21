@@ -40,7 +40,6 @@ export class StorageService {
 		const items = await this.getConfig();
 		if (!items || !items.version) await this.saveConfig(this.config);
 		else this.updateConfig(items);
-		chrome.storage.onChanged.addListener((items) => this.updateConfig(items));
 	}
 
 	private async getConfig(): Promise<Config> {
@@ -55,7 +54,7 @@ export class StorageService {
 		});
 	}
 
-	private updateConfig(items: any) {
+	public updateConfig(items: any) {
 		Object.keys(this.config).map((k) => {
 			if (items[k] !== undefined) {
 				if (items[k].newValue === undefined) {
