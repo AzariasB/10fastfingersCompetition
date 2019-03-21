@@ -56,10 +56,13 @@ class App {
 			);
 			this.updateBadge();
 		});
-		chrome.storage.onChanged.addListener((items) => this.storage.updateConfig(items));
-		chrome.browserAction.onClicked.addListener(() => this.goToCompetition());
-		chrome.storage.onChanged.addListener(() => this.updateBadge());
-		chrome.notifications.onClicked.addListener(() => this.goToCompetition());
+		chrome.storage.onChanged.addListener((items) => {
+			this.storage.updateConfig(items);
+			this.updateBadge();
+		});
+		const goCompet = () => this.goToCompetition();
+		chrome.browserAction.onClicked.addListener(goCompet);
+		chrome.notifications.onClicked.addListener(goCompet);
 	}
 
 	/**
