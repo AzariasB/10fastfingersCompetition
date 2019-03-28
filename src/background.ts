@@ -60,9 +60,11 @@ class App {
 			this.storage.updateConfig(items);
 			this.updateBadge();
 		});
-		const goCompet = () => this.goToCompetition();
-		chrome.browserAction.onClicked.addListener(goCompet);
-		chrome.notifications.onClicked.addListener(goCompet);
+		chrome.browserAction.onClicked.addListener(() => this.goToCompetition());
+		chrome.notifications.onClicked.addListener((notifId) => {
+			chrome.notifications.clear(notifId);
+			this.goToCompetition();
+		});
 	}
 
 	/**
