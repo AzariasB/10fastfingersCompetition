@@ -62,6 +62,9 @@
 	"several_new": {
 		"message": "Ci sono più competizioni disponibili"
 	},
+	"try_create_compet": {
+		"message": "Creare una competizione se possibile"
+	},
 	"website_language": {
 		"message": "Lingua del sito Web per le pagine di test"
 	}

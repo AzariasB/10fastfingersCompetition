@@ -62,6 +62,9 @@
 	"several_new": {
 		"message": "There are multiple available competitions"
 	},
+	"try_create_compet": {
+		"message": "Create competition if none available"
+	},
 	"website_language": {
 		"message": "Language of the website for the test pages"
 	}

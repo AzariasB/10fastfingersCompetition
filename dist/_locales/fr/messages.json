@@ -62,6 +62,9 @@
 	"several_new": {
 		"message": "Des compétitions sont disponibles"
 	},
+	"try_create_compet": {
+		"message": "Créer une compétition si possible"
+	},
 	"website_language": {
 		"message": "Langue de 10fastfinger pour les pages de test"
 	}

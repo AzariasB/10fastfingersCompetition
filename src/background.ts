@@ -32,10 +32,13 @@ import {
 	tr,
 	NOTIFICATION_TIME,
 	WEBSITE_URL,
-	BIG_ICON
+	BIG_ICON,
+	CREATE_COMPETITION_URL
 } from './common';
 import { Alarm } from './Alarm';
 import { StorageService } from './StorageService';
+import { Tabs } from 'materialize-css';
+import { availableLang } from './languages';
 
 /**
  * Main class of the extension, used to coordinate
@@ -108,27 +111,65 @@ class App {
 	 * goes to the oldest
 	 * Otherwise, go to the alternative page, chosen by the user
 	 */
-	private goToCompetition() {
+	private async goToCompetition(): Promise<void> {
 		if (this.storage.animateIcon) this.iconAnimator.beginAnimation();
-		this.updateBadge()
-			.then((compets) => {
-				if (compets.length === 0) {
-					this.goToAlternativePage();
-				} else {
-					this.openCompetitionTab(compets.shift());
-				}
-				this.iconAnimator.endAnimation();
-			})
-			.catch(() => {
-				this.iconAnimator.endAnimation();
-			});
+		try {
+			const competitions = await this.updateBadge();
+			if (competitions.length === 0) {
+				const createdOne = await this.tryCreateCompetition();
+				if (!createdOne) this.goToAlternativePage();
+			} else {
+				this.openCompetitionTab(competitions.shift());
+			}
+			this.iconAnimator.endAnimation();
+		} catch (ex) {
+			console.error(ex);
+			this.iconAnimator.endAnimation();
+		}
 	}
 
-	private openCompetitionTab(competition: string) {
-		chrome.tabs.create({
-			active: true,
-			url: getCompetitionURl(competition)
+	private async tryCreateCompetition(): Promise<boolean> {
+		if (!this.storage.createIfPossible) return false;
+		const langId = availableLang[this.storage.websiteLanguage].flagId;
+		const formData = new URLSearchParams(`speedtest_id=${langId}&privacy=0`);
+		const resp = await fetch(CREATE_COMPETITION_URL, {
+			method: 'POST',
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			},
+			body: formData
 		});
+		try {
+			const json = await resp.json();
+			console.log(json);
+			if (json.start) {
+				const parent = document.createElement('p');
+				parent.innerHTML = json.start;
+				const competHref = parent.querySelector('a').href;
+				await this.openTab(competHref);
+				return true;
+			}
+		} catch (ex) {
+			console.error(ex);
+			return false;
+		}
+		return false;
+	}
+
+	private async openCompetitionTab(competition: string): Promise<chrome.tabs.Tab> {
+		return await this.openTab(getCompetitionURl(competition));
+	}
+
+	private async openTab(url: string): Promise<chrome.tabs.Tab> {
+		return new Promise((res) =>
+			chrome.tabs.create(
+				{
+					active: true,
+					url
+				},
+				(tab) => res(tab)
+			)
+		);
 	}
 
 	private goToAlternativePage() {

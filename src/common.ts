@@ -21,10 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
+export const join = (...args: string[]): string => args.join('/');
 export const CONFIG_VERSION = 1;
 export const tr = chrome.i18n.getMessage;
 export const WEBSITE_URL = 'https://10fastfingers.com';
+export const CREATE_COMPETITION_URL = join(WEBSITE_URL, 'competitions', 'add');
 export const ALARM_NAME = 'typingTestRefresh';
 export const CONNECTED_ICON = 'pictures/icon.png';
 export const DISCONNECTED_ICON = 'pictures/icon_gray.png';
@@ -50,6 +51,7 @@ export interface Config {
 	openOption: OpenOption;
 	notifyOnCreation: boolean;
 	animateIcon: boolean;
+	createIfPossible: boolean;
 }
 
 const PAGES_URL = {
@@ -61,8 +63,6 @@ const PAGES_URL = {
 	[OpenOption.OpenTextPractice]: 'text-practice/new',
 	[OpenOption.OpenTop1000]: 'top1000'
 };
-
-export const join = (...args: string[]): string => args.join('/');
 
 export const is10fastFingersUrl = (url: string): boolean => url.indexOf(WEBSITE_URL) === 0;
 

@@ -35,7 +35,8 @@ export class StorageService {
 			openOption: OpenOption.OpenTestPage,
 			notifyOnCreation: true,
 			animateIcon: true,
-			websiteLanguage: 'english'
+			websiteLanguage: 'english',
+			createIfPossible: true
 		};
 		const items = await this.getConfig();
 		if (!items || !items.version) await this.saveConfig(this.config);
@@ -88,5 +89,9 @@ export class StorageService {
 
 	public get animateIcon(): boolean {
 		return this.config.animateIcon;
+	}
+
+	public get createIfPossible(): boolean {
+		return this.config.createIfPossible;
 	}
 }

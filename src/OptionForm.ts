@@ -48,6 +48,7 @@ export class OptionForm {
 		const noCompet = (document.querySelector('input[name="group1"]:checked') as HTMLInputElement).value;
 		const animation = (document.getElementById('animation') as HTMLInputElement).checked;
 		const notification = (document.getElementById('notification') as HTMLInputElement).checked;
+		const createIfPossible = (document.getElementById('create_compet') as HTMLInputElement).checked;
 		const config: Config = {
 			animateIcon: animation,
 			notifyOnCreation: notification,
@@ -55,7 +56,8 @@ export class OptionForm {
 			version: CONFIG_VERSION,
 			openOption: <OpenOption>noCompet,
 			checkTimeout: timeout,
-			langWatch: langWatch
+			langWatch: langWatch,
+			createIfPossible: createIfPossible
 		};
 
 		this.saveCallback(config).then(() => {
@@ -80,10 +82,14 @@ export class OptionForm {
 		this.createNoCompetOptions(config.openOption);
 		const refreshInput = <HTMLInputElement>document.getElementById('timeoutRefresh');
 		refreshInput.value = '' + config.checkTimeout;
-		const animationCheckBox = <HTMLInputElement>document.getElementById('animation');
-		animationCheckBox.checked = config.animateIcon;
-		const notificationCheckBox = <HTMLInputElement>document.getElementById('notification');
-		notificationCheckBox.checked = config.notifyOnCreation;
+		this.check('animation', config.animateIcon);
+		this.check('notification', config.notifyOnCreation);
+		this.check('create_compet', config.createIfPossible);
+	}
+
+	private check(id: string, val: boolean) {
+		const input = <HTMLInputElement>document.getElementById(id);
+		if (input) input.checked = val;
 	}
 
 	private createNoCompetOptions(chosenOption: OpenOption) {
