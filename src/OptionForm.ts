@@ -120,10 +120,16 @@ export class OptionForm {
 		Object.keys(availableLang)
 			.sort((a, b) => availableLang[a].value.localeCompare(availableLang[b].value))
 			.map((k) => {
-				const value = availableLang[k].value;
+				const language = availableLang[k];
+				const flagId = language.flagId;
+				console.log(flagId);
+				const value = language.value;
 				const option = document.createElement('option');
+				const flag = document.createElement('span');
+				flag.classList.add('flag', 'flagid' + flagId);
 				option.value = k;
 				option.innerText = value;
+				option.prepend(flag);
 				option.selected = langWatch.indexOf(k) > -1;
 				competLanguageSelect.appendChild(option);
 				const langClone = <HTMLOptionElement>option.cloneNode(true);
