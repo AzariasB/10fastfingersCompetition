@@ -141,10 +141,9 @@ class App {
 		});
 		try {
 			const json = await resp.json();
-			console.log(json);
-			if (json.start) {
+			if (json.url) {
 				const parent = document.createElement('p');
-				parent.innerHTML = json.start;
+				parent.innerHTML = json.url;
 				const competHref = parent.querySelector('a').href;
 				await this.openTab(competHref);
 				return true;

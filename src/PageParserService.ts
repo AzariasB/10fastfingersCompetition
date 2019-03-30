@@ -73,7 +73,9 @@ export class PageParseService {
      * @returns all the competitions to be completed by the user
      */
 	private async getMyCompetitions(langs: string[]): Promise<string[]> {
-		const response = await fetch(this.pageUrl);
+		const response = await fetch(this.pageUrl, {
+			credentials: 'include'
+		});
 		const page = await response.text();
 		const doneCompetitions = this.getCompetitionsParticipated(page);
 		const cleanedPage = this.cleanHtml(page);
