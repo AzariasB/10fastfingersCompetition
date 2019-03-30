@@ -1,6 +1,3 @@
-import { availableLang } from './languages';
-import { NOTIFICATION_TIME } from './common';
-
 /*
  * The MIT License
  *
@@ -24,6 +21,8 @@ import { NOTIFICATION_TIME } from './common';
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+import { availableLang } from './languages';
 
 const clearRegexes = [
 	new RegExp('<script[^>]*>(.|\\s)*?<\\/script>', 'g'), //rm script tags

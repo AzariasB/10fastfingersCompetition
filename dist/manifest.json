@@ -16,5 +16,5 @@
 	"browser_action": {
 		"default_icon": "pictures/icon.png"
 	},
-	"permissions": [ "cookies", "storage", "alarms", "activeTab", "tabs", "notifications", "*://10fastfingers.com/" ]
+	"permissions": [ "storage", "alarms", "activeTab", "tabs", "notifications", "*://10fastfingers.com/" ]
 }
