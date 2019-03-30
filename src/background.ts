@@ -52,11 +52,11 @@ class App {
 	constructor() {
 		this.storage = new StorageService();
 		this.alarm = new Alarm(() => this.storage.checkTimeout, () => this.updateBadge());
+		this.iconAnimator = new IconAnimator(
+			<HTMLImageElement>document.getElementById('logged_in'),
+			<HTMLCanvasElement>document.getElementById('canvas')
+		);
 		this.storage.init().then(() => {
-			this.iconAnimator = new IconAnimator(
-				<HTMLImageElement>document.getElementById('logged_in'),
-				<HTMLCanvasElement>document.getElementById('canvas')
-			);
 			this.updateBadge();
 		});
 		chrome.storage.onChanged.addListener((items) => {
@@ -89,7 +89,6 @@ class App {
 			return [];
 		}
 	}
-
 	/**
 	 * creates a notification
 	 * only if the option is on
@@ -137,6 +136,7 @@ class App {
 			headers: {
 				'X-Requested-With': 'XMLHttpRequest'
 			},
+			credentials: 'include',
 			body: formData
 		});
 		try {

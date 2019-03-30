@@ -1,6 +1,6 @@
 {
 	"background": {
-		"persistent": false,
+		"persistent": true,
 		"page": "background.html"
 	},
 	"manifest_version": 2,
@@ -16,5 +16,5 @@
 	"browser_action": {
 		"default_icon": "pictures/icon.png"
 	},
-	"permissions": [ "storage", "alarms", "activeTab", "tabs", "notifications", "*://10fastfingers.com/" ]
+	"permissions": [ "cookies", "storage", "alarms", "activeTab", "tabs", "notifications", "*://10fastfingers.com/" ]
 }

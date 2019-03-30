@@ -25,7 +25,7 @@ import { ALARM_NAME } from './common';
  */
 
 export class Alarm {
-	constructor(private timeout: () => number, private _callback: () => void) {
+	constructor(private timeout: () => number, private _callback: () => Promise<any>) {
 		chrome.alarms.get(ALARM_NAME, (alarm) => {
 			if (!alarm) {
 				chrome.alarms.create(ALARM_NAME, {
@@ -33,21 +33,28 @@ export class Alarm {
 				});
 			}
 		});
-		chrome.alarms.onAlarm.addListener((a) => this.callAlarm(a));
-	}
-
-	private callAlarm(alarm: chrome.alarms.Alarm) {
-		if (alarm.name != ALARM_NAME) return;
-		if (this._callback) this._callback();
-		chrome.alarms.get(ALARM_NAME, (alarm) => {
-			if (!alarm) {
-				chrome.alarms.create(ALARM_NAME, {
-					delayInMinutes: this.timeout()
-				});
-			}
+		chrome.alarms.onAlarm.addListener(async (a) => {
+			await this.callAlarm(a);
+			return true;
 		});
 	}
-	public set callback(nwCallback: () => void) {
+
+	private async callAlarm(alarm: chrome.alarms.Alarm): Promise<boolean> {
+		if (alarm.name != ALARM_NAME) return;
+		if (this._callback) await this._callback();
+		return new Promise((res) => {
+			chrome.alarms.get(ALARM_NAME, (alarm) => {
+				if (!alarm) {
+					chrome.alarms.create(ALARM_NAME, {
+						delayInMinutes: this.timeout()
+					});
+					res(true);
+				}
+				res(false);
+			});
+		});
+	}
+	public set callback(nwCallback: () => Promise<any>) {
 		this._callback = nwCallback;
 	}
 }

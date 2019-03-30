@@ -1,4 +1,5 @@
 import { availableLang } from './languages';
+import { NOTIFICATION_TIME } from './common';
 
 /*
  * The MIT License
@@ -74,6 +75,7 @@ export class PageParseService {
      */
 	private async getMyCompetitions(langs: string[]): Promise<string[]> {
 		const response = await fetch(this.pageUrl, {
+			method: 'GET',
 			credentials: 'include'
 		});
 		const page = await response.text();
