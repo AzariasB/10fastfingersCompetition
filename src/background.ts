@@ -79,7 +79,7 @@ class App {
 			const compets = await PageParseService.parse(getCompetitionsPage(), this.storage.langWatch);
 			const shownCompetitions = await PageParseService.getDisplayedCompetitions();
 			this.iconAnimator.showConnected(compets.length);
-			if (shownCompetitions < compets.length) {
+			if (shownCompetitions === 0 && compets.length) {
 				this.notifyCompetCreation();
 			}
 			return compets;
