@@ -68,6 +68,25 @@ class App {
 			chrome.notifications.clear(notifId);
 			this.goToCompetition();
 		});
+		chrome.webRequest.onCompleted.addListener(
+			(details) => {
+				if (this.isCompetitionSave(details)) {
+					this.updateBadge();
+				}
+			},
+			{
+				urls: [ '*://10fastfingers.com/*' ]
+			}
+		);
+	}
+
+	private isCompetitionSave(details: chrome.webRequest.WebResponseCacheDetails) {
+		return (
+			details.initiator.indexOf(WEBSITE_URL) != -1 &&
+			details.method === 'POST' &&
+			details.type === 'xmlhttprequest' &&
+			details.url.endsWith('save_result')
+		);
 	}
 
 	/**
@@ -193,5 +212,4 @@ class App {
 	}
 }
 
-//Watch for : '/save_result'
 const app = new App();
