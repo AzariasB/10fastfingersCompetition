@@ -33,6 +33,7 @@ export class OptionForm {
 		this.saveCallback = saveFunc;
 		this.setValues(options);
 		this.translatePage();
+		this.setVersion();
 		M.AutoInit();
 		const saveButton = <HTMLButtonElement>document.getElementById('save');
 		saveButton.addEventListener('click', () => this.saveConfig());
@@ -64,6 +65,14 @@ export class OptionForm {
 			M.toast({
 				html: tr('option_saved')
 			});
+		});
+	}
+
+	private setVersion() {
+		const version = chrome.runtime.getManifest().version;
+		document.querySelectorAll('.version').forEach((el) => {
+			const html = <HTMLElement>el;
+			html.innerText = version;
 		});
 	}
 
