@@ -49,17 +49,6 @@ export class PageParseService {
 		return await new PageParseService(pageUrl).getMyCompetitions(langs);
 	}
 
-	public static async getDisplayedCompetitions(): Promise<number> {
-		return new Promise((res, rej) => {
-			chrome.browserAction.getBadgeText({}, (text) => {
-				if (!text || !text.length) return res(0);
-				const toNumber = +text;
-				if (isNaN(toNumber)) return res(0);
-				return res(toNumber);
-			});
-		});
-	}
-
 	/**
      * Constructor with the url of the page to parse
      */

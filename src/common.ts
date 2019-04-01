@@ -82,3 +82,24 @@ export const getAlternatePage = (opOp: OpenOption, lang: string) => {
 			return PAGES_URL[opOp];
 	}
 };
+
+export function isCompetitionSave(details: chrome.webRequest.WebResponseCacheDetails) {
+	return (
+		details.initiator &&
+		details.initiator.indexOf(WEBSITE_URL) != -1 &&
+		details.method === 'POST' &&
+		details.type === 'xmlhttprequest' &&
+		details.url.endsWith('save_result')
+	);
+}
+
+export async function getDisplayedCompetitions(): Promise<number> {
+	return new Promise((res, rej) => {
+		chrome.browserAction.getBadgeText({}, (text) => {
+			if (!text || !text.length) return res(0);
+			const toNumber = +text;
+			if (isNaN(toNumber)) return res(0);
+			return res(toNumber);
+		});
+	});
+}

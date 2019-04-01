@@ -33,7 +33,9 @@ import {
 	NOTIFICATION_TIME,
 	WEBSITE_URL,
 	BIG_ICON,
-	CREATE_COMPETITION_URL
+	CREATE_COMPETITION_URL,
+	isCompetitionSave,
+	getDisplayedCompetitions
 } from './common';
 import { Alarm } from './Alarm';
 import { StorageService } from './StorageService';
@@ -70,22 +72,13 @@ class App {
 		});
 		chrome.webRequest.onCompleted.addListener(
 			(details) => {
-				if (this.isCompetitionSave(details)) {
+				if (isCompetitionSave(details)) {
 					this.updateBadge();
 				}
 			},
 			{
 				urls: [ '*://10fastfingers.com/*' ]
 			}
-		);
-	}
-
-	private isCompetitionSave(details: chrome.webRequest.WebResponseCacheDetails) {
-		return (
-			details.initiator.indexOf(WEBSITE_URL) != -1 &&
-			details.method === 'POST' &&
-			details.type === 'xmlhttprequest' &&
-			details.url.endsWith('save_result')
 		);
 	}
 
@@ -96,7 +89,7 @@ class App {
 	private async updateBadge(): Promise<string[]> {
 		try {
 			const compets = await PageParseService.parse(getCompetitionsPage(), this.storage.langWatch);
-			const shownCompetitions = await PageParseService.getDisplayedCompetitions();
+			const shownCompetitions = await getDisplayedCompetitions();
 			this.iconAnimator.showConnected(compets.length);
 			if (shownCompetitions === 0 && compets.length) {
 				this.notifyCompetCreation();
@@ -137,7 +130,7 @@ class App {
 				const createdOne = await this.tryCreateCompetition();
 				if (!createdOne) this.goToAlternativePage();
 			} else {
-				this.openCompetitionTab(competitions.shift());
+				await this.openCompetitionTab(competitions.shift());
 			}
 			this.iconAnimator.endAnimation();
 		} catch (ex) {
