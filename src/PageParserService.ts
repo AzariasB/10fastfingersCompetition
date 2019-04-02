@@ -83,11 +83,9 @@ export class PageParseService {
 	private readPageCompetitions(cleanHtml: string, flagIds: number[]): CompetitionData[] {
 		const dummyDiv = document.createElement('DIV');
 		dummyDiv.innerHTML = cleanHtml;
-		document.body.appendChild(dummyDiv);
-		const tbody = document.getElementById('join-competition-table').getElementsByTagName('tbody')[0];
+		const tbody = dummyDiv.querySelector('#join-competition-table').getElementsByTagName('tbody')[0];
 		const competitions = tbody.getElementsByTagName('tr');
 		const tranform = this.hasGreenStamp(flagIds);
-		document.body.removeChild(dummyDiv);
 		return [ ...competitions ].map(tranform).filter((x) => x !== null);
 	}
 
