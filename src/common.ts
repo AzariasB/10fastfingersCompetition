@@ -21,8 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
+/**
+  * Simple joiner to 'encode' urls
+  */
 export const join = (...args: string[]): string => args.join('/');
 export const CONFIG_VERSION = 1;
+
+/**
+ * Faster translator access
+ */
 export const tr = chrome.i18n.getMessage;
 export const WEBSITE_URL = 'https://10fastfingers.com';
 export const CREATE_COMPETITION_URL = join(WEBSITE_URL, 'competitions', 'add');
@@ -64,15 +72,36 @@ const PAGES_URL = {
 	[OpenOption.OpenTop1000]: 'top1000'
 };
 
+/**
+ * Checks if the given string contains, at the begining, the adress
+ * of 10fastfingers
+ */
 export const is10fastFingersUrl = (url: string): boolean => url.indexOf(WEBSITE_URL) === 0;
 
+/**
+ * Full URL of the competition
+ * 
+ * @param competitionUrl path of the competition
+ */
 export const getCompetitionURl = (competitionUrl: string): string => join(WEBSITE_URL, competitionUrl);
 
+/**
+ * URL of the basic typing test
+ * 
+ * @param language language of the typing test
+ */
 export const getTypingTestUrl = (language: string = 'english'): string =>
 	join(WEBSITE_URL, PAGES_URL[OpenOption.OpenTestPage], language);
 
+/**
+ * URL of the page containing the list of all competitions
+ */
 export const getCompetitionsPage = (): string => join(WEBSITE_URL, PAGES_URL[OpenOption.OpenCompetitionPage]);
 
+/**
+ * Gets the alternative page URL, when there is no competition, the lang
+ * parameter is only used for some of these pages
+ */
 export const getAlternatePage = (opOp: OpenOption, lang: string) => {
 	switch (opOp) {
 		case OpenOption.OpenAdvanced:
@@ -83,6 +112,10 @@ export const getAlternatePage = (opOp: OpenOption, lang: string) => {
 	}
 };
 
+/**
+ * Whenever a chrome request is received, checks it is the request
+ * sent when a competition is completed by the user
+ */
 export function isCompetitionSave(details: chrome.webRequest.WebResponseCacheDetails) {
 	return (
 		details.initiator &&
@@ -93,6 +126,10 @@ export function isCompetitionSave(details: chrome.webRequest.WebResponseCacheDet
 	);
 }
 
+/**
+ * Text displayed on the browseraction icon,
+ * 0 if no text is displayed, or the text is not a number
+ */
 export async function getDisplayedCompetitions(): Promise<number> {
 	return new Promise((res, rej) => {
 		chrome.browserAction.getBadgeText({}, (text) => {

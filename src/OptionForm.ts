@@ -39,6 +39,9 @@ export class OptionForm {
 		saveButton.addEventListener('click', () => this.saveConfig());
 	}
 
+	/**
+	 * Saves all the value to the sync storage of chrome
+	 */
 	public saveConfig() {
 		const selected = document.querySelectorAll('#competitionLanguage option:checked');
 		const langWatch = Array.from(selected).map((el) => (<HTMLOptionElement>el).value);
@@ -68,6 +71,10 @@ export class OptionForm {
 		});
 	}
 
+	/**
+	 * Set the version for all the element containing
+	 * the 'version' class
+	 */
 	private setVersion() {
 		const version = chrome.runtime.getManifest().version;
 		document.querySelectorAll('.version').forEach((el) => {
@@ -76,6 +83,10 @@ export class OptionForm {
 		});
 	}
 
+	/**
+	 * Translates all the elements on the page with the
+	 * 'translatable' class
+	 */
 	private translatePage() {
 		document.querySelectorAll('.translatable').forEach((el) => {
 			const htmlEl = <HTMLElement>el;
@@ -85,6 +96,10 @@ export class OptionForm {
 		});
 	}
 
+	/**
+	 * Set the values of the input element of the page
+	 * based on what's already configured
+	 */
 	private setValues(config: Config) {
 		//Add available languages
 		this.createLanguageSelect(config.langWatch, config.websiteLanguage);
@@ -101,6 +116,9 @@ export class OptionForm {
 		if (input) input.checked = val;
 	}
 
+	/**
+	 * Create the radio buttons of 'what to do when no compet is available'
+	 */
 	private createNoCompetOptions(chosenOption: OpenOption) {
 		const parent = document.createElement('p');
 		const label = document.createElement('label');
@@ -123,6 +141,12 @@ export class OptionForm {
 		});
 	}
 
+	/**
+	 * Create the two select elements
+	 * one for the competitions to watch,
+	 * the other for the language of the website
+	 * and select the elements already chosen by the user
+	 */
 	private createLanguageSelect(langWatch: string[], websiteLanguage: string) {
 		const competLanguageSelect = document.getElementById('competitionLanguage');
 		const websiteLanguageSelect = document.getElementById('websiteLanguage');

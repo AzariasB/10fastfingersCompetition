@@ -24,6 +24,13 @@
 
 import { Config, OpenOption, CONFIG_VERSION } from './common';
 
+/**
+ * Service used to interface with chrome sync storage
+ * has the default configuration saved when none is found
+ * will merge this default configu with anything that's already
+ * saved
+ * Has a direct accessor for each config element
+ */
 export class StorageService {
 	private config: Config;
 
@@ -43,18 +50,28 @@ export class StorageService {
 		else this.updateConfig(items);
 	}
 
+	/**
+	 * Retrieves the config in the sync memory
+	 */
 	private async getConfig(): Promise<Config> {
 		return new Promise((res, rej) => {
 			chrome.storage.sync.get((items: Config) => res(items));
 		});
 	}
 
+	/**
+	 * Saves the config in the sync storage
+	 */
 	private async saveConfig(item: Config): Promise<Config> {
 		return new Promise((res, rej) => {
 			chrome.storage.sync.set(item, () => res(item));
 		});
 	}
 
+	/**
+	 * Merges the current config object with
+	 * the given items
+	 */
 	public updateConfig(items: any) {
 		Object.keys(this.config).map((k) => {
 			if (items[k] !== undefined) {
@@ -66,6 +83,10 @@ export class StorageService {
 			}
 		});
 	}
+
+	/**
+	 * Accessor for each config element
+	 */
 
 	public get checkTimeout(): number {
 		return this.config.checkTimeout;

@@ -139,6 +139,10 @@ class App {
 		}
 	}
 
+	/**
+	 * Tries to create a competition, and if success,
+	 * will go to the created competition
+	 */
 	private async tryCreateCompetition(): Promise<boolean> {
 		if (!this.storage.createIfPossible) return false;
 		const langId = availableLang[this.storage.websiteLanguage].flagId;
@@ -171,6 +175,39 @@ class App {
 		return await this.openTab(getCompetitionURl(competition));
 	}
 
+	/**
+	 * Queries the tabs of chrome where the 
+	 * url is 10fastfingers, used when no competitions
+	 * were found
+	 */
+	private goToAlternativePage() {
+		chrome.tabs.query(
+			{
+				url: join(WEBSITE_URL, '*')
+			},
+			(tabs) => this.openFirstTab(tabs)
+		);
+	}
+
+	/**
+	 * Opens the first tab with an alternative page
+	 * if the list is empty, creates a new tab
+	 */
+	private openFirstTab(tabs: chrome.tabs.Tab[]) {
+		const url = join(WEBSITE_URL, getAlternatePage(this.storage.openOption, this.storage.websiteLanguage));
+		if (tabs.length === 0) {
+			this.openTab(url);
+		} else {
+			chrome.tabs.update(tabs[0].id, {
+				active: true,
+				url
+			});
+		}
+	}
+
+	/**
+	 * Opens a single tab with the given URL
+	 */
 	private async openTab(url: string): Promise<chrome.tabs.Tab> {
 		return new Promise((res) =>
 			chrome.tabs.create(
@@ -181,27 +218,6 @@ class App {
 				(tab) => res(tab)
 			)
 		);
-	}
-
-	private goToAlternativePage() {
-		chrome.tabs.query(
-			{
-				url: join(WEBSITE_URL, '*')
-			},
-			(tabs) => this.openFirstTab(tabs)
-		);
-	}
-
-	private openFirstTab(tabs: chrome.tabs.Tab[]) {
-		const url = join(WEBSITE_URL, getAlternatePage(this.storage.openOption, this.storage.websiteLanguage));
-		if (tabs.length === 0) {
-			chrome.tabs.create({ url });
-		} else {
-			chrome.tabs.update(tabs[0].id, {
-				active: true,
-				url
-			});
-		}
 	}
 }
 
