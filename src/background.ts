@@ -88,7 +88,10 @@ class App {
 	 */
 	private async updateBadge(): Promise<string[]> {
 		try {
-			const compets = await PageParseService.parse(getCompetitionsPage(), this.storage.langWatch);
+			const tabs = (await this.getWebsiteTabs()).map((t) => t.url);
+			const allCompets = await PageParseService.parse(getCompetitionsPage(), this.storage.langWatch);
+			//Filter out the competition already opened
+			const compets = allCompets.filter((x) => !tabs.some((t) => t.indexOf(x) > -1));
 			const shownCompetitions = await getDisplayedCompetitions();
 			this.iconAnimator.showConnected(compets.length);
 			if (shownCompetitions === 0 && compets.length) {
@@ -181,12 +184,18 @@ class App {
 	 * were found
 	 */
 	private goToAlternativePage() {
-		chrome.tabs.query(
-			{
-				url: join(WEBSITE_URL, '*')
-			},
-			(tabs) => this.openFirstTab(tabs)
-		);
+		this.getWebsiteTabs().then((tabs) => this.openFirstTab(tabs));
+	}
+
+	private async getWebsiteTabs(): Promise<chrome.tabs.Tab[]> {
+		return new Promise((res) => {
+			chrome.tabs.query(
+				{
+					url: join(WEBSITE_URL, '*')
+				},
+				(tabs) => res(tabs)
+			);
+		});
 	}
 
 	/**
