@@ -131,7 +131,7 @@ class App {
 			const competitions = await this.updateBadge();
 			if (competitions.length === 0) {
 				const createdOne = await this.tryCreateCompetition();
-				if (!createdOne) this.goToAlternativePage();
+				if (!createdOne) await this.goToAlternativePage();
 			} else {
 				await this.openCompetitionTab(competitions.shift());
 			}
@@ -164,7 +164,7 @@ class App {
 				const parent = document.createElement('p');
 				parent.innerHTML = json.url;
 				const competHref = parent.querySelector('a').href;
-				await this.openTab(competHref);
+				await this.updateOrOpenTab(competHref);
 				return true;
 			}
 		} catch (ex) {
@@ -175,7 +175,8 @@ class App {
 	}
 
 	private async openCompetitionTab(competition: string): Promise<chrome.tabs.Tab> {
-		return await this.openTab(getCompetitionURl(competition));
+		const url = getCompetitionURl(competition);
+		return await this.updateOrOpenTab(url);
 	}
 
 	/**
@@ -183,10 +184,19 @@ class App {
 	 * url is 10fastfingers, used when no competitions
 	 * were found
 	 */
-	private goToAlternativePage() {
-		this.getWebsiteTabs().then((tabs) => this.openFirstTab(tabs));
+	private async goToAlternativePage(): Promise<chrome.tabs.Tab> {
+		const url = join(WEBSITE_URL, getAlternatePage(this.storage.openOption, this.storage.websiteLanguage));
+		return await this.updateOrOpenTab(url);
 	}
 
+	private async updateOrOpenTab(url: string): Promise<chrome.tabs.Tab> {
+		const tabs = await this.getWebsiteTabs();
+		return await this.openFirstTab(tabs, url);
+	}
+
+	/**
+	 * Gets all the tab containg the 10fastfingers url
+	 */
 	private async getWebsiteTabs(): Promise<chrome.tabs.Tab[]> {
 		return new Promise((res) => {
 			chrome.tabs.query(
@@ -202,14 +212,19 @@ class App {
 	 * Opens the first tab with an alternative page
 	 * if the list is empty, creates a new tab
 	 */
-	private openFirstTab(tabs: chrome.tabs.Tab[]) {
-		const url = join(WEBSITE_URL, getAlternatePage(this.storage.openOption, this.storage.websiteLanguage));
+	private async openFirstTab(tabs: chrome.tabs.Tab[], url: string): Promise<chrome.tabs.Tab> {
 		if (tabs.length === 0) {
-			this.openTab(url);
+			return await this.openTab(url);
 		} else {
-			chrome.tabs.update(tabs[0].id, {
-				active: true,
-				url
+			return new Promise((res) => {
+				chrome.tabs.update(
+					tabs[0].id,
+					{
+						active: true,
+						url
+					},
+					(t) => res(t)
+				);
 			});
 		}
 	}
