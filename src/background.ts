@@ -41,6 +41,7 @@ import { Alarm } from './Alarm';
 import { StorageService } from './StorageService';
 import { Tabs } from 'materialize-css';
 import { availableLang } from './languages';
+import { Requester } from './Requester';
 
 /**
  * Main class of the extension, used to coordinate
@@ -150,15 +151,8 @@ class App {
 		if (!this.storage.createIfPossible) return false;
 		const langId = availableLang[this.storage.websiteLanguage].flagId;
 		const formData = new URLSearchParams(`speedtest_id=${langId}&privacy=0`);
-		const resp = await fetch(CREATE_COMPETITION_URL, {
-			method: 'POST',
-			headers: {
-				'X-Requested-With': 'XMLHttpRequest'
-			},
-			credentials: 'include',
-			body: formData
-		});
 		try {
+			const resp = await Requester.post(CREATE_COMPETITION_URL, formData);
 			const json = await resp.json();
 			if (json.url) {
 				const parent = document.createElement('p');

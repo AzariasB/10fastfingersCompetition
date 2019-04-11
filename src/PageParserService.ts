@@ -23,6 +23,7 @@
  */
 
 import { availableLang } from './languages';
+import { Requester } from './Requester';
 
 const clearRegexes = [
 	new RegExp('<script[^>]*>(.|\\s)*?<\\/script>', 'g'), //rm script tags
@@ -62,11 +63,7 @@ export class PageParseService {
      * @returns all the competitions to be completed by the user
      */
 	private async getMyCompetitions(langs: string[]): Promise<string[]> {
-		const response = await fetch(this.pageUrl, {
-			method: 'GET',
-			credentials: 'include'
-		});
-		const page = await response.text();
+		const page = await Requester.get(this.pageUrl);
 		const doneCompetitions = this.getCompetitionsParticipated(page);
 		const cleanedPage = this.cleanHtml(page);
 		const flagIds = langs.map((x) => availableLang[x].flagId);
