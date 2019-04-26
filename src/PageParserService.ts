@@ -95,7 +95,8 @@ export class PageParseService {
 		return (compet): CompetitionData => {
 			const informations = compet.getElementsByTagName('td');
 			const flag = +informations[0].getElementsByTagName('span')[0].getAttribute('id').replace('flagid', '');
-			if (flagIds.indexOf(+flag) === -1) return null;
+			const timeLeft = informations[5].innerText; // If seconds remains, not possible to join the competition
+			if (timeLeft.endsWith('s') || flagIds.indexOf(+flag) === -1) return null;
 			const competId = informations[2].getElementsByTagName('div')[0].getAttribute('competition_id');
 			//Compet not done yet
 			return {
