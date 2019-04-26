@@ -72,11 +72,12 @@ const PAGES_URL = {
 	[OpenOption.OpenTop1000]: 'top1000'
 };
 
+const VALID_URL_REGEX = /^https:\/\/10fastfingers\.com(\/.*)?$/;
 /**
  * Checks if the given string contains, at the begining, the adress
  * of 10fastfingers
  */
-export const is10fastFingersUrl = (url: string): boolean => url.indexOf(WEBSITE_URL) === 0;
+export const is10fastFingersUrl = (url: string): boolean => VALID_URL_REGEX.test(url);
 
 /**
  * Full URL of the competition
