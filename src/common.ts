@@ -141,3 +141,20 @@ export async function getDisplayedCompetitions(): Promise<number> {
 		});
 	});
 }
+
+/**
+ * Instead of using the all mighty-dangerous eval,
+ * this function will decompose the string to find the values of the array
+ *
+ * @param {string} stringArray a string looking like var array_name = [value1,value2,...]
+ * @returns the array formed from the string
+ */
+export function parseJsArray(stringArray: string): number[] {
+	//If emptry string or empty value, return empty array
+	if (!stringArray || !stringArray.length) return [];
+	const brackIndex = stringArray.indexOf('[');
+	const closeIndex = stringArray.indexOf(']');
+	stringArray = stringArray.substr(brackIndex + 1, closeIndex - brackIndex - 1);
+	if (stringArray.length === 0) return [];
+	return stringArray.split(/,\s*/).map((x) => +x.substr(1, x.length - 2));
+}

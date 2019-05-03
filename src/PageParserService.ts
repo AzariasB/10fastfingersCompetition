@@ -24,6 +24,7 @@
 
 import { availableLang } from './languages';
 import { Requester } from './Requester';
+import { parseJsArray } from './common';
 
 const clearRegexes = [
 	new RegExp('<script[^>]*>(.|\\s)*?<\\/script>', 'g'), //rm script tags
@@ -95,7 +96,7 @@ export class PageParseService {
 		return (compet): CompetitionData => {
 			const informations = compet.getElementsByTagName('td');
 			const flag = +informations[0].getElementsByTagName('span')[0].getAttribute('id').replace('flagid', '');
-			const timeLeft = informations[5].innerText; // If seconds remains, not possible to join the competition
+			const timeLeft = informations[5].innerText || ''; // If seconds remains, not possible to join the competition
 			if (timeLeft.endsWith('s') || flagIds.indexOf(+flag) === -1) return null;
 			const competId = informations[2].getElementsByTagName('div')[0].getAttribute('competition_id');
 			//Compet not done yet
@@ -123,26 +124,9 @@ export class PageParseService {
 	private getCompetitionsParticipated(html: string): number[] {
 		const res = competListRegex.exec(html);
 		if (res && res[0]) {
-			return this.parseJsArray(res[0]);
+			return parseJsArray(res[0]);
 		} else {
 			return [];
 		}
-	}
-
-	/**
-     * Instead of using the all mighty-dangerous eval,
-     * this function will decompose the string to find the values of the array
-     *
-     * @param {string} stringArray a string looking like var array_name = [value1,value2,...]
-     * @returns the array formed from the string
-     */
-	private parseJsArray(stringArray: string): number[] {
-		//If emptry string or empty value, return empty array
-		if (!stringArray || !stringArray.length) return [];
-		const brackIndex = stringArray.indexOf('[');
-		const closeIndex = stringArray.indexOf(']');
-		stringArray = stringArray.substr(brackIndex + 1, closeIndex - brackIndex - 1);
-
-		return stringArray.split(',').map((x) => +x.substr(1, x.length - 2));
 	}
 }
