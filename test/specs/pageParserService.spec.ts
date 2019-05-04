@@ -42,7 +42,7 @@ Requester.get = async function(url: String): Promise<string> {
 
 async function readFileData(): Promise<string> {
 	return new Promise((res, rej) => {
-		readFile(__dirname + '/fakeData.ts', (err, data) => {
+		readFile(__dirname + '/fakeData.txt', (err, data) => {
 			if (err) return rej(err);
 			return res(data.toString('UTF-8'));
 		});
