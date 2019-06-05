@@ -15,7 +15,6 @@
 		"url": "https://github.com/AzariasB/10fastfingersCompetition"
 	},
 	"devDependencies": {
-		"@types/axios": "^0.14.0",
 		"@types/chai": "^4.1.7",
 		"@types/chrome": "0.0.82",
 		"@types/jsdom": "^12.2.3",
