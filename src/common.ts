@@ -73,6 +73,7 @@ const PAGES_URL = {
 	[OpenOption.OpenTop1000]: 'top1000'
 };
 
+const EMPY_TAB_REGEX = /^chrome:\/\/newtab?\/$/;
 const VALID_URL_REGEX = /^https:\/\/10fastfingers\.com(\/.*)?$/;
 /**
  * Checks if the given string contains, at the begining, the adress
@@ -126,6 +127,16 @@ export function isCompetitionSave(details: chrome.webRequest.WebResponseCacheDet
 		details.type === 'xmlhttprequest' &&
 		details.url.endsWith('save_result')
 	);
+}
+
+/**
+ * Checks wether the given tab is a new empty tab
+ * so it can be used for something else
+ * 
+ * @param tab tab that can be empty
+ */
+export function isEmptyTab(tab: chrome.tabs.Tab): boolean {
+	return tab && EMPY_TAB_REGEX.test(tab.url);
 }
 
 /**

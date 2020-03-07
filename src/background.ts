@@ -36,7 +36,8 @@ import {
 	CREATE_COMPETITION_URL,
 	isCompetitionSave,
 	getDisplayedCompetitions,
-	OPTION_PAGE
+	OPTION_PAGE,
+	isEmptyTab
 } from './common';
 import { Alarm } from './Alarm';
 import { StorageService } from './StorageService';
@@ -234,14 +235,28 @@ class App {
 	 * Opens a single tab with the given URL
 	 */
 	private async openFocusedTab(url: string): Promise<chrome.tabs.Tab> {
-		return new Promise((res) =>
-			chrome.tabs.create(
-				{
-					active: true,
-					url
-				},
-				(tab) => res(tab)
-			)
+		return new Promise((res) => {
+			chrome.tabs.query({ active: true }, (tabs) => {
+				const tab = tabs?.[0];
+				if (isEmptyTab(tab)) {
+					chrome.tabs.update(tab.id, {
+						active: true,
+						url: url
+					}, (tab) => res(tab));
+				} else {
+					chrome.tabs.create(
+						{
+							active: true,
+							url
+						},
+						(tab) => res(tab)
+					)
+				}
+
+			});
+
+		}
+
 		);
 	}
 }
