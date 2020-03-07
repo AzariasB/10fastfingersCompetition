@@ -38,9 +38,9 @@ export class StorageService {
 		this.config = {
 			version: CONFIG_VERSION,
 			checkTimeout: 5,
-			langWatch: [ 'english' ],
+			langWatch: ['english'],
 			openOption: OpenOption.OpenTestPage,
-			notifyOnCreation: true,
+			notifyOnCreation: false,
 			animateIcon: true,
 			websiteLanguage: 'english',
 			createIfPossible: true

@@ -35,11 +35,11 @@ import {
 	BIG_ICON,
 	CREATE_COMPETITION_URL,
 	isCompetitionSave,
-	getDisplayedCompetitions
+	getDisplayedCompetitions,
+	OPTION_PAGE
 } from './common';
 import { Alarm } from './Alarm';
 import { StorageService } from './StorageService';
-import { Tabs } from 'materialize-css';
 import { availableLang } from './languages';
 import { Requester } from './Requester';
 
@@ -78,9 +78,16 @@ class App {
 				}
 			},
 			{
-				urls: [ '*://10fastfingers.com/*' ]
+				urls: ['*://10fastfingers.com/*']
 			}
 		);
+		chrome.runtime.onInstalled.addListener(
+			(details) => {
+				if (details.reason === 'install') {
+					this.openFocusedTab(chrome.extension.getURL(OPTION_PAGE));
+				}
+			}
+		)
 	}
 
 	/**
@@ -208,7 +215,7 @@ class App {
 	 */
 	private async openFirstTab(tabs: chrome.tabs.Tab[], url: string): Promise<chrome.tabs.Tab> {
 		if (tabs.length === 0) {
-			return await this.openTab(url);
+			return await this.openFocusedTab(url);
 		} else {
 			return new Promise((res) => {
 				chrome.tabs.update(
@@ -226,7 +233,7 @@ class App {
 	/**
 	 * Opens a single tab with the given URL
 	 */
-	private async openTab(url: string): Promise<chrome.tabs.Tab> {
+	private async openFocusedTab(url: string): Promise<chrome.tabs.Tab> {
 		return new Promise((res) =>
 			chrome.tabs.create(
 				{

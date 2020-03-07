@@ -1,6 +1,6 @@
 {
 	"name": "10fastfingers-competition",
-	"version": "2.4.0",
+	"version": "2.5.0",
 	"description": "Chrome extension to show the number of available competitions for a given langugage",
 	"main": "index.js",
 	"scripts": {
@@ -15,26 +15,26 @@
 		"url": "https://github.com/AzariasB/10fastfingersCompetition"
 	},
 	"devDependencies": {
-		"@types/chai": "^4.1.7",
+		"@types/chai": "^4.2.10",
 		"@types/chrome": "0.0.82",
-		"@types/jsdom": "^12.2.3",
-		"@types/materialize-css": "^1.0.6",
-		"@types/mocha": "^5.2.6",
-		"@types/node": "^11.13.4",
+		"@types/jsdom": "^12.2.4",
+		"@types/materialize-css": "^1.0.7",
+		"@types/mocha": "^5.2.7",
+		"@types/node": "^11.15.7",
 		"@types/sinon-chrome": "^2.2.6",
 		"chai": "^4.2.0",
-		"jsdom": "^15.0.0",
-		"mocha": "^6.1.4",
+		"jsdom": "^15.2.1",
+		"mocha": "^6.2.2",
 		"sinon-chrome": "^3.0.1",
 		"ts-loader": "latest",
-		"ts-node": "^8.0.3",
+		"ts-node": "^8.6.2",
 		"typescript": "latest",
-		"uglifyjs-webpack-plugin": "^2.1.2",
+		"uglifyjs-webpack-plugin": "^2.2.0",
 		"webpack": "latest",
 		"webpack-cli": "latest",
 		"webpack-merge": "latest"
 	},
 	"dependencies": {
-		"materialize-css": "^1.0.0-rc.2"
+		"materialize-css": "^1.0.0"
 	}
 }
