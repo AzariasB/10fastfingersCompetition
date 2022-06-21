@@ -22,25 +22,25 @@
  * THE SOFTWARE.
  */
 
-import { Config } from './common';
-import { OptionForm } from './OptionForm';
+import { Config } from "./common";
+import { OptionForm } from "./OptionForm";
 
 class App {
-	private optForm: OptionForm;
+  private optForm: OptionForm;
 
-	constructor() {
-		chrome.storage.sync.get((items: Config) => {
-			this.optForm = new OptionForm(items, this.saveConfig);
-		});
-	}
+  constructor() {
+    chrome.storage.sync.get((items: Config) => {
+      this.optForm = new OptionForm(items ?? {}, this.saveConfig);
+    });
+  }
 
-	private async saveConfig(conf: Config): Promise<Config> {
-		return new Promise<Config>((res) => {
-			chrome.storage.sync.set(conf, () => {
-				res(conf);
-			});
-		});
-	}
+  private async saveConfig(conf: Config): Promise<Config> {
+    return new Promise<Config>((res) => {
+      chrome.storage.sync.set(conf, () => {
+        res(conf);
+      });
+    });
+  }
 }
 
 const app = new App();

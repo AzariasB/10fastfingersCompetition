@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-import { Config, OpenOption, CONFIG_VERSION } from './common';
+import { Config, OpenOption, DEFAULT_CONFIG } from "./common";
 
 /**
  * Service used to interface with chrome sync storage
@@ -32,87 +32,78 @@ import { Config, OpenOption, CONFIG_VERSION } from './common';
  * Has a direct accessor for each config element
  */
 export class StorageService {
-	private config: Config;
+  private config: Config;
 
-	public async init(): Promise<void> {
-		this.config = {
-			version: CONFIG_VERSION,
-			checkTimeout: 5,
-			langWatch: ['english'],
-			openOption: OpenOption.OpenTestPage,
-			notifyOnCreation: false,
-			animateIcon: true,
-			websiteLanguage: 'english',
-			createIfPossible: true
-		};
-		const items = await this.getConfig();
-		if (!items || !items.version) await this.saveConfig(this.config);
-		else this.updateConfig(items);
-	}
+  public async init(): Promise<void> {
+    this.config = DEFAULT_CONFIG;
+    const items = await this.getConfig();
+    if (!items || !items.version) await this.saveConfig(this.config);
+    else this.updateConfig(items);
+  }
 
-	/**
-	 * Retrieves the config in the sync memory
-	 */
-	private async getConfig(): Promise<Config> {
-		return new Promise((res, rej) => {
-			chrome.storage.sync.get((items: Config) => res(items));
-		});
-	}
+  /**
+   * Retrieves the config in the sync memory
+   */
+  private async getConfig(): Promise<Config> {
+    return new Promise((res, rej) => {
+      chrome.storage.sync.get((items: Config) => res(items));
+    });
+  }
 
-	/**
-	 * Saves the config in the sync storage
-	 */
-	private async saveConfig(item: Config): Promise<Config> {
-		return new Promise((res, rej) => {
-			chrome.storage.sync.set(item, () => res(item));
-		});
-	}
+  /**
+   * Saves the config in the sync storage
+   */
+  private async saveConfig(item: Config): Promise<Config> {
+    return new Promise((res, rej) => {
+      chrome.storage.sync.set(item, () => res(item));
+    });
+  }
 
-	/**
-	 * Merges the current config object with
-	 * the given items
-	 */
-	public updateConfig(items: any) {
-		Object.keys(this.config).map((k) => {
-			if (items[k] !== undefined) {
-				if (items[k].newValue === undefined) {
-					this.config[k] = items[k];
-				} else {
-					this.config[k] = items[k].newValue;
-				}
-			}
-		});
-	}
+  /**
+   * Merges the current config object with
+   * the given items
+   */
+  public updateConfig(items: any) {
+    Object.keys(this.config).map((k) => {
+      if (items[k] !== undefined) {
+        if (items[k].newValue === undefined) {
+          this.config[k] = items[k];
+        } else {
+          this.config[k] = items[k].newValue;
+        }
+      }
+    });
+  }
 
-	/**
-	 * Accessor for each config element
-	 */
+  /**
+   * Accessor for each config element
+   */
 
-	public get checkTimeout(): number {
-		return this.config.checkTimeout;
-	}
+  public get checkTimeout(): number {
+    return this.config.checkTimeout;
+  }
 
-	public get langWatch(): string[] {
-		return this.config.langWatch;
-	}
+  public get langWatch(): string[] {
+    return this.config.langWatch;
+  }
 
-	public get openOption(): OpenOption {
-		return this.config.openOption;
-	}
+  public get openOption(): OpenOption {
+    return this.config.openOption;
+  }
 
-	public get notifyOnCreation(): boolean {
-		return this.config.notifyOnCreation;
-	}
+  public get notifyOnCreation(): boolean {
+    return this.config.notifyOnCreation;
+  }
 
-	public get websiteLanguage(): string {
-		return this.config.websiteLanguage;
-	}
+  public get websiteLanguage(): string {
+    return this.config.websiteLanguage;
+  }
 
-	public get animateIcon(): boolean {
-		return this.config.animateIcon;
-	}
+  public get animateIcon(): boolean {
+    return this.config.animateIcon;
+  }
 
-	public get createIfPossible(): boolean {
-		return this.config.createIfPossible;
-	}
+  public get createIfPossible(): boolean {
+    return this.config.createIfPossible;
+  }
 }

@@ -1,4 +1,4 @@
-import { ALARM_NAME } from './common';
+import { ALARM_NAME } from "./common";
 
 /*
  * The MIT License
@@ -25,36 +25,41 @@ import { ALARM_NAME } from './common';
  */
 
 export class Alarm {
-	constructor(private timeout: () => number, private _callback: () => Promise<any>) {
-		chrome.alarms.get(ALARM_NAME, (alarm) => {
-			if (!alarm) {
-				chrome.alarms.create(ALARM_NAME, {
-					delayInMinutes: timeout()
-				});
-			}
-		});
-		chrome.alarms.onAlarm.addListener(async (a) => {
-			await this.callAlarm(a);
-			return true;
-		});
-	}
+  constructor(
+    private timeout: () => number,
+    private _callback: () => Promise<any>
+  ) {
+    chrome.alarms.get(ALARM_NAME, (alarm) => {
+      if (!alarm) {
+        chrome.alarms.create(ALARM_NAME, {
+          delayInMinutes: timeout(),
+        });
+      }
+    });
+    chrome.alarms.onAlarm.addListener(async (a) => {
+      await this.callAlarm(a);
+      return true;
+    });
+  }
 
-	private async callAlarm(alarm: chrome.alarms.Alarm): Promise<boolean> {
-		if (alarm.name != ALARM_NAME) return;
-		if (this._callback) await this._callback();
-		return new Promise((res) => {
-			chrome.alarms.get(ALARM_NAME, (alarm) => {
-				if (!alarm) {
-					chrome.alarms.create(ALARM_NAME, {
-						delayInMinutes: this.timeout()
-					});
-					res(true);
-				}
-				res(false);
-			});
-		});
-	}
-	public set callback(nwCallback: () => Promise<any>) {
-		this._callback = nwCallback;
-	}
+  private async callAlarm(
+    alarm: chrome.alarms.Alarm
+  ): Promise<boolean | undefined> {
+    if (alarm.name != ALARM_NAME) return;
+    if (this._callback) await this._callback();
+    return new Promise((res) => {
+      chrome.alarms.get(ALARM_NAME, (alarm) => {
+        if (!alarm) {
+          chrome.alarms.create(ALARM_NAME, {
+            delayInMinutes: this.timeout(),
+          });
+          res(true);
+        }
+        res(false);
+      });
+    });
+  }
+  public set callback(nwCallback: () => Promise<any>) {
+    this._callback = nwCallback;
+  }
 }

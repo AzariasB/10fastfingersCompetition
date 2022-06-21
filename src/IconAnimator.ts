@@ -22,68 +22,40 @@
  * THE SOFTWARE.
  */
 
-import { CONNECTED_ICON, DISCONNECTED_ICON, ANIMATION_SPEED, tr } from './common';
+import {
+  CONNECTED_ICON,
+  DISCONNECTED_ICON,
+  ANIMATION_SPEED,
+  tr,
+} from "./common";
 
 export class IconAnimator {
-	private intervalId?: number = null;
-	private context: CanvasRenderingContext2D;
-	private baseImage: HTMLImageElement;
+  constructor() {}
 
-	constructor(baseImg: HTMLImageElement, canvas: HTMLCanvasElement) {
-		this.baseImage = baseImg;
-		this.context = canvas.getContext('2d');
-	}
+  public showConnected(availableCompets: number) {
+    const badgeMessage =
+      availableCompets == 0
+        ? tr("nothing_new")
+        : availableCompets == 1
+        ? tr("one_new")
+        : tr("several_new");
+    this.updateBrowserAction(
+      `${availableCompets ?? 0}`,
+      badgeMessage,
+      CONNECTED_ICON
+    );
+  }
 
-	public showConnected(availableCompets: number) {
-		const badgeMessage =
-			availableCompets == 0 ? tr('nothing_new') : availableCompets == 1 ? tr('one_new') : tr('several_new');
-		this.updateBrowserAction(availableCompets ? availableCompets + '' : null, badgeMessage, CONNECTED_ICON);
-	}
+  public showDisconnected() {
+    this.updateBrowserAction("", "not_connected", DISCONNECTED_ICON);
+  }
 
-	public showDisconnected() {
-		this.updateBrowserAction(null, 'not_connected', DISCONNECTED_ICON);
-	}
-
-	public beginAnimation() {
-		if (this.intervalId !== null) return;
-		this.context.drawImage(this.baseImage, 0, 0);
-		this.intervalId = setInterval(
-			(properties: { column: number; direction: number }) => {
-				if (properties.column >= this.baseImage.width || properties.column <= 0) {
-					properties.direction = -properties.direction;
-				} else {
-					this.negateColumn(properties.column);
-				}
-				properties.column += properties.direction;
-			},
-			ANIMATION_SPEED,
-			{ direction: 1, column: 1 }
-		);
-	}
-
-	private negateColumn(n: number) {
-		const data = this.context.getImageData(0, 0, this.baseImage.width, this.baseImage.height);
-		for (let col = n * 4; col < data.data.length; col += data.width * 4) {
-			data.data[col] = 255 - data.data[col];
-			data.data[col + 1] = 255 - data.data[col + 1];
-			data.data[col + 2] = 255 - data.data[col + 2];
-			data.data[col + 3] = 255;
-		}
-		this.context.putImageData(data, 0, 0);
-		chrome.browserAction.setIcon({
-			imageData: this.context.getImageData(0, 0, this.baseImage.width, this.baseImage.height)
-		});
-	}
-
-	public endAnimation() {
-		this.intervalId && clearInterval(this.intervalId);
-		chrome.browserAction.setIcon({ path: CONNECTED_ICON });
-	}
-
-	private updateBrowserAction(text: string, title: string, iconPath: string) {
-		chrome.browserAction.setBadgeText({ text: text || '' });
-		chrome.browserAction.setTitle({ title: title });
-		chrome.browserAction.setBadgeBackgroundColor({ color: text ? [ 10, 56, 0, 255 ] : [ 0, 0, 0, 0 ] });
-		chrome.browserAction.setIcon({ path: iconPath });
-	}
+  private updateBrowserAction(text: string, title: string, iconPath: string) {
+    chrome.action.setBadgeText({ text: text });
+    chrome.action.setTitle({ title: title });
+    chrome.action.setBadgeBackgroundColor({
+      color: text ? [10, 56, 0, 255] : [0, 0, 0, 0],
+    });
+    chrome.action.setIcon({ path: iconPath });
+  }
 }
