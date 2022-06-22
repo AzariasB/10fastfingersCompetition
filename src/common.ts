@@ -161,13 +161,11 @@ export function isEmptyTab(tab: chrome.tabs.Tab): boolean {
  * 0 if no text is displayed, or the text is not a number
  */
 export async function getDisplayedCompetitions(): Promise<number> {
-  return new Promise((res, rej) => {
-    chrome.action.getBadgeText({}, (text) => {
-      if (!text || !text.length) return res(0);
-      const toNumber = +text;
-      if (isNaN(toNumber)) return res(0);
-      return res(toNumber);
-    });
+  return chrome.action.getBadgeText({}).then((text) => {
+    if (!text || !text.length) return 0;
+    const toNumber = +text;
+    if (isNaN(toNumber)) return 0;
+    return toNumber;
   });
 }
 
