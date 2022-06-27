@@ -30,7 +30,7 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.11",
+    "cheerio": "^1.0.0-rc.12",
     "materialize-css": "^1.0.0"
   },
   "jest": {
