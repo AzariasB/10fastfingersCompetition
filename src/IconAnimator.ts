@@ -22,12 +22,7 @@
  * THE SOFTWARE.
  */
 
-import {
-  CONNECTED_ICON,
-  DISCONNECTED_ICON,
-  ANIMATION_SPEED,
-  tr,
-} from "./common";
+import { CONNECTED_ICON, DISCONNECTED_ICON, tr } from "./common";
 
 export class IconAnimator {
   constructor() {}
@@ -40,7 +35,7 @@ export class IconAnimator {
         ? tr("one_new")
         : tr("several_new");
     this.updateBrowserAction(
-      `${availableCompets ?? 0}`,
+      `${availableCompets || ""}`,
       badgeMessage,
       CONNECTED_ICON
     );
@@ -51,8 +46,8 @@ export class IconAnimator {
   }
 
   private updateBrowserAction(text: string, title: string, iconPath: string) {
-    chrome.action.setBadgeText({ text: text });
-    chrome.action.setTitle({ title: title });
+    chrome.action.setBadgeText({ text });
+    chrome.action.setTitle({ title });
     chrome.action.setBadgeBackgroundColor({
       color: text ? [10, 56, 0, 255] : [0, 0, 0, 0],
     });
