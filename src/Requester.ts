@@ -29,30 +29,30 @@
  * themselves
  */
 export class Requester {
-	/**
-     * 
-     * @param url target url
-     */
-	public static async get(url: string): Promise<string> {
-		const resp = await fetch(url, {
-			method: 'GET',
-			credentials: 'include'
-		});
-		return await resp.text();
-	}
+  /**
+   *
+   * @param url target url
+   */
+  public static async get(url: string): Promise<string> {
+    const resp = await fetch(url, {
+      method: "GET",
+      credentials: "include",
+    });
+    return await resp.text();
+  }
 
-	/**
-     * @param url target url
-     * @param data data send
-     */
-	public static async post(url: string, data: any): Promise<any> {
-		return await fetch(url, {
-			method: 'POST',
-			headers: {
-				'X-Requested-With': 'XMLHttpRequest'
-			},
-			credentials: 'include',
-			body: data
-		});
-	}
+  /**
+   * @param url target url
+   * @param data data send
+   */
+  public static async post(url: string, data: any): Promise<Response> {
+    return await fetch(url, {
+      method: "POST",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+      credentials: "include",
+      body: data,
+    });
+  }
 }

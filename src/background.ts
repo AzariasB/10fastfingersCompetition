@@ -200,7 +200,7 @@ class App {
   }
 
   /**
-   * Gets all the tab containg the 10fastfingers url
+   * Gets all the tab containing the 10fastfingers url
    */
   private async getWebsiteTabs(): Promise<chrome.tabs.Tab[]> {
     return new Promise((res) => {

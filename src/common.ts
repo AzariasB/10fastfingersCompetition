@@ -183,5 +183,5 @@ export function parseJsArray(stringArray: string): number[] {
   const closeIndex = stringArray.indexOf("]");
   stringArray = stringArray.substring(brackIndex + 1, closeIndex);
   if (stringArray.length === 0) return [];
-  return stringArray.split(/,\s*/).map((x) => +x.substr(1, x.length - 2));
+  return stringArray.split(/,\s*/).map((x) => +x.slice(1, x.length - 1));
 }
