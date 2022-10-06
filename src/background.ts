@@ -22,8 +22,8 @@
  * THE SOFTWARE.
  */
 
-import { IconAnimator } from "./IconAnimator";
-import { PageParseService } from "./PageParserService";
+import { IconAnimator } from './IconAnimator';
+import { PageParseService } from './PageParserService';
 import {
   getCompetitionsPage,
   getCompetitionURl,
@@ -38,11 +38,12 @@ import {
   getDisplayedCompetitions,
   OPTION_PAGE,
   isEmptyTab,
-} from "./common";
-import { Alarm } from "./Alarm";
-import { StorageService } from "./StorageService";
-import { availableLang } from "./languages";
-import { Requester } from "./Requester";
+  extractCompetitionUrl,
+} from './common';
+import { Alarm } from './Alarm';
+import { StorageService } from './StorageService';
+import { availableLang } from './languages';
+import { Requester } from './Requester';
 
 /**
  * Main class of the extension, used to coordinate
@@ -80,11 +81,11 @@ class App {
         }
       },
       {
-        urls: ["*://10fastfingers.com/*"],
+        urls: ['*://10fastfingers.com/*'],
       }
     );
     chrome.runtime.onInstalled.addListener((details) => {
-      if (details.reason === "install") {
+      if (details.reason === 'install') {
         this.openFocusedTab(chrome.extension.getURL(OPTION_PAGE));
       }
     });
@@ -124,11 +125,11 @@ class App {
   private notifyCompetCreation() {
     if (!this.storage.notifyOnCreation) return;
     chrome.notifications.create({
-      type: "basic",
+      type: 'basic',
       iconUrl: BIG_ICON,
       eventTime: NOTIFICATION_TIME,
-      title: "10fastfingers competition",
-      message: tr("one_was_created"),
+      title: '10fastfingers competition',
+      message: tr('one_was_created'),
       isClickable: true,
     });
   }
@@ -164,8 +165,11 @@ class App {
       const resp = await Requester.post(CREATE_COMPETITION_URL, formData);
       const json = await resp.json();
       if (json.url) {
-        await this.updateOrOpenTab(json.url);
-        return true;
+        const competitionUrl = extractCompetitionUrl(json.url);
+        if (competitionUrl) {
+          await this.updateOrOpenTab(json.url);
+          return true;
+        }
       }
     } catch (ex) {
       console.error(ex);
@@ -206,7 +210,7 @@ class App {
     return new Promise((res) => {
       chrome.tabs.query(
         {
-          url: join(WEBSITE_URL, "*"),
+          url: join(WEBSITE_URL, '*'),
         },
         (tabs) => res(tabs)
       );
