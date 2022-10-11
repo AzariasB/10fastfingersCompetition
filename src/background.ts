@@ -167,7 +167,7 @@ class App {
       if (json.url) {
         const competitionUrl = extractCompetitionUrl(json.url);
         if (competitionUrl) {
-          await this.updateOrOpenTab(json.url);
+          await this.updateOrOpenTab(competitionUrl);
           return true;
         }
       }

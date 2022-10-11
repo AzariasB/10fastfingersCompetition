@@ -22,15 +22,15 @@
  * THE SOFTWARE.
  */
 
-import M from "materialize-css";
+import M from 'materialize-css';
 import {
   Config,
   tr,
   OpenOption,
   CONFIG_VERSION,
   DEFAULT_CONFIG,
-} from "./common";
-import { availableLang } from "./languages";
+} from './common';
+import { availableLang } from './languages';
 
 export class OptionForm {
   private saveCallback: (c: Config) => Promise<Config>;
@@ -41,8 +41,8 @@ export class OptionForm {
     this.translatePage();
     this.setVersion();
     M.AutoInit();
-    const saveButton = <HTMLButtonElement>document.getElementById("save");
-    saveButton.addEventListener("click", () => this.saveConfig());
+    const saveButton = <HTMLButtonElement>document.getElementById('save');
+    saveButton.addEventListener('click', () => this.saveConfig());
   }
 
   /**
@@ -50,34 +50,32 @@ export class OptionForm {
    */
   public saveConfig() {
     const selected = document.querySelectorAll(
-      "#competitionLanguage option:checked"
+      '#competitionLanguage option:checked'
     );
     const langWatch = Array.from(selected).map(
       (el) => (<HTMLOptionElement>el).value
     );
     const websiteLang = (
       document.querySelector(
-        "#websiteLanguage option:checked"
+        '#websiteLanguage option:checked'
       ) as HTMLOptionElement
     ).value;
     const timeoutInput = document.querySelector(
-      "input#timeoutRefresh"
+      'input#timeoutRefresh'
     ) as HTMLInputElement;
     const timeout = Math.max(1, Math.min(60, +timeoutInput.value));
-    timeoutInput.value = timeout + "";
+    timeoutInput.value = timeout + '';
     const noCompet = (
       document.querySelector('input[name="group1"]:checked') as HTMLInputElement
     ).value;
-    const animation = (document.getElementById("animation") as HTMLInputElement)
-      .checked;
     const notification = (
-      document.getElementById("notification") as HTMLInputElement
+      document.getElementById('notification') as HTMLInputElement
     ).checked;
     const createIfPossible = (
-      document.getElementById("create_compet") as HTMLInputElement
+      document.getElementById('create_compet') as HTMLInputElement
     ).checked;
     const config: Config = {
-      animateIcon: animation,
+      animateIcon: false,
       notifyOnCreation: notification,
       websiteLanguage: websiteLang,
       version: CONFIG_VERSION,
@@ -89,7 +87,7 @@ export class OptionForm {
 
     this.saveCallback(config).then(() => {
       M.toast({
-        html: tr("option_saved"),
+        html: tr('option_saved'),
       });
     });
   }
@@ -100,7 +98,7 @@ export class OptionForm {
    */
   private setVersion() {
     const version = chrome.runtime.getManifest().version;
-    document.querySelectorAll(".version").forEach((el) => {
+    document.querySelectorAll('.version').forEach((el) => {
       const html = <HTMLElement>el;
       html.innerText = version;
     });
@@ -111,7 +109,7 @@ export class OptionForm {
    * 'translatable' class
    */
   private translatePage() {
-    document.querySelectorAll(".translatable").forEach((el) => {
+    document.querySelectorAll('.translatable').forEach((el) => {
       const htmlEl = <HTMLElement>el;
       if (htmlEl.innerText && htmlEl.innerText.length) {
         htmlEl.innerText = tr(htmlEl.innerText) || htmlEl.innerText;
@@ -128,12 +126,12 @@ export class OptionForm {
     this.createLanguageSelect(config.langWatch ?? [], config.websiteLanguage);
     this.createNoCompetOptions(config.openOption);
     const refreshInput = <HTMLInputElement>(
-      document.getElementById("timeoutRefresh")
+      document.getElementById('timeoutRefresh')
     );
-    refreshInput.value = "" + config.checkTimeout;
-    this.check("animation", config.animateIcon);
-    this.check("notification", config.notifyOnCreation);
-    this.check("create_compet", config.createIfPossible);
+    refreshInput.value = '' + config.checkTimeout;
+    // this.check('animation', config.animateIcon);
+    this.check('notification', config.notifyOnCreation);
+    this.check('create_compet', config.createIfPossible);
   }
 
   private check(id: string, val: boolean) {
@@ -145,21 +143,21 @@ export class OptionForm {
    * Create the radio buttons of 'what to do when no compet is available'
    */
   private createNoCompetOptions(chosenOption: OpenOption) {
-    const parent = document.createElement("p");
-    const label = document.createElement("label");
-    const input = document.createElement("input");
-    input.name = "group1";
-    input.type = "radio";
-    const span = document.createElement("span");
+    const parent = document.createElement('p');
+    const label = document.createElement('label');
+    const input = document.createElement('input');
+    input.name = 'group1';
+    input.type = 'radio';
+    const span = document.createElement('span');
     label.appendChild(input);
     label.appendChild(span);
     parent.appendChild(label);
-    const radioGroup = document.getElementById("openOptionGroup");
+    const radioGroup = document.getElementById('openOptionGroup');
     Object.keys(OpenOption).map((k) => {
       const val = OpenOption[k];
       const element = <HTMLParagraphElement>parent.cloneNode(true);
-      element.querySelector("span")!.innerText = tr(val) || val;
-      const input = element.querySelector("input")!;
+      element.querySelector('span')!.innerText = tr(val) || val;
+      const input = element.querySelector('input')!;
       input.checked = val == chosenOption;
       input.value = val;
       radioGroup?.appendChild(element);
@@ -173,8 +171,8 @@ export class OptionForm {
    * and select the elements already chosen by the user
    */
   private createLanguageSelect(langWatch: string[], websiteLanguage: string) {
-    const competLanguageSelect = document.getElementById("competitionLanguage");
-    const websiteLanguageSelect = document.getElementById("websiteLanguage");
+    const competLanguageSelect = document.getElementById('competitionLanguage');
+    const websiteLanguageSelect = document.getElementById('websiteLanguage');
     Object.keys(availableLang)
       .sort((a, b) =>
         availableLang[a].value.localeCompare(availableLang[b].value)
@@ -184,9 +182,9 @@ export class OptionForm {
         const flagId = language.flagId;
         console.log(flagId);
         const value = language.value;
-        const option = document.createElement("option");
-        const flag = document.createElement("span");
-        flag.classList.add("flag", "flagid" + flagId);
+        const option = document.createElement('option');
+        const flag = document.createElement('span');
+        flag.classList.add('flag', 'flagid' + flagId);
         option.value = k;
         option.innerText = value;
         option.prepend(flag);
