@@ -15,7 +15,7 @@
     "url": "https://github.com/AzariasB/10fastfingersCompetition"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.244",
+    "@types/chrome": "0.0.245",
     "@types/jest": "^29.0.0",
     "@types/materialize-css": "^1.0.11",
     "@types/node": "^20.5.0",
