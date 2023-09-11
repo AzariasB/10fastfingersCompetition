@@ -1,0 +1,70 @@
+name: Update Chrome Extension
+
+on:
+  workflow_run:
+      workflows: [CI]
+      branches: ["v2.x"]
+      types:
+        - completed
+
+
+jobs:
+  build-chrome-extension:
+    name: Build Chrome extension artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Build
+        run: |-
+          npm ci
+          npm run build
+          zip -r 10fastfingers-${{ github.event.pull_request.head.sha }}.zip dist
+
+      - name: Archive chrome-extension artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: 10fastfingers-${{ github.sha }}
+          path: 10fastfingers-${{ github.event.pull_request.head.sha }}.zip
+  
+  webstore-upload-cli
+
+    # api usage reference:
+    # * <https://developer.chrome.com/docs/webstore/using_webstore_api/>
+    # * <https://github.com/fregante/chrome-webstore-upload/blob/main/How%20to%20generate%20Google%20API%20keys.md>
+    upload-extension:
+      name: Upload extension
+      runs-on: ubuntu-latest
+      needs: build-chrome-extension
+      env:
+        EXTENSION_ID: ${{ env.EXTENSION_ID }}
+
+      steps:
+        - uses: actions/setup-node@v3
+          with:
+            node-version: "20"
+
+        - name: Download bundle artifact
+          uses: actions/download-artifact@v3
+          with:
+            name: chrome-extension-${{ github.sha }}
+
+        - name: Install webstore cli
+          run: |-
+            npm install -g chrome-webstore-upload-cli
+
+        - name: Upload step
+          run: |-
+            chrome-webstore-upload upload \\
+# --auto-publish
+              --source chrome-extension-${{ github.event.pull_request.head.sha }}.zip \\
+              --extension-id ${{ env.EXTENSION_ID }} \\
+              --client-id ${{ secrets.CI_GOOGLE_CLIENT_ID }} \\
+              --client-secret ${{ secrets.CI_GOOGLE_CLIENT_SECRET }} \\
+              --refresh-token ${{ secrets.CI_GOOGLE_REFRESH_TOKEN }}
