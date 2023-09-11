@@ -33,8 +33,7 @@ jobs:
           name: 10fastfingers-${{ github.sha }}
           path: 10fastfingers-${{ github.event.pull_request.head.sha }}.zip
   
-  webstore-upload-cli
-
+  webstore-upload-cli:
     # api usage reference:
     # * <https://developer.chrome.com/docs/webstore/using_webstore_api/>
     # * <https://github.com/fregante/chrome-webstore-upload/blob/main/How%20to%20generate%20Google%20API%20keys.md>
