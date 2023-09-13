@@ -14,16 +14,9 @@
       "matchStrings": [
         "\\s*\"version\":\\s*\"(?<currentValue>.*)\","
       ],
-      "depNameTemplate": "10fastfingers-competition",
-      "datasourceTemplate": "npm"
-    }
-  ],
-  "packageRules": [
-    {
-      "description": "Automatically merge minor and patch-level updates",
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true,
-      "automergeType": "branch"
+      "depNameTemplate": "10fastfingersCompetition",
+      "datasourceTemplate": "npm",
+      "packageNameTemplate": "github:AzariasB/10fastfingersCompetition"
     }
   ]
 }
