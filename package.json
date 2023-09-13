@@ -1,6 +1,6 @@
 {
   "name": "10fastfingers-competition",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Chrome extension to show the number of available competitions for a given langugage",
   "main": "index.js",
   "scripts": {

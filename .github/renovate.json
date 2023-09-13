@@ -1,0 +1,29 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    "group:allNonMajor"
+  ],
+  "bumpVersion": "patch",
+  "assignees": ["AzariasB"],
+  "timezone": "Europe/Paris",
+  "regexManagers": [
+    {
+      "description": "Ensure the package.json and manifest.json have the same version",
+      "fileMatch": ["^dist/manifest.json$"],
+      "matchStrings": [
+        "\\s*\"version\":\\s*\"(?<currentValue>.*)\","
+      ],
+      "depNameTemplate": "10fastfingers-competition",
+      "datasourceTemplate": "npm"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Automatically merge minor and patch-level updates",
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "branch"
+    }
+  ]
+}

@@ -25,13 +25,13 @@ jobs:
         run: |
           npm ci
           npm run build
-          zip -r 10fastfingers-${{ github.event.pull_request.head.sha }}.zip dist
+          zip -r 10fastfingers-${{ github.sha }}.zip dist
 
       - name: Archive chrome-extension artifact
         uses: actions/upload-artifact@v3
         with:
           name: 10fastfingers-${{ github.sha }}
-          path: 10fastfingers-${{ github.event.pull_request.head.sha }}.zip
+          path: 10fastfingers-${{ github.sha }}.zip
   # api usage reference:
   # * <https://developer.chrome.com/docs/webstore/using_webstore_api/>
   # * <https://github.com/fregante/chrome-webstore-upload/blob/main/How%20to%20generate%20Google%20API%20keys.md>
@@ -48,11 +48,12 @@ jobs:
         with:
           name: 10fastfingers-${{ github.sha }}
       - name: Install webstore cli
-        run: npm i -g "chrome-webstore-upload-cli"
+        run: npm i -g chrome-webstore-upload-cli
       - name: Upload step
         run: |
           chrome-webstore-upload upload \\
-            --source "10fastfingers-${{ github.event.pull_request.head.sha }}.zip" \\
+            --auto-publish
+            --source "10fastfingers-${{ github.sha }}.zip" \\
             --extension-id "${{ env.EXTENSION_ID }}" \\
             --client-id "${{ secrets.CI_GOOGLE_CLIENT_ID }}" \\
             --client-secret "${{ secrets.CI_GOOGLE_CLIENT_SECRET }}" \\
