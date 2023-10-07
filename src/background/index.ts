@@ -36,12 +36,11 @@ import {
   CREATE_COMPETITION_URL,
   isCompetitionSave,
   getDisplayedCompetitions,
-  OPTION_PAGE,
   isEmptyTab,
   extractCompetitionUrl,
   availableLang,
 } from "../common";
-import { Alarm } from "./Alarm";
+import { setupAlarm } from "./alarm";
 import { StorageService } from "./StorageService";
 import { Requester } from "./Requester";
 
@@ -51,12 +50,11 @@ import { Requester } from "./Requester";
  */
 class App {
   private readonly iconAnimator: IconAnimator;
-  private readonly alarm: Alarm;
   private readonly storage: StorageService;
 
   constructor() {
     this.storage = new StorageService();
-    this.alarm = new Alarm(
+    setupAlarm(
       () => this.storage.checkTimeout,
       () => this.updateBadge(),
     );
@@ -86,7 +84,7 @@ class App {
     );
     chrome.runtime.onInstalled.addListener((details) => {
       if (details.reason === "install") {
-        this.openFocusedTab(chrome.runtime.getURL(OPTION_PAGE));
+        chrome.runtime.openOptionsPage();
       }
     });
   }
@@ -271,4 +269,4 @@ class App {
   }
 }
 
-global.app = new App();
+new App();

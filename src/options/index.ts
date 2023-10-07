@@ -24,25 +24,17 @@
 
 import "./custom.css";
 
-import { Config } from "../common/common";
+import type { Config } from "../common/common";
 import { OptionForm } from "./OptionForm";
 
-class App {
-  private optForm: OptionForm;
-
-  constructor() {
-    chrome.storage.sync.get((items: Config) => {
-      this.optForm = new OptionForm(items ?? {}, this.saveConfig);
-    });
-  }
-
-  private async saveConfig(conf: Config): Promise<Config> {
-    return new Promise<Config>((res) => {
-      chrome.storage.sync.set(conf, () => {
-        res(conf);
-      });
-    });
-  }
+async function saveConfig(conf: Config) {
+  await chrome.storage.sync.set(conf);
+  return conf;
 }
 
-global.app = new App();
+async function main() {
+  const items = (await chrome.storage.sync.get()) as Config;
+  new OptionForm(items ?? {}, saveConfig);
+}
+
+main();

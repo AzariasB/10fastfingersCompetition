@@ -24,42 +24,29 @@
 
 import { ALARM_NAME } from "../common";
 
-export class Alarm {
-  constructor(
-    private timeout: () => number,
-    private _callback: () => Promise<any>,
-  ) {
-    chrome.alarms.get(ALARM_NAME, (alarm) => {
-      if (!alarm) {
-        chrome.alarms.create(ALARM_NAME, {
-          delayInMinutes: timeout(),
-        });
-      }
-    });
-    chrome.alarms.onAlarm.addListener(async (a) => {
-      await this.callAlarm(a);
-      return true;
-    });
+function alarmCallback(
+  timeout: () => number,
+  callback: () => Promise<unknown>,
+) {
+  return async (alarm: chrome.alarms.Alarm) => {
+    if (alarm.name != ALARM_NAME) return;
+    await callback();
+    const exists = await chrome.alarms.get(ALARM_NAME);
+    if (!exists) {
+      await chrome.alarms.create(ALARM_NAME, { delayInMinutes: timeout() });
+    }
+    return true;
+  };
+}
+
+export async function setupAlarm(
+  timeout: () => number,
+  callback: () => Promise<any>,
+) {
+  const alarm = await chrome.alarms.get(ALARM_NAME);
+  if (!alarm) {
+    await chrome.alarms.create(ALARM_NAME, { delayInMinutes: timeout() });
   }
 
-  private async callAlarm(
-    alarm: chrome.alarms.Alarm,
-  ): Promise<boolean | undefined> {
-    if (alarm.name != ALARM_NAME) return;
-    if (this._callback) await this._callback();
-    return new Promise((res) => {
-      chrome.alarms.get(ALARM_NAME, (alarm) => {
-        if (!alarm) {
-          chrome.alarms.create(ALARM_NAME, {
-            delayInMinutes: this.timeout(),
-          });
-          res(true);
-        }
-        res(false);
-      });
-    });
-  }
-  public set callback(nwCallback: () => Promise<any>) {
-    this._callback = nwCallback;
-  }
+  chrome.alarms.onAlarm.addListener(alarmCallback(timeout, callback));
 }
