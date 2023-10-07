@@ -8,10 +8,10 @@
     "build": "vite build",
     "dev": "vite dev",
     "test": "jest",
-    "format:check": "prettier --check \"src/**/*.ts\"",
-    "format": "prettier --write \"src/**/*.ts\"",
-    "lint": "eslint \"src/**/*.ts\" --max-warnings=0",
-    "lint:fix": "eslint \"src/**/*.ts\" --fix"
+    "format:check": "prettier --check \"**/*.ts\"",
+    "format": "prettier --write \"**/*.ts\"",
+    "lint": "eslint \"**/*.ts\" --max-warnings=0",
+    "lint:fix": "eslint \"**/*.ts\" --fix"
   },
   "author": "AzariasB",
   "license": " MIT",

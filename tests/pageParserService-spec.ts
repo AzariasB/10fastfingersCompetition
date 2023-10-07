@@ -38,7 +38,7 @@ Requester.get = async function (): Promise<string> {
 
 async function readFileData(): Promise<string> {
   return readFile("./tests/fakeData.txt").then((file) =>
-    file.toString("utf-8")
+    file.toString("utf-8"),
   );
 }
 

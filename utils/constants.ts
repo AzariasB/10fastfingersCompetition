@@ -1,1 +1,1 @@
-export const outputFolderName = 'dist';
+export const outputFolderName = "dist";
