@@ -29,7 +29,7 @@ import {
   is10fastFingersUrl,
   parseJsArray,
   extractCompetitionUrl,
-} from '../src/common/common';
+} from '../src/common';
 
 describe('Common methods', () => {
   it('Should join elements togeter', () => {
