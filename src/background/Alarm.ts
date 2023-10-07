@@ -1,9 +1,7 @@
-import { ALARM_NAME } from "./common";
-
 /*
  * The MIT License
  *
- * Copyright 2019 Azarias Boutin.
+ * Copyright 2023 AzariasB.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,10 +22,12 @@ import { ALARM_NAME } from "./common";
  * THE SOFTWARE.
  */
 
+import { ALARM_NAME } from "../common";
+
 export class Alarm {
   constructor(
     private timeout: () => number,
-    private _callback: () => Promise<any>
+    private _callback: () => Promise<any>,
   ) {
     chrome.alarms.get(ALARM_NAME, (alarm) => {
       if (!alarm) {
@@ -43,7 +43,7 @@ export class Alarm {
   }
 
   private async callAlarm(
-    alarm: chrome.alarms.Alarm
+    alarm: chrome.alarms.Alarm,
   ): Promise<boolean | undefined> {
     if (alarm.name != ALARM_NAME) return;
     if (this._callback) await this._callback();

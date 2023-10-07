@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 Azarias Boutin.
+ * Copyright 2023 AzariasB.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,37 +22,35 @@
  * THE SOFTWARE.
  */
 
-/**
- * Class used to interface with the ajax request,
- * to be able to change the framework to do the
- * requests without having to change the requests
- * themselves
- */
-export class Requester {
-  /**
-   *
-   * @param url target url
-   */
-  public static async get(url: string): Promise<string> {
-    const resp = await fetch(url, {
-      method: "GET",
-      credentials: "include",
-    });
-    return await resp.text();
+import { CONNECTED_ICON, DISCONNECTED_ICON, tr } from "../common";
+
+export class IconAnimator {
+  constructor() {}
+
+  public showConnected(availableCompets: number) {
+    const badgeMessage =
+      availableCompets == 0
+        ? tr("nothing_new")
+        : availableCompets == 1
+        ? tr("one_new")
+        : tr("several_new");
+    this.updateBrowserAction(
+      `${availableCompets || ""}`,
+      badgeMessage,
+      CONNECTED_ICON,
+    );
   }
 
-  /**
-   * @param url target url
-   * @param data data send
-   */
-  public static async post(url: string, data: any): Promise<Response> {
-    return await fetch(url, {
-      method: "POST",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-      },
-      credentials: "include",
-      body: data,
+  public showDisconnected() {
+    this.updateBrowserAction("", "not_connected", DISCONNECTED_ICON);
+  }
+
+  private updateBrowserAction(text: string, title: string, iconPath: string) {
+    chrome.action.setBadgeText({ text });
+    chrome.action.setTitle({ title });
+    chrome.action.setBadgeBackgroundColor({
+      color: text ? [10, 56, 0, 255] : [0, 0, 0, 0],
     });
+    chrome.action.setIcon({ path: iconPath });
   }
 }

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 Azarias Boutin.
+ * Copyright 2023 AzariasB.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,35 +22,6 @@
  * THE SOFTWARE.
  */
 
-import { CONNECTED_ICON, DISCONNECTED_ICON, tr } from "./common";
-
-export class IconAnimator {
-  constructor() {}
-
-  public showConnected(availableCompets: number) {
-    const badgeMessage =
-      availableCompets == 0
-        ? tr("nothing_new")
-        : availableCompets == 1
-        ? tr("one_new")
-        : tr("several_new");
-    this.updateBrowserAction(
-      `${availableCompets || ""}`,
-      badgeMessage,
-      CONNECTED_ICON
-    );
-  }
-
-  public showDisconnected() {
-    this.updateBrowserAction("", "not_connected", DISCONNECTED_ICON);
-  }
-
-  private updateBrowserAction(text: string, title: string, iconPath: string) {
-    chrome.action.setBadgeText({ text });
-    chrome.action.setTitle({ title });
-    chrome.action.setBadgeBackgroundColor({
-      color: text ? [10, 56, 0, 255] : [0, 0, 0, 0],
-    });
-    chrome.action.setIcon({ path: iconPath });
-  }
-}
+export * from "./common";
+export * from "./languages";
+export * from "./constants";

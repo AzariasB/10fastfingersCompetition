@@ -10,14 +10,6 @@
             "problemMatcher": [
                 "$eslint-stylish"
             ],
-        },
-        {
-            "label": "watch",
-            "type":  "npm",
-            "script": "watch",
-            "problemMatcher": [
-                "$eslint-stylish"
-            ],
         }
     ]
 }

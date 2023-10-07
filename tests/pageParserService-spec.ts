@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 Azarias Boutin.
+ * Copyright 2023 AzariasB.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,8 +25,8 @@
 import * as chrome from "sinon-chrome";
 global["chrome"] = chrome as any;
 import { readFile } from "node:fs/promises";
-import { Requester } from "../src/Requester";
-import { PageParseService } from "../src/PageParserService";
+import { Requester } from "../src/background/Requester";
+import { PageParseService } from "../src/background/PageParserService";
 
 let fileContent = "";
 let requesterGetCalled = false;

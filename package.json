@@ -1,12 +1,17 @@
 {
   "name": "10fastfingers-competition",
-  "version": "3.0.1",
-  "description": "Chrome extension to show the number of available competitions for a given langugage",
+  "displayName": "10fastfingerCompetition",
+  "version": "4.0.0",
+  "description": "Knowing if there is a new competition in your langage",
   "main": "index.js",
   "scripts": {
-    "watch": "webpack --config webpack/webpack.dev.js --watch",
-    "build": "webpack --config webpack/webpack.prod.js",
-    "test": "jest"
+    "build": "vite build",
+    "dev": "vite dev",
+    "test": "jest",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts\" --max-warnings=0",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix"
   },
   "author": "AzariasB",
   "license": " MIT",
@@ -20,18 +25,25 @@
     "@types/materialize-css": "^1.0.11",
     "@types/node": "^20.5.0",
     "@types/sinon-chrome": "^2.2.11",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.1",
     "jest": "^29.0.0",
+    "prettier": "^3.0.3",
     "sinon-chrome": "^3.0.1",
     "ts-jest": "^29.0.0",
     "ts-loader": "^9.4.4",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6",
+    "vite": "^4.4.11",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "cheerio": "^1.0.0-rc.12",
-    "materialize-css": "^1.0.0"
+    "@materializecss/materialize": "^2.0.3-alpha",
+    "cheerio": "^1.0.0-rc.12"
   },
   "jest": {
     "testEnvironment": "node",

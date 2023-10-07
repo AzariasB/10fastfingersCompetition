@@ -1,20 +1,25 @@
 {
   "manifest_version": 3,
   "name": "10fastfingerCompetition",
-  "description": "Knowing if there is a new competition in your langage",
   "version": "3.0.1",
-  "background": {
-    "service_worker": "background.js"
-  },
   "default_locale": "en",
-  "options_page": "option.html",
-  "icons": {
-    "128": "pictures/big_icon.png"
+  "author": "AzariasB",
+  "description": "Knowing if there is a new competition in your langage",
+  "options_ui": {
+    "open_in_tab": false,
+    "page": "src/options/index.html"
+  },
+  "background": {
+    "service_worker": "src/background/index.js",
+    "type": "module"
   },
   "action": {
     "default_icon": {
-      "16": "pictures/icon.png"
+      "16": "/img/icon.png"
     }
+  },
+  "icons": {
+    "128": "/img/big_icon.png"
   },
   "permissions": [
     "webRequest",
@@ -24,5 +29,7 @@
     "tabs",
     "notifications"
   ],
-  "host_permissions": ["*://10fastfingers.com/"]
+  "host_permissions": [
+    "*://10fastfingers.com/"
+  ]
 }

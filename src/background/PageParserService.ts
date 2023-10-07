@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 Azarias Boutin.
+ * Copyright 2023 AzariasB.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,24 +22,23 @@
  * THE SOFTWARE.
  */
 
-import { availableLang } from "./languages";
+import { availableLang, parseJsArray } from "../common";
 import { Requester } from "./Requester";
-import { parseJsArray } from "./common";
-import { Element as CheerioElement, Cheerio, load } from "cheerio";
+import { Element as CheerioElement, load } from "cheerio";
 
 const clearRegexes = [
   new RegExp("<script[^>]*>(.|\\s)*?<\\/script>", "g"), //rm script tags
   new RegExp("url\\(['\"][\\d\\D]*?.png['\"]\\)", "g"), //rm url attributes in images
   new RegExp(
     "<[a-z]*.*?style=['\"].*?url\\(.*?\\).*?['\"].*?>.*?<\\/[a-z]*>",
-    "ig"
+    "ig",
   ), //rm anchors
   new RegExp("<link[^>]*?>", "g"), //rm links
   new RegExp("<img[^>]*?\\/?>", "g"), // rm images
 ];
 
 const competListRegex =
-  /\s*var\s+competitions_participated\s*=\s*\[(\"\d+\",)*(\"\d+\")?\];/;
+  /\s*var\s+competitions_participated\s*=\s*\[("\d+",)*("\d+")?\];/;
 
 interface CompetitionData {
   id: number;
@@ -54,7 +53,7 @@ export class PageParseService {
    */
   public static async parse(
     pageUrl: string,
-    langs: string[]
+    langs: string[],
   ): Promise<string[]> {
     return await new PageParseService(pageUrl).getMyCompetitions(langs);
   }
@@ -90,7 +89,7 @@ export class PageParseService {
    */
   private readPageCompetitions(
     cleanHtml: string,
-    flagIds: number[]
+    flagIds: number[],
   ): CompetitionData[] {
     const $ = load(cleanHtml);
     const rows = $("#join-competition-table tbody").first().find("tr");
@@ -108,11 +107,11 @@ export class PageParseService {
    * @returns A function to turn a row into a competition data (null if it does not have the flag in the list)
    */
   private hasGreenStamp(
-    flagIds: number[]
+    flagIds: number[],
   ): (
     this: CheerioElement,
     i: number,
-    el: CheerioElement
+    el: CheerioElement,
   ) => CompetitionData | null {
     return (_idx, el: CheerioElement): CompetitionData | null => {
       const $td = load(el)("td");

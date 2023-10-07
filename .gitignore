@@ -4,3 +4,5 @@ dist/*.js
 tmp/
 dist.zip
 dist.crx
+dist
+public/manifest.json

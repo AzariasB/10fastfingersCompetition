@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 Azarias Boutin.
+ * Copyright 2023 AzariasB.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-import { Config, OpenOption, DEFAULT_CONFIG } from "./common";
+import { Config, OpenOption, DEFAULT_CONFIG } from "../common/common";
 
 /**
  * Service used to interface with chrome sync storage
@@ -45,25 +45,22 @@ export class StorageService {
    * Retrieves the config in the sync memory
    */
   private async getConfig(): Promise<Config> {
-    return new Promise((res, rej) => {
-      chrome.storage.sync.get((items: Config) => res(items));
-    });
+    return chrome.storage.sync.get() as Promise<Config>;
   }
 
   /**
    * Saves the config in the sync storage
    */
   private async saveConfig(item: Config): Promise<Config> {
-    return new Promise((res, rej) => {
-      chrome.storage.sync.set(item, () => res(item));
-    });
+    await chrome.storage.sync.set(item);
+    return item;
   }
 
   /**
    * Merges the current config object with
    * the given items
    */
-  public updateConfig(items: any) {
+  public updateConfig(items: Record<string, any>) {
     Object.keys(this.config).map((k) => {
       if (items[k] !== undefined) {
         if (items[k].newValue === undefined) {

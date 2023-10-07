@@ -1,0 +1,71 @@
+{
+	"animation_option": {
+		"message": "Animation de chargement"
+	},
+	"choose_language": {
+		"message": "Choisissez un language dans la liste"
+	},
+	"choose_languages": {
+		"message": "Choisissez plusieurs language dans la liste"
+	},
+	"competition_language": {
+		"message": "Langues des compétitions auxquelles vous souhaitez participer"
+	},
+	"confirm_save": {
+		"message": "Enregistrer"
+	},
+	"noCompet_option": {
+		"message": "Page par défaut quand aucune compétition n'est disponible"
+	},
+	"not_connected": {
+		"message": "Un problème est survenu en accédant à 10fastfingers"
+	},
+	"nothing_new": {
+		"message": "Pas de compétitions disponible"
+	},
+	"notification_option": {
+		"message": "Notification quand une compétition est disponible"
+	},
+	"one_new": {
+		"message": "Une compétition est disponible"
+	},
+	"one_was_created": {
+		"message": "Une nouvelle compétition est disponible"
+	},
+	"open_advanced_page": {
+		"message": "Ouvrir la page de test avancés"
+	},
+	"open_competition_page": {
+		"message": "Ouvrir la page des compétitions"
+	},
+	"open_custom_page": {
+		"message": "Ouvrir la page de test customisé"
+	},
+	"open_multiplayer_page": {
+		"message": "Ouvrir la page du jeu multijoeur"
+	},
+	"open_test_page": {
+		"message": "Ouvrir la page de test"
+	},
+	"open_text_practice_page": {
+		"message": "Ouvrir la page de pratique sur texte"
+	},
+	"open_top_1000_page": {
+		"message": "Ouvrir la page du top 1000"
+	},
+	"option_saved": {
+		"message": "Toutes les modification ont étés enregistrées"
+	},
+	"refresh_option": {
+		"message": "Rafraîchir compteur de compétition tous les (minutes):"
+	},
+	"several_new": {
+		"message": "Des compétitions sont disponibles"
+	},
+	"try_create_compet": {
+		"message": "Créer une compétition si possible"
+	},
+	"website_language": {
+		"message": "Langue de 10fastfinger pour les pages de test"
+	}
+}

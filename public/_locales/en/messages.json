@@ -1,0 +1,71 @@
+{
+	"animation_option": {
+		"message": "Loading animation"
+	},
+	"choose_language": {
+		"message": "Choose a single language from the list"
+	},
+	"choose_languages": {
+		"message": "Choose several languages from the list"
+	},
+	"competition_language": {
+		"message": "Languages of the competitions you want to compete in"
+	},
+	"confirm_save": {
+		"message": "Save"
+	},
+	"noCompet_option": {
+		"message": "Page to access when no competition is available"
+	},
+	"not_connected": {
+		"message": "There was a problem when accessing 10fastfingers"
+	},
+	"nothing_new": {
+		"message": "There's no new competition"
+	},
+	"notification_option": {
+		"message": "Notification when a new competition is created"
+	},
+	"one_new": {
+		"message": "There's one available competition"
+	},
+	"one_was_created": {
+		"message": "A new competition is available"
+	},
+	"open_advanced_page": {
+		"message": "Open the advanced test page"
+	},
+	"open_competition_page": {
+		"message": "Open the competitions page"
+	},
+	"open_custom_page": {
+		"message": "Open the custom test page"
+	},
+	"open_multiplayer_page": {
+		"message": "Open the multiplayer game page"
+	},
+	"open_test_page": {
+		"message": "Open default test page"
+	},
+	"open_text_practice_page": {
+		"message": "Open the text practice page"
+	},
+	"open_top_1000_page": {
+		"message": "Open the top 1000 page"
+	},
+	"option_saved": {
+		"message": "All modifications were saved"
+	},
+	"refresh_option": {
+		"message": "Check for new competitions every(minutes) :"
+	},
+	"several_new": {
+		"message": "There are multiple available competitions"
+	},
+	"try_create_compet": {
+		"message": "Create competition if none available"
+	},
+	"website_language": {
+		"message": "Language of the website for the test pages"
+	}
+}

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2019 Azarias Boutin.
+ * Copyright 2023 AzariasB.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,34 +22,21 @@
  * THE SOFTWARE.
  */
 
-/**
- * Simple joiner to 'encode' urls
- */
-export const join = (...args: string[]): string => args.join('/');
-export const CONFIG_VERSION = 1;
+import { CONFIG_VERSION, WEBSITE_URL, join } from "./constants";
 
 /**
  * Faster translator access
  */
 export const tr = chrome.i18n.getMessage;
-export const WEBSITE_URL = 'https://10fastfingers.com';
-export const CREATE_COMPETITION_URL = join(WEBSITE_URL, 'competitions', 'add');
-export const ALARM_NAME = 'typingTestRefresh';
-export const CONNECTED_ICON = 'pictures/icon.png';
-export const DISCONNECTED_ICON = 'pictures/icon_gray.png';
-export const BIG_ICON = 'pictures/big_icon.png';
-export const OPTION_PAGE = 'option.html';
-export const ANIMATION_SPEED = 20;
-export const NOTIFICATION_TIME = 2000;
 
 export enum OpenOption {
-  OpenTestPage = 'open_test_page',
-  OpenCompetitionPage = 'open_competition_page',
-  OpenAdvanced = 'open_advanced_page',
-  OpenCustom = 'open_custom_page',
-  OpenMultiPlayer = 'open_multiplayer_page',
-  OpenTextPractice = 'open_text_practice_page',
-  OpenTop1000 = 'open_top_1000_page',
+  OpenTestPage = "open_test_page",
+  OpenCompetitionPage = "open_competition_page",
+  OpenAdvanced = "open_advanced_page",
+  OpenCustom = "open_custom_page",
+  OpenMultiPlayer = "open_multiplayer_page",
+  OpenTextPractice = "open_text_practice_page",
+  OpenTop1000 = "open_top_1000_page",
 }
 
 export interface Config {
@@ -64,13 +51,13 @@ export interface Config {
 }
 
 const PAGES_URL = {
-  [OpenOption.OpenTestPage]: 'typing-test',
-  [OpenOption.OpenAdvanced]: 'advanced-typing-test',
-  [OpenOption.OpenCompetitionPage]: 'competitions',
-  [OpenOption.OpenCustom]: 'widgets/typingtest',
-  [OpenOption.OpenMultiPlayer]: 'multiplayer',
-  [OpenOption.OpenTextPractice]: 'text-practice/new',
-  [OpenOption.OpenTop1000]: 'top1000',
+  [OpenOption.OpenTestPage]: "typing-test",
+  [OpenOption.OpenAdvanced]: "advanced-typing-test",
+  [OpenOption.OpenCompetitionPage]: "competitions",
+  [OpenOption.OpenCustom]: "widgets/typingtest",
+  [OpenOption.OpenMultiPlayer]: "multiplayer",
+  [OpenOption.OpenTextPractice]: "text-practice/new",
+  [OpenOption.OpenTop1000]: "top1000",
 };
 
 const EMPY_TAB_REGEX = /^chrome:\/\/newtab?\/$/;
@@ -81,11 +68,11 @@ const COMPETITION_URL_REGEX =
 export const DEFAULT_CONFIG: Config = {
   version: CONFIG_VERSION,
   checkTimeout: 5,
-  langWatch: ['english'],
+  langWatch: ["english"],
   openOption: OpenOption.OpenTestPage,
   notifyOnCreation: false,
   animateIcon: true,
-  websiteLanguage: 'english',
+  websiteLanguage: "english",
   createIfPossible: true,
 };
 
@@ -109,7 +96,7 @@ export const getCompetitionURl = (competitionUrl: string): string =>
  *
  * @param language language of the typing test
  */
-export const getTypingTestUrl = (language: string = 'english'): string =>
+export const getTypingTestUrl = (language: string = "english"): string =>
   join(WEBSITE_URL, PAGES_URL[OpenOption.OpenTestPage], language);
 
 /**
@@ -137,14 +124,14 @@ export const getAlternatePage = (opOp: OpenOption, lang: string) => {
  * sent when a competition is completed by the user
  */
 export function isCompetitionSave(
-  details: chrome.webRequest.WebResponseCacheDetails
+  details: chrome.webRequest.WebResponseCacheDetails,
 ) {
   return (
     details.initiator &&
     details.initiator.indexOf(WEBSITE_URL) != -1 &&
-    details.method === 'POST' &&
-    details.type === 'xmlhttprequest' &&
-    details.url.endsWith('save_result')
+    details.method === "POST" &&
+    details.type === "xmlhttprequest" &&
+    details.url.endsWith("save_result")
   );
 }
 
@@ -155,7 +142,7 @@ export function isCompetitionSave(
  * @param tab tab that can be empty
  */
 export function isEmptyTab(tab: chrome.tabs.Tab): boolean {
-  return tab && EMPY_TAB_REGEX.test(tab.url ?? '');
+  return tab && EMPY_TAB_REGEX.test(tab.url ?? "");
 }
 
 /**
@@ -181,8 +168,8 @@ export async function getDisplayedCompetitions(): Promise<number> {
 export function parseJsArray(stringArray: string): number[] {
   //If emptry string or empty value, return empty array
   if (!stringArray || !stringArray.length) return [];
-  const brackIndex = stringArray.indexOf('[');
-  const closeIndex = stringArray.indexOf(']');
+  const brackIndex = stringArray.indexOf("[");
+  const closeIndex = stringArray.indexOf("]");
   stringArray = stringArray.substring(brackIndex + 1, closeIndex);
   if (stringArray.length === 0) return [];
   return stringArray.split(/,\s*/).map((x) => +x.slice(1, x.length - 1));

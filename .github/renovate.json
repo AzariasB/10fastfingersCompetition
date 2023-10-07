@@ -7,16 +7,7 @@
   "bumpVersion": "patch",
   "assignees": ["AzariasB"],
   "timezone": "Europe/Paris",
-  "regexManagers": [
-    {
-      "description": "Ensure the package.json and manifest.json have the same version",
-      "fileMatch": ["^dist/manifest.json$"],
-      "matchStrings": [
-        "\\s*\"version\":\\s*\"(?<currentValue>.*)\","
-      ],
-      "depNameTemplate": "10fastfingersCompetition",
-      "datasourceTemplate": "npm",
-      "packageNameTemplate": "github:AzariasB/10fastfingersCompetition"
-    }
+  "schedule": [
+    "before 6pm on monday"
   ]
 }
