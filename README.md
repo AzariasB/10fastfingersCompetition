@@ -1,6 +1,6 @@
 # 10fastfingersCompetition
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/AzariasB/10fastfingersCompetition/workflow.yml)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/AzariasB/10fastfingersCompetition/test.yml)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/AzariasB/10fastfingersCompetition.svg)
 ![Chrome Web Store](https://img.shields.io/chrome-web-store/rating/jgnpbbnjekmldfdbgkmijclckednldll)
 ![Chrome Web Store](https://img.shields.io/chrome-web-store/users/jgnpbbnjekmldfdbgkmijclckednldll)
