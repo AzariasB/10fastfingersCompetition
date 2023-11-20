@@ -1,7 +1,7 @@
 {
   "name": "10fastfingers-competition",
   "displayName": "10fastfingerCompetition",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "Knowing if there is a new competition in your langage",
   "main": "index.js",
   "scripts": {
@@ -37,7 +37,7 @@
     "ts-loader": "^9.4.4",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6",
-    "vite": "^4.4.11"
+    "vite": "^5.0.0"
   },
   "dependencies": {
     "@materializecss/materialize": "^2.0.3-alpha",
