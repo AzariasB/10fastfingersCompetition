@@ -32,8 +32,8 @@ export class IconAnimator {
       availableCompets == 0
         ? tr("nothing_new")
         : availableCompets == 1
-        ? tr("one_new")
-        : tr("several_new");
+          ? tr("one_new")
+          : tr("several_new");
     this.updateBrowserAction(
       `${availableCompets || ""}`,
       badgeMessage,
