@@ -46,7 +46,7 @@ jobs:
         with:
           node-version: "20"
       - name: Download bundle artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: 10fastfingers-${{ github.sha }}
       - name: Install webstore cli
