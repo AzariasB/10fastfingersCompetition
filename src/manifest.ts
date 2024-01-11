@@ -6,7 +6,7 @@ const manifest: chrome.runtime.ManifestBase = {
   name: pkg.displayName,
   version: pkg.version,
   default_locale: "en",
-  author: {email: pkg.author},
+  author: { email: pkg.author },
   description: pkg.description,
   options_ui: {
     open_in_tab: false,
