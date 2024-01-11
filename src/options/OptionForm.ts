@@ -24,7 +24,7 @@
 
 import "@materializecss/materialize/dist/css/materialize.css";
 
-import { M } from "@materializecss/materialize";
+import { M } from "@materializecss/materialize/dist/js/materialize";
 import {
   Config,
   tr,
