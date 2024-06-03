@@ -6,8 +6,5 @@
   ],
   "bumpVersion": "patch",
   "assignees": ["AzariasB"],
-  "timezone": "Europe/Paris",
-  "schedule": [
-    "before 4am on the first day of the month"
-  ]
+  "timezone": "Europe/Paris"
 }
