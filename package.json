@@ -1,7 +1,7 @@
 {
   "name": "10fastfingers-competition",
   "displayName": "10fastfingerCompetition",
-  "version": "4.0.11",
+  "version": "4.0.12",
   "description": "Knowing if there is a new competition in your langage",
   "main": "index.js",
   "type": "module",
