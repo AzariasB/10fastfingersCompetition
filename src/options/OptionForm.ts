@@ -21,10 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+import "@materializecss/materialize/dist/css/materialize.min.css";
 
-import "@materializecss/materialize/dist/css/materialize.css";
-
-import { M } from "@materializecss/materialize/dist/js/materialize";
+import { M } from "@materializecss/materialize/dist/js/materialize.js";
 import {
   Config,
   tr,

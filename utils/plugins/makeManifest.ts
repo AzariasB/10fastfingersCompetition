@@ -8,7 +8,10 @@ const outDir = resolve(__dirname, "..", "..", "public");
 export default function makeManifest(): PluginOption {
   return {
     name: "make-manifest",
-    buildEnd() {
+    buildEnd(err) {
+      if (err) {
+        return;
+      }
       if (!existsSync(outDir)) {
         mkdirSync(outDir);
       }

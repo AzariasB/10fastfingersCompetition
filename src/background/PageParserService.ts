@@ -24,7 +24,7 @@
 
 import { availableLang, parseJsArray } from "../common";
 import { Requester } from "./Requester";
-import { Element as CheerioElement, load } from "cheerio";
+import { load } from "cheerio";
 
 const clearRegexes = [
   new RegExp("<script[^>]*>(.|\\s)*?<\\/script>", "g"), //rm script tags
@@ -108,12 +108,8 @@ export class PageParseService {
    */
   private hasGreenStamp(
     flagIds: number[],
-  ): (
-    this: CheerioElement,
-    i: number,
-    el: CheerioElement,
-  ) => CompetitionData | null {
-    return (_idx, el: CheerioElement): CompetitionData | null => {
+  ): (this, i: number, el) => CompetitionData | null {
+    return (_idx, el): CompetitionData | null => {
       const $td = load(el)("td");
       const flagSpan = $td.find("span:first-child").attr("id");
       const flag = +(flagSpan?.replace("flagid", "") ?? "0");
