@@ -1,7 +1,7 @@
 {
   "name": "10fastfingers-competition",
   "displayName": "10fastfingerCompetition",
-  "version": "4.0.15",
+  "version": "4.0.16",
   "description": "Knowing if there is a new competition in your langage",
   "main": "index.js",
   "type": "module",
@@ -21,7 +21,7 @@
     "url": "https://github.com/AzariasB/10fastfingersCompetition"
   },
   "devDependencies": {
-    "@types/chrome": "0.0.270",
+    "@types/chrome": "0.0.276",
     "@types/jest": "^29.5.12",
     "@types/materialize-css": "^1.0.14",
     "@types/node": "^22.5.2",
@@ -41,7 +41,7 @@
     "vite": "^5.4.2"
   },
   "dependencies": {
-    "@materializecss/materialize": "2.1.0",
+    "@materializecss/materialize": "2.1.1",
     "cheerio": "^1.0.0"
   },
   "jest": {
