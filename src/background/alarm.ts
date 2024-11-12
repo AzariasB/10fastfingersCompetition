@@ -22,31 +22,25 @@
  * THE SOFTWARE.
  */
 
-import { ALARM_NAME } from "../common";
+import { ALARM_NAME } from '../common'
 
-function alarmCallback(
-  timeout: () => number,
-  callback: () => Promise<unknown>,
-) {
+function alarmCallback(timeout: () => number, callback: () => Promise<unknown>) {
   return async (alarm: chrome.alarms.Alarm) => {
-    if (alarm.name != ALARM_NAME) return;
-    await callback();
-    const exists = await chrome.alarms.get(ALARM_NAME);
+    if (alarm.name != ALARM_NAME) return
+    await callback()
+    const exists = await chrome.alarms.get(ALARM_NAME)
     if (!exists) {
-      await chrome.alarms.create(ALARM_NAME, { delayInMinutes: timeout() });
+      await chrome.alarms.create(ALARM_NAME, { delayInMinutes: timeout() })
     }
-    return true;
-  };
+    return true
+  }
 }
 
-export async function setupAlarm(
-  timeout: () => number,
-  callback: () => Promise<any>,
-) {
-  const alarm = await chrome.alarms.get(ALARM_NAME);
+export async function setupAlarm(timeout: () => number, callback: () => Promise<unknown>) {
+  const alarm = await chrome.alarms.get(ALARM_NAME)
   if (!alarm) {
-    await chrome.alarms.create(ALARM_NAME, { delayInMinutes: timeout() });
+    await chrome.alarms.create(ALARM_NAME, { delayInMinutes: timeout() })
   }
 
-  chrome.alarms.onAlarm.addListener(alarmCallback(timeout, callback));
+  chrome.alarms.onAlarm.addListener(alarmCallback(timeout, callback))
 }

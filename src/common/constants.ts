@@ -22,19 +22,18 @@
  * THE SOFTWARE.
  */
 
-export const CONFIG_VERSION = 1;
+export const CONFIG_VERSION = 1
 
 /**
  * Simple joiner to 'encode' urls
  */
-export const join = (...args: string[]): string => args.join("/");
+export const join = (...args: string[]): string => args.join('/')
 
-export const WEBSITE_URL = "https://10fastfingers.com";
-export const CREATE_COMPETITION_URL = join(WEBSITE_URL, "competitions", "add");
-export const ALARM_NAME = "typingTestRefresh";
-export const CONNECTED_ICON = "/img/icon.png";
-export const DISCONNECTED_ICON = "/img/icon_gray.png";
-export const BIG_ICON = "/img/big_icon.png";
-export const OPTION_PAGE = "src/options/index.html";
-export const ANIMATION_SPEED = 20;
-export const NOTIFICATION_TIME = 2000;
+export const WEBSITE_URL = 'https://10fastfingers.com'
+export const CREATE_COMPETITION_URL = join(WEBSITE_URL, 'competitions', 'add')
+export const ALARM_NAME = 'typingTestRefresh'
+export const CONNECTED_ICON = '/img/icon.png'
+export const DISCONNECTED_ICON = '/img/icon_gray.png'
+export const BIG_ICON = '/img/big_icon.png'
+export const OPTION_PAGE = 'src/options/index.html'
+export const NOTIFICATION_TIME = 2000

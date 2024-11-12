@@ -22,19 +22,41 @@
  * THE SOFTWARE.
  */
 
-import "./custom.css";
+import { readFile } from 'node:fs/promises'
+import { Requester } from '../src/background/Requester'
+import { PageParseService } from '../src/background/PageParserService'
+import { test, beforeAll, describe, expect } from 'vitest'
 
-import type { Config } from "../common/common";
-import { OptionForm } from "./OptionForm";
+let fileContent = ''
+let requesterGetCalled = false
 
-async function saveConfig(conf: Config) {
-  await chrome.storage.sync.set(conf);
-  return conf;
+Requester.get = async function (): Promise<string> {
+  requesterGetCalled = true
+  return fileContent
 }
 
-async function main() {
-  const items = (await chrome.storage.sync.get()) as Config;
-  new OptionForm(items ?? {}, saveConfig);
+async function readFileData(): Promise<string> {
+  return readFile('./tests/fakeData.txt').then((file) => file.toString('utf-8'))
 }
 
-main();
+beforeAll(async () => {
+  fileContent = await readFileData()
+})
+
+test('Page parser service', () => {
+  describe('should call the get request method', () => {
+    PageParseService.parse('whatever', ['french'])
+    expect(requesterGetCalled).toBe(true)
+  })
+
+  describe('Should find 5 french competition in the fake data provided', async () => {
+    const competitions = await PageParseService.parse('whatever', ['french'])
+
+    expect(competitions).toHaveLength(3)
+    expect(competitions).toEqual([
+      '/competition/5ccb66888b6e3',
+      '/competition/5ccba7500997b',
+      '/competition/5ccbbd4a76625',
+    ])
+  })
+})

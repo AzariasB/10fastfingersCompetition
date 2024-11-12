@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-import { CONNECTED_ICON, DISCONNECTED_ICON, tr } from "../common";
+import { CONNECTED_ICON, DISCONNECTED_ICON, tr } from '../common'
 
 export class IconAnimator {
   constructor() {}
@@ -30,27 +30,23 @@ export class IconAnimator {
   public showConnected(availableCompets: number) {
     const badgeMessage =
       availableCompets == 0
-        ? tr("nothing_new")
+        ? tr('nothing_new')
         : availableCompets == 1
-          ? tr("one_new")
-          : tr("several_new");
-    this.updateBrowserAction(
-      `${availableCompets || ""}`,
-      badgeMessage,
-      CONNECTED_ICON,
-    );
+          ? tr('one_new')
+          : tr('several_new')
+    this.updateBrowserAction(`${availableCompets || ''}`, badgeMessage, CONNECTED_ICON)
   }
 
   public showDisconnected() {
-    this.updateBrowserAction("", "not_connected", DISCONNECTED_ICON);
+    this.updateBrowserAction('', 'not_connected', DISCONNECTED_ICON)
   }
 
   private updateBrowserAction(text: string, title: string, iconPath: string) {
-    chrome.action.setBadgeText({ text });
-    chrome.action.setTitle({ title });
+    chrome.action.setBadgeText({ text })
+    chrome.action.setTitle({ title })
     chrome.action.setBadgeBackgroundColor({
       color: text ? [10, 56, 0, 255] : [0, 0, 0, 0],
-    });
-    chrome.action.setIcon({ path: iconPath });
+    })
+    chrome.action.setIcon({ path: iconPath })
   }
 }
