@@ -22,8 +22,8 @@
  * THE SOFTWARE.
  */
 
-import { IconAnimator } from "./IconAnimator";
-import { PageParseService } from "./PageParserService";
+import { IconAnimator } from './IconAnimator'
+import { PageParseService } from './PageParserService'
 import {
   getCompetitionsPage,
   getCompetitionURl,
@@ -39,54 +39,54 @@ import {
   isEmptyTab,
   extractCompetitionUrl,
   availableLang,
-} from "../common";
-import { setupAlarm } from "./alarm";
-import { StorageService } from "./StorageService";
-import { Requester } from "./Requester";
+} from '../common'
+import { setupAlarm } from './alarm'
+import { StorageService } from './StorageService'
+import { Requester } from './Requester'
 
 /**
  * Main class of the extension, used to coordinate
  * all the elements : the alarm, the storage and the icon
  */
 class App {
-  private readonly iconAnimator: IconAnimator;
-  private readonly storage: StorageService;
+  private readonly iconAnimator: IconAnimator
+  private readonly storage: StorageService
 
   constructor() {
-    this.storage = new StorageService();
+    this.storage = new StorageService()
     setupAlarm(
       () => this.storage.checkTimeout,
       () => this.updateBadge(),
-    );
+    )
 
-    this.iconAnimator = new IconAnimator();
+    this.iconAnimator = new IconAnimator()
     this.storage.init().then(() => {
-      this.updateBadge();
-    });
-    chrome.storage.onChanged.addListener((items) => {
-      this.storage.updateConfig(items);
-      this.updateBadge();
-    });
-    chrome.action.onClicked.addListener(() => this.goToCompetition());
+      this.updateBadge()
+    })
+    chrome.storage.onChanged.addListener((/* items */) => {
+      this.storage.updateConfig(/* items */)
+      this.updateBadge()
+    })
+    chrome.action.onClicked.addListener(() => this.goToCompetition())
     chrome.notifications.onClicked.addListener((notifId) => {
-      chrome.notifications.clear(notifId);
-      this.goToCompetition();
-    });
+      chrome.notifications.clear(notifId)
+      this.goToCompetition()
+    })
     chrome.webRequest.onCompleted.addListener(
       (details) => {
         if (isCompetitionSave(details)) {
-          this.updateBadge();
+          this.updateBadge()
         }
       },
       {
-        urls: ["*://10fastfingers.com/*"],
+        urls: ['*://10fastfingers.com/*'],
       },
-    );
+    )
     chrome.runtime.onInstalled.addListener((details) => {
-      if (details.reason === "install") {
-        chrome.runtime.openOptionsPage();
+      if (details.reason === 'install') {
+        chrome.runtime.openOptionsPage()
       }
-    });
+    })
   }
 
   /**
@@ -95,25 +95,20 @@ class App {
    */
   private async updateBadge(): Promise<string[]> {
     try {
-      const tabs = (await this.getWebsiteTabs()).map((t) => t.url);
-      const allCompets = await PageParseService.parse(
-        getCompetitionsPage(),
-        this.storage.langWatch,
-      );
+      const tabs = (await this.getWebsiteTabs()).map((t) => t.url)
+      const allCompets = await PageParseService.parse(getCompetitionsPage(), this.storage.langWatch)
       //Filter out the competition already opened
-      const compets = allCompets.filter(
-        (x) => !tabs.some((t) => (t?.indexOf(x) ?? -1) > -1),
-      );
-      const shownCompetitions = await getDisplayedCompetitions();
-      this.iconAnimator.showConnected(compets.length);
+      const compets = allCompets.filter((x) => !tabs.some((t) => (t?.indexOf(x) ?? -1) > -1))
+      const shownCompetitions = await getDisplayedCompetitions()
+      this.iconAnimator.showConnected(compets.length)
       if (shownCompetitions === 0 && compets.length) {
-        this.notifyCompetCreation();
+        this.notifyCompetCreation()
       }
-      return compets;
+      return compets
     } catch (err) {
-      console.error(err);
-      this.iconAnimator.showDisconnected();
-      return [];
+      console.error(err)
+      this.iconAnimator.showDisconnected()
+      return []
     }
   }
   /**
@@ -121,15 +116,15 @@ class App {
    * only if the option is on
    */
   private notifyCompetCreation() {
-    if (!this.storage.notifyOnCreation) return;
+    if (!this.storage.notifyOnCreation) return
     chrome.notifications.create({
-      type: "basic",
+      type: 'basic',
       iconUrl: BIG_ICON,
       eventTime: NOTIFICATION_TIME,
-      title: "10fastfingers competition",
-      message: tr("one_was_created"),
+      title: '10fastfingers competition',
+      message: tr('one_was_created'),
       isClickable: true,
-    });
+    })
   }
 
   /**
@@ -139,15 +134,15 @@ class App {
    */
   private async goToCompetition(): Promise<void> {
     try {
-      const competitions = await this.updateBadge();
+      const competitions = await this.updateBadge()
       if (competitions.length === 0) {
-        const createdOne = await this.tryCreateCompetition();
-        if (!createdOne) await this.goToAlternativePage();
+        const createdOne = await this.tryCreateCompetition()
+        if (!createdOne) await this.goToAlternativePage()
       } else {
-        await this.openCompetitionTab(competitions.shift()!);
+        await this.openCompetitionTab(competitions.shift()!)
       }
     } catch (ex) {
-      console.error(ex);
+      console.error(ex)
     }
   }
 
@@ -156,31 +151,29 @@ class App {
    * will go to the created competition
    */
   private async tryCreateCompetition(): Promise<boolean> {
-    if (!this.storage.createIfPossible) return false;
-    const langId = availableLang[this.storage.websiteLanguage].flagId;
-    const formData = new URLSearchParams(`speedtest_id=${langId}&privacy=0`);
+    if (!this.storage.createIfPossible) return false
+    const langId = availableLang[this.storage.websiteLanguage].flagId
+    const formData = new URLSearchParams(`speedtest_id=${langId}&privacy=0`)
     try {
-      const resp = await Requester.post(CREATE_COMPETITION_URL, formData);
-      const json = await resp.json();
+      const resp = await Requester.post(CREATE_COMPETITION_URL, formData)
+      const json = await resp.json()
       if (json.url) {
-        const competitionUrl = extractCompetitionUrl(json.url);
+        const competitionUrl = extractCompetitionUrl(json.url)
         if (competitionUrl) {
-          await this.updateOrOpenTab(competitionUrl);
-          return true;
+          await this.updateOrOpenTab(competitionUrl)
+          return true
         }
       }
     } catch (ex) {
-      console.error(ex);
-      return false;
+      console.error(ex)
+      return false
     }
-    return false;
+    return false
   }
 
-  private async openCompetitionTab(
-    competition: string,
-  ): Promise<chrome.tabs.Tab> {
-    const url = getCompetitionURl(competition);
-    return await this.updateOrOpenTab(url);
+  private async openCompetitionTab(competition: string): Promise<chrome.tabs.Tab> {
+    const url = getCompetitionURl(competition)
+    return await this.updateOrOpenTab(url)
   }
 
   /**
@@ -192,13 +185,13 @@ class App {
     const url = join(
       WEBSITE_URL,
       getAlternatePage(this.storage.openOption, this.storage.websiteLanguage),
-    );
-    return await this.updateOrOpenTab(url);
+    )
+    return await this.updateOrOpenTab(url)
   }
 
   private async updateOrOpenTab(url: string): Promise<chrome.tabs.Tab> {
-    const tabs = await this.getWebsiteTabs();
-    return await this.openFirstTab(tabs, url);
+    const tabs = await this.getWebsiteTabs()
+    return await this.openFirstTab(tabs, url)
   }
 
   /**
@@ -208,23 +201,20 @@ class App {
     return new Promise((res) => {
       chrome.tabs.query(
         {
-          url: join(WEBSITE_URL, "*"),
+          url: join(WEBSITE_URL, '*'),
         },
         (tabs) => res(tabs),
-      );
-    });
+      )
+    })
   }
 
   /**
    * Opens the first tab with an alternative page
    * if the list is empty, creates a new tab
    */
-  private async openFirstTab(
-    tabs: chrome.tabs.Tab[],
-    url: string,
-  ): Promise<chrome.tabs.Tab> {
+  private async openFirstTab(tabs: chrome.tabs.Tab[], url: string): Promise<chrome.tabs.Tab> {
     if (tabs.length === 0) {
-      return await this.openFocusedTab(url);
+      return await this.openFocusedTab(url)
     } else {
       return new Promise((res) => {
         chrome.tabs.update(
@@ -234,8 +224,8 @@ class App {
             url,
           },
           (t) => res(t!),
-        );
-      });
+        )
+      })
     }
   }
 
@@ -245,7 +235,7 @@ class App {
   private async openFocusedTab(url: string): Promise<chrome.tabs.Tab> {
     return new Promise((res) => {
       chrome.tabs.query({ active: true }, (tabs) => {
-        const tab = tabs?.[0];
+        const tab = tabs?.[0]
         if (isEmptyTab(tab)) {
           chrome.tabs.update(
             tab.id ?? 0,
@@ -254,7 +244,7 @@ class App {
               url: url,
             },
             (tab) => tab && res(tab),
-          );
+          )
         } else {
           chrome.tabs.create(
             {
@@ -262,11 +252,11 @@ class App {
               url,
             },
             (tab) => res(tab),
-          );
+          )
         }
-      });
-    });
+      })
+    })
   }
 }
 
-new App();
+new App()

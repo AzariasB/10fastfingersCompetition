@@ -22,27 +22,23 @@
  * THE SOFTWARE.
  */
 
-import { availableLang, parseJsArray } from "../common";
-import { Requester } from "./Requester";
-import { load } from "cheerio";
+import { availableLang, parseJsArray, type ValidLanguage } from '../common'
+import { Requester } from './Requester'
+import { load } from 'cheerio'
 
 const clearRegexes = [
-  new RegExp("<script[^>]*>(.|\\s)*?<\\/script>", "g"), //rm script tags
-  new RegExp("url\\(['\"][\\d\\D]*?.png['\"]\\)", "g"), //rm url attributes in images
-  new RegExp(
-    "<[a-z]*.*?style=['\"].*?url\\(.*?\\).*?['\"].*?>.*?<\\/[a-z]*>",
-    "ig",
-  ), //rm anchors
-  new RegExp("<link[^>]*?>", "g"), //rm links
-  new RegExp("<img[^>]*?\\/?>", "g"), // rm images
-];
+  new RegExp('<script[^>]*>(.|\\s)*?<\\/script>', 'g'), //rm script tags
+  new RegExp('url\\([\'"][\\d\\D]*?.png[\'"]\\)', 'g'), //rm url attributes in images
+  new RegExp('<[a-z]*.*?style=[\'"].*?url\\(.*?\\).*?[\'"].*?>.*?<\\/[a-z]*>', 'ig'), //rm anchors
+  new RegExp('<link[^>]*?>', 'g'), //rm links
+  new RegExp('<img[^>]*?\\/?>', 'g'), // rm images
+]
 
-const competListRegex =
-  /\s*var\s+competitions_participated\s*=\s*\[("\d+",)*("\d+")?\];/;
+const competListRegex = /\s*var\s+competitions_participated\s*=\s*\[("\d+",)*("\d+")?\];/
 
 interface CompetitionData {
-  id: number;
-  url: string;
+  id: number
+  url: string
 }
 
 export class PageParseService {
@@ -51,11 +47,8 @@ export class PageParseService {
    * when the user is connected, returns the list of URLS of the competitions
    * to be done yet
    */
-  public static async parse(
-    pageUrl: string,
-    langs: string[],
-  ): Promise<string[]> {
-    return await new PageParseService(pageUrl).getMyCompetitions(langs);
+  public static async parse(pageUrl: string, langs: ValidLanguage[]): Promise<string[]> {
+    return await new PageParseService(pageUrl).getMyCompetitions(langs)
   }
 
   /**
@@ -70,15 +63,13 @@ export class PageParseService {
    * @param langs list of languages the user want to compet in
    * @returns all the competitions to be completed by the user
    */
-  private async getMyCompetitions(langs: string[]): Promise<string[]> {
-    const page = await Requester.get(this.pageUrl);
-    const doneCompetitions = this.getCompetitionsParticipated(page);
-    const cleanedPage = this.cleanHtml(page);
-    const flagIds = langs.map((x) => availableLang[x].flagId);
-    const compets = this.readPageCompetitions(cleanedPage, flagIds);
-    return compets
-      .filter((x) => doneCompetitions.indexOf(x.id) == -1)
-      .map((x) => x.url);
+  private async getMyCompetitions(langs: ValidLanguage[]): Promise<string[]> {
+    const page = await Requester.get(this.pageUrl)
+    const doneCompetitions = this.getCompetitionsParticipated(page)
+    const cleanedPage = this.cleanHtml(page)
+    const flagIds = langs.map((x) => availableLang[x].flagId)
+    const compets = this.readPageCompetitions(cleanedPage, flagIds)
+    return compets.filter((x) => doneCompetitions.indexOf(x.id) == -1).map((x) => x.url)
   }
 
   /**
@@ -87,18 +78,15 @@ export class PageParseService {
    * @param flagIds ids of the flags we're looking for
    * @returns List of all the competitions found
    */
-  private readPageCompetitions(
-    cleanHtml: string,
-    flagIds: number[],
-  ): CompetitionData[] {
-    const $ = load(cleanHtml);
-    const rows = $("#join-competition-table tbody").first().find("tr");
-    const transform = this.hasGreenStamp(flagIds);
+  private readPageCompetitions(cleanHtml: string, flagIds: number[]): CompetitionData[] {
+    const $ = load(cleanHtml)
+    const rows = $('#join-competition-table tbody').first().find('tr')
+    const transform = this.hasGreenStamp(flagIds)
 
     return rows
       .map(transform)
       .toArray()
-      .filter((x) => x !== null);
+      .filter((x) => x !== null)
   }
 
   /**
@@ -108,23 +96,20 @@ export class PageParseService {
    */
   private hasGreenStamp(
     flagIds: number[],
-  ): (this, i: number, el) => CompetitionData | null {
+  ): (this: unknown, i: number, el: unknown) => CompetitionData | null {
     return (_idx, el): CompetitionData | null => {
-      const $td = load(el)("td");
-      const flagSpan = $td.find("span:first-child").attr("id");
-      const flag = +(flagSpan?.replace("flagid", "") ?? "0");
-      const timeLeft = $td.last().text() ?? ""; // If seconds remains, not possible to join the competition
-      if (timeLeft.endsWith("s") || flagIds.indexOf(flag) === -1) return null;
-      const competId = $td
-        .find(":nth-child(3) div")
-        .first()
-        .attr("competition_id");
+      const $td = load(el as string)('td')
+      const flagSpan = $td.find('span:first-child').attr('id')
+      const flag = +(flagSpan?.replace('flagid', '') ?? '0')
+      const timeLeft = $td.last().text() ?? '' // If seconds remains, not possible to join the competition
+      if (timeLeft.endsWith('s') || flagIds.indexOf(flag) === -1) return null
+      const competId = $td.find(':nth-child(3) div').first().attr('competition_id')
       //Compet not done yet
       return {
         id: +(competId ?? 0),
-        url: $td.find(":nth-child(2) a").first().attr("href") ?? "",
-      };
-    };
+        url: $td.find(':nth-child(2) a').first().attr('href') ?? '',
+      }
+    }
   }
 
   /**
@@ -133,7 +118,7 @@ export class PageParseService {
    * @return The cleaned html
    */
   private cleanHtml(html: string): string {
-    return clearRegexes.reduce((str, a) => str.replace(a, ""), html);
+    return clearRegexes.reduce((str, a) => str.replace(a, ''), html)
   }
 
   /**
@@ -142,11 +127,11 @@ export class PageParseService {
    * @returns the list of the competitions ids
    */
   private getCompetitionsParticipated(html: string): number[] {
-    const res = competListRegex.exec(html);
+    const res = competListRegex.exec(html)
     if (res && res[0]) {
-      return parseJsArray(res[0]);
+      return parseJsArray(res[0])
     } else {
-      return [];
+      return []
     }
   }
 }

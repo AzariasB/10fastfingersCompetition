@@ -22,6 +22,19 @@
  * THE SOFTWARE.
  */
 
-export * from './common'
-export * from './languages'
-export * from './constants'
+import '../assets/style/custom.css'
+
+import { createApp } from 'vue'
+import App from './App.vue'
+import PrimeVue from 'primevue/config'
+import Nora from '@primevue/themes/nora'
+import ToastService from 'primevue/toastservice'
+
+createApp(App)
+  .use(PrimeVue, {
+    theme: {
+      preset: Nora,
+    },
+  })
+  .use(ToastService)
+  .mount('#app')

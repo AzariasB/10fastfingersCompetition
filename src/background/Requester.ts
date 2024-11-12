@@ -35,24 +35,24 @@ export class Requester {
    */
   public static async get(url: string): Promise<string> {
     const resp = await fetch(url, {
-      method: "GET",
-      credentials: "include",
-    });
-    return await resp.text();
+      method: 'GET',
+      credentials: 'include',
+    })
+    return await resp.text()
   }
 
   /**
    * @param url target url
    * @param data data send
    */
-  public static async post(url: string, data: any): Promise<Response> {
+  public static async post(url: string, data: BodyInit | null | undefined): Promise<Response> {
     return await fetch(url, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "X-Requested-With": "XMLHttpRequest",
+        'X-Requested-With': 'XMLHttpRequest',
       },
-      credentials: "include",
+      credentials: 'include',
       body: data,
-    });
+    })
   }
 }

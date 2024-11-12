@@ -22,7 +22,8 @@
  * THE SOFTWARE.
  */
 
-import { Config, OpenOption, DEFAULT_CONFIG } from "../common/common";
+import { type Config, OpenOption, DEFAULT_CONFIG } from '../common/common'
+import type { ValidLanguage } from '@/common'
 
 /**
  * Service used to interface with chrome sync storage
@@ -32,44 +33,43 @@ import { Config, OpenOption, DEFAULT_CONFIG } from "../common/common";
  * Has a direct accessor for each config element
  */
 export class StorageService {
-  private config: Config;
+  private config: Config = DEFAULT_CONFIG
 
   public async init(): Promise<void> {
-    this.config = DEFAULT_CONFIG;
-    const items = await this.getConfig();
-    if (!items || !items.version) await this.saveConfig(this.config);
-    else this.updateConfig(items);
+    const items = await this.getConfig()
+    if (!items || !items.version) await this.saveConfig(this.config)
+    else this.updateConfig(/* items */)
   }
 
   /**
    * Retrieves the config in the sync memory
    */
   private async getConfig(): Promise<Config> {
-    return chrome.storage.sync.get() as Promise<Config>;
+    return (await chrome.storage.sync.get()) as Config
   }
 
   /**
    * Saves the config in the sync storage
    */
   private async saveConfig(item: Config): Promise<Config> {
-    await chrome.storage.sync.set(item);
-    return item;
+    await chrome.storage.sync.set(item)
+    return item
   }
 
   /**
    * Merges the current config object with
    * the given items
    */
-  public updateConfig(items: Record<string, any>) {
-    Object.keys(this.config).map((k) => {
-      if (items[k] !== undefined) {
+  public updateConfig(/* items: Record<string, unknown> */) {
+    Object.keys(this.config).map((/* k */) => {
+      /*      if (items[k] !== undefined) {
         if (items[k].newValue === undefined) {
           this.config[k] = items[k];
         } else {
           this.config[k] = items[k].newValue;
         }
-      }
-    });
+      }*/
+    })
   }
 
   /**
@@ -77,30 +77,26 @@ export class StorageService {
    */
 
   public get checkTimeout(): number {
-    return this.config.checkTimeout;
+    return this.config.checkTimeout
   }
 
-  public get langWatch(): string[] {
-    return this.config.langWatch;
+  public get langWatch(): ValidLanguage[] {
+    return this.config.langWatch
   }
 
   public get openOption(): OpenOption {
-    return this.config.openOption;
+    return this.config.openOption
   }
 
   public get notifyOnCreation(): boolean {
-    return this.config.notifyOnCreation;
+    return this.config.notifyOnCreation
   }
 
-  public get websiteLanguage(): string {
-    return this.config.websiteLanguage;
-  }
-
-  public get animateIcon(): boolean {
-    return this.config.animateIcon;
+  public get websiteLanguage(): ValidLanguage {
+    return this.config.websiteLanguage
   }
 
   public get createIfPossible(): boolean {
-    return this.config.createIfPossible;
+    return this.config.createIfPossible
   }
 }
