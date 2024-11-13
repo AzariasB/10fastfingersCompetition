@@ -1,7 +1,7 @@
 {
   "name": "10fastfingers-competition",
   "displayName": "10fastfingerCompetition",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Knowing if there is a new competition in your language",
   "private": true,
   "author": "AzariasB",

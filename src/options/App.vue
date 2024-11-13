@@ -92,12 +92,12 @@
     <div class="p-2">
       <Button fluid @click="() => save()" :label="tr('confirm_save')" />
     </div>
-    <Toast />
+    <Toast position="bottom-center" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { FloatLabel, MultiSelect, Select, ToggleSwitch, InputNumber, Button } from 'primevue'
+import { FloatLabel, MultiSelect, Select, ToggleSwitch, InputNumber, Button, Toast } from 'primevue'
 import { useToast } from 'primevue/usetoast'
 import { availableLang, type Config, DEFAULT_CONFIG, OpenOption } from '@/common'
 import { onBeforeMount, reactive, toRaw } from 'vue'
@@ -120,7 +120,6 @@ const competitionLanguages = Object.entries(availableLang).map(([k, v]) => {
 })
 
 async function save() {
-  console.log('saving configuration')
   try {
     const toSave = toRaw(config)
     await chrome.storage.sync.set(toSave)
