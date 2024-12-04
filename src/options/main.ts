@@ -27,13 +27,13 @@ import '../assets/style/custom.css'
 import { createApp } from 'vue'
 import App from './App.vue'
 import PrimeVue from 'primevue/config'
-import Nora from '@primevue/themes/nora'
+import Material from '@primevue/themes/material'
 import ToastService from 'primevue/toastservice'
 
 createApp(App)
   .use(PrimeVue, {
     theme: {
-      preset: Nora,
+      preset: Material,
     },
   })
   .use(ToastService)
