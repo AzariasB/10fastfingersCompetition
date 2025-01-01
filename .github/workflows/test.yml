@@ -21,3 +21,4 @@ jobs:
           yarn format:check
           yarn lint
           yarn test
+          yarn build
