@@ -122,10 +122,10 @@ export const getAlternatePage = (opOp: OpenOption, lang: string) => {
  * Whenever a chrome request is received, checks it is the request
  * sent when a competition is completed by the user
  */
-export function isCompetitionSave(details: chrome.webRequest.WebResponseCacheDetails) {
+export function isCompetitionSave(details: chrome.webRequest.WebRequestDetails) {
   return (
     details.initiator &&
-    details.initiator.indexOf(WEBSITE_URL) != -1 &&
+    details.initiator.indexOf(WEBSITE_URL) !== -1 &&
     details.method === 'POST' &&
     details.type === 'xmlhttprequest' &&
     details.url.endsWith('save_result')

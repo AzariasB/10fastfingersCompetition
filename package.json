@@ -43,5 +43,6 @@
     "vite-plugin-vue-devtools": "^7.5.4",
     "vitest": "^3.0.0",
     "vue-tsc": "^2.1.10"
-  }
+  },
+  "packageManager": "yarn@4.9.1"
 }
