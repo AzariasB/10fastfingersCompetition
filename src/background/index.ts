@@ -218,7 +218,7 @@ class App {
     } else {
       return new Promise((res) => {
         chrome.tabs.update(
-          tabs[0].id!,
+          tabs[0]!.id!,
           {
             active: true,
             url,
