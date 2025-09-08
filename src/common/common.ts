@@ -138,8 +138,8 @@ export function isCompetitionSave(details: chrome.webRequest.WebRequestDetails) 
  *
  * @param tab tab that can be empty
  */
-export function isEmptyTab(tab: chrome.tabs.Tab): boolean {
-  return tab && EMPY_TAB_REGEX.test(tab.url ?? '')
+export function isEmptyTab(tab: chrome.tabs.Tab | undefined): tab is chrome.tabs.Tab {
+  return tab != undefined && EMPY_TAB_REGEX.test(tab.url ?? '')
 }
 
 /**
