@@ -25,8 +25,8 @@
 import { join, is10fastFingersUrl, parseJsArray, extractCompetitionUrl } from '../src/common'
 import { test, describe, expect } from 'vitest'
 
-test('Common methods', () => {
-  describe('Should join elements togeter', () => {
+describe('Common methods', () => {
+  test('Should join elements togeter', () => {
     const simpleJoin = join('a', 'b')
     expect(simpleJoin).toEqual('a/b')
 
@@ -34,7 +34,7 @@ test('Common methods', () => {
     expect(moreJoins).toEqual('x/mostElement//j')
   })
 
-  describe('Should be able to detect a valid 10fastfingers url', () => {
+  test('Should be able to detect a valid 10fastfingers url', () => {
     const validUrl = 'https://10fastfingers.com'
 
     const valids = [validUrl, validUrl + '/randomStuff', validUrl + '/']
@@ -50,7 +50,7 @@ test('Common methods', () => {
     invalids.forEach((iv) => expect(is10fastFingersUrl(iv)).toBe(false))
   })
 
-  describe('Should correctly parse a js array', () => {
+  test('Should correctly parse a js array', () => {
     const testValues = [
       '[]',
       '["1"]',
@@ -67,7 +67,7 @@ test('Common methods', () => {
     })
   })
 
-  describe('Should correctly extract the competition url from a more complex string', () => {
+  test('Should correctly extract the competition url from a more complex string', () => {
     const validTests = [
       [
         'Start: <a href="https://10fastfingers.com/competition/633ea8bf6d3a8">https://10fastfingers.com/competition/633ea8bf6d3a8</a>',
