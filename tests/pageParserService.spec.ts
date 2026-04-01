@@ -43,13 +43,13 @@ beforeAll(async () => {
   fileContent = await readFileData()
 })
 
-test('Page parser service', () => {
-  describe('should call the get request method', () => {
+describe('Page parser service', () => {
+  test('should call the get request method', () => {
     PageParseService.parse('whatever', ['french'])
     expect(requesterGetCalled).toBe(true)
   })
 
-  describe('Should find 5 french competition in the fake data provided', async () => {
+  test('Should find 5 french competition in the fake data provided', async () => {
     const competitions = await PageParseService.parse('whatever', ['french'])
 
     expect(competitions).toHaveLength(3)
