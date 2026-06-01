@@ -1,7 +1,7 @@
 {
   "name": "10fastfingers-competition",
   "displayName": "10fastfingerCompetition",
-  "version": "5.0.24",
+  "version": "5.0.25",
   "description": "Knowing if there is a new competition in your language",
   "private": true,
   "author": "AzariasB",
@@ -35,7 +35,7 @@
     "@vue/tsconfig": "^0.9.0",
     "eslint": "^10.0.0",
     "eslint-plugin-vue": "^10.0.0",
-    "npm-run-all2": "^8.0.0",
+    "npm-run-all2": "^9.0.0",
     "prettier": "^3.3.3",
     "sinon-chrome": "^3.0.1",
     "typescript": "~6.0.0",
