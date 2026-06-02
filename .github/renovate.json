@@ -4,6 +4,7 @@
     "config:base",
     "group:allNonMajor"
   ],
+  "minimumReleaseAge": "7 days",
   "bumpVersion": "patch",
   "assignees": ["AzariasB"],
   "timezone": "Europe/Paris",

@@ -1,7 +1,7 @@
 {
   "name": "10fastfingers-competition",
   "displayName": "10fastfingerCompetition",
-  "version": "5.0.25",
+  "version": "5.1.0",
   "description": "Knowing if there is a new competition in your language",
   "private": true,
   "author": "AzariasB",
@@ -43,6 +43,5 @@
     "vite-plugin-vue-devtools": "^8.0.0",
     "vitest": "^4.0.0",
     "vue-tsc": "^3.0.0"
-  },
-  "packageManager": "yarn@4.14.1"
+  }
 }
