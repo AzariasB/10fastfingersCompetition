@@ -1,7 +1,7 @@
 {
   "name": "10fastfingers-competition",
   "displayName": "10fastfingerCompetition",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "Knowing if there is a new competition in your language",
   "private": true,
   "author": "AzariasB",
@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@tsconfig/node24": "^24.0.0",
-    "@types/chrome": "^0.1.0",
+    "@types/chrome": "^0.2.0",
     "@types/node": "^24.0.0",
     "@types/sinon-chrome": "^2.2.15",
     "@vitejs/plugin-vue": "^6.0.0",
